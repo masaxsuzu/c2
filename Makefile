@@ -6,7 +6,10 @@ test: c2
 c2: main.o
 	$(CC) -o $@ $? $(LDFLAGS)
 
+fmt:
+	clang-format *.c -i
+
 clean:
 	rm -f c2 *.o *~ tmp*
 
-.PHONY: test clean
+.PHONY: test fmt clean
