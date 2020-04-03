@@ -23,6 +23,8 @@ struct Token {
 typedef enum {
     ND_Add,
     ND_Sub,
+    ND_Mul,
+    ND_Div,
     ND_Num,
 } NodeKind;
 
@@ -121,7 +123,7 @@ Token *tokenize() {
             continue;
         }
 
-        if(*p == '+' || *p == '-') {
+        if(strchr("+-*/()", *p)) {
             cur = new_token(TK_Reserved, cur, p++);
             continue;
         }
@@ -158,8 +160,17 @@ Node *mul();
 Node *primary();
 
 Node *mul() {
-    // WIP : multipier is not supported yet.
-    return primary();  
+    Node *node = primary();
+
+    for(;;) {
+        if(consume('*')) {
+            node = new_node(ND_Mul, node, primary());
+        } else if(consume('/')) {
+            node = new_node(ND_Div, node, primary());
+        } else{
+            return node;
+        }
+    }
 }
 
 Node *primary() {
@@ -206,6 +217,13 @@ void gen(Node *node) {
         break;
     case ND_Sub:
         printf("    sub rax, rdi\n");
+        break;
+    case ND_Mul:
+        printf("    imul rax, rdi\n");
+        break;
+    case ND_Div:
+        printf("    cqo\n");
+        printf("    idiv rdi\n");
         break;
     default:
         break;
