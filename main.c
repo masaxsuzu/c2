@@ -16,7 +16,7 @@ typedef struct Token Token;
 struct Token {
     TokenKind kind;
     Token *next;
-    int value;      // only for number
+    int value; // only for number
     char *str;
 };
 
@@ -34,7 +34,7 @@ struct Node {
     NodeKind kind;
     Node *left;
     Node *right;
-    int value;      // only for number
+    int value; // only for number
 };
 
 Token *token;
@@ -46,10 +46,10 @@ void error(char *fmt, ...) {
     va_list ap;
     va_start(ap, fmt);
     vfprintf(stderr, fmt, ap);
-    fprintf(stderr,"\n");
+    fprintf(stderr, "\n");
     exit(1);
- }
- 
+}
+
 // Report an error with human-readble format.
 void error_at(char *loc, char *fmt, ...) {
     va_list ap;
@@ -60,36 +60,37 @@ void error_at(char *loc, char *fmt, ...) {
     fprintf(stderr, "%*s", pos, "");
     fprintf(stderr, "^ ");
     vfprintf(stderr, fmt, ap);
-    fprintf(stderr,"\n");
+    fprintf(stderr, "\n");
     exit(1);
- }
+}
 
 // Show current token as json format.
 void debug_token(char *label) {
-    fprintf(stderr,"{ \"label\": %s, \"kind\": %d, \"value\": %d }\n", label, token->kind, token->value);
+    fprintf(stderr, "{ \"label\": %s, \"kind\": %d, \"value\": %d }\n", label,
+            token->kind, token->value);
 }
 
 // If next token is as expected, advance 1 token.
-// Then return true. Otherwise return false. 
+// Then return true. Otherwise return false.
 bool consume(char op) {
-    if(token->kind != TK_Reserved || token->str[0] != op){
+    if (token->kind != TK_Reserved || token->str[0] != op) {
         return false;
     }
-    token= token->next;
+    token = token->next;
     return true;
 }
 
 // If next token is as expected, advance 1 token.
 // Otherwise report an error.
 void expect(char op) {
-    if(token->kind != TK_Reserved || token->str[0] != op){
+    if (token->kind != TK_Reserved || token->str[0] != op) {
         error_at(token->str, "expected '%c'", op);
     }
     token = token->next;
 }
 
 int expect_number() {
-    if(token->kind != TK_Number){
+    if (token->kind != TK_Number) {
         error_at(token->str, "expacted a number");
     }
     int number = token->value;
@@ -97,9 +98,7 @@ int expect_number() {
     return number;
 }
 
-bool at_eof() {
-    return token->kind == TK_Eof;
-}
+bool at_eof() { return token->kind == TK_Eof; }
 
 Token *new_token(TokenKind kind, Token *cur, char *str) {
     Token *tok = calloc(1, sizeof(Token));
@@ -117,18 +116,17 @@ Token *tokenize() {
     head.next = NULL;
     Token *cur = &head;
     while (*p) {
-
-        if(isspace(*p)) {
+        if (isspace(*p)) {
             p++;
             continue;
         }
 
-        if(strchr("+-*/()", *p)) {
+        if (strchr("+-*/()", *p)) {
             cur = new_token(TK_Reserved, cur, p++);
             continue;
         }
 
-        if(isdigit(*p)) {
+        if (isdigit(*p)) {
             cur = new_token(TK_Number, cur, p);
             cur->value = strtol(p, &p, 10);
             continue;
@@ -162,19 +160,19 @@ Node *primary();
 Node *mul() {
     Node *node = primary();
 
-    for(;;) {
-        if(consume('*')) {
+    for (;;) {
+        if (consume('*')) {
             node = new_node(ND_Mul, node, primary());
-        } else if(consume('/')) {
+        } else if (consume('/')) {
             node = new_node(ND_Div, node, primary());
-        } else{
+        } else {
             return node;
         }
     }
 }
 
 Node *primary() {
-    if(consume('(')) {
+    if (consume('(')) {
         Node *node = expr();
         expect(')');
         return node;
@@ -186,32 +184,30 @@ Node *primary() {
 Node *expr() {
     Node *node = mul();
 
-    for(;;) {
-        if(consume('+')) {
+    for (;;) {
+        if (consume('+')) {
             node = new_node(ND_Add, node, mul());
-        } else if(consume('-')) {
+        } else if (consume('-')) {
             node = new_node(ND_Sub, node, mul());
-        } else
-        {
+        } else {
             return node;
         }
     }
 }
 
 void gen(Node *node) {
-    if(node->kind == ND_Num) {
+    if (node->kind == ND_Num) {
         printf("    push %d\n", node->value);
         return;
     }
-    
+
     gen(node->left);
     gen(node->right);
 
     printf("    pop rdi\n");
     printf("    pop rax\n");
 
-    switch (node->kind)
-    {
+    switch (node->kind) {
     case ND_Add:
         printf("    add rax, rdi\n");
         break;
@@ -233,8 +229,7 @@ void gen(Node *node) {
 }
 
 int main(int argc, char **argv) {
-
-    if(argc != 2){
+    if (argc != 2) {
         error("%s: invalid number of arguments", argv[0]);
     }
 
