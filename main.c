@@ -21,12 +21,27 @@ struct Token {
 };
 
 Token *token;
+char *user_input;
 
 // Report an error.
 // Arguments are same as printf
 void error(char *fmt, ...) {
     va_list ap;
     va_start(ap, fmt);
+    vfprintf(stderr, fmt, ap);
+    fprintf(stderr,"\n");
+    exit(1);
+ }
+ 
+// Report an error with human-readble format.
+void error_at(char *loc, char *fmt, ...) {
+    va_list ap;
+    va_start(ap, fmt);
+    int pos = loc - user_input;
+
+    fprintf(stderr, "%s\n", user_input);
+    fprintf(stderr, "%*s", pos, "");
+    fprintf(stderr, "^ ");
     vfprintf(stderr, fmt, ap);
     fprintf(stderr,"\n");
     exit(1);
@@ -51,14 +66,14 @@ bool consume(char op) {
 // Otherwise report an error.
 void expect(char op) {
     if(token->kind != Reserved || token->str[0] != op){
-        error("Token is not '%c'", op);
+        error_at(token->str, "expected '%c'", op);
     }
     token = token->next;
 }
 
 int expect_number() {
     if(token->kind != Number){
-        error("Not a number");
+        error_at(token->str, "expacted a number");
     }
     int number = token->value;
     token = token->next;
@@ -80,7 +95,8 @@ Token *new_token(TokenKind kind, Token *cur, char *str) {
 
 // Tokenize input 'p'.
 // Then return the token.
-Token *tokenize(char *p) {
+Token *tokenize() {
+    char *p = user_input;
     Token head;
     head.next = NULL;
     Token *cur = &head;
@@ -101,7 +117,7 @@ Token *tokenize(char *p) {
             cur->value = strtol(p, &p, 10);
             continue;
         }
-        error("Failed to tokenize");
+        error_at(p, "expected a number");
     }
 
     new_token(Eof, cur, p);
@@ -111,10 +127,11 @@ Token *tokenize(char *p) {
 int main(int argc, char **argv) {
 
     if(argc != 2){
-        error("Got wrong number of arguments");
+        error("%s: invalid number of arguments", argv[0]);
     }
 
-    token = tokenize(argv[1]);
+    user_input = argv[1];
+    token = tokenize();
 
     // Output the first parts of assembly
     printf(".intel_syntax noprefix\n");
