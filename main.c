@@ -6,9 +6,9 @@
 #include <string.h>
 
 typedef enum {
-    Reserved,
-    Number,
-    Eof,
+    TK_Reserved,
+    TK_Number,
+    TK_Eof,
 } TokenKind;
 
 typedef struct Token Token;
@@ -55,7 +55,7 @@ void debug_token(char *label) {
 // If next token is as expected, advance 1 token.
 // Then return true. Otherwise return false. 
 bool consume(char op) {
-    if(token->kind != Reserved || token->str[0] != op){
+    if(token->kind != TK_Reserved || token->str[0] != op){
         return false;
     }
     token= token->next;
@@ -65,14 +65,14 @@ bool consume(char op) {
 // If next token is as expected, advance 1 token.
 // Otherwise report an error.
 void expect(char op) {
-    if(token->kind != Reserved || token->str[0] != op){
+    if(token->kind != TK_Reserved || token->str[0] != op){
         error_at(token->str, "expected '%c'", op);
     }
     token = token->next;
 }
 
 int expect_number() {
-    if(token->kind != Number){
+    if(token->kind != TK_Number){
         error_at(token->str, "expacted a number");
     }
     int number = token->value;
@@ -81,7 +81,7 @@ int expect_number() {
 }
 
 bool at_eof() {
-    return token->kind == Eof;
+    return token->kind == TK_Eof;
 }
 
 // New a token, then chain it cur pointer.
@@ -108,19 +108,19 @@ Token *tokenize() {
         }
 
         if(*p == '+' || *p == '-') {
-            cur = new_token(Reserved, cur, p++);
+            cur = new_token(TK_Reserved, cur, p++);
             continue;
         }
 
         if(isdigit(*p)) {
-            cur = new_token(Number, cur, p);
+            cur = new_token(TK_Number, cur, p);
             cur->value = strtol(p, &p, 10);
             continue;
         }
         error_at(p, "expected a number");
     }
 
-    new_token(Eof, cur, p);
+    new_token(TK_Eof, cur, p);
     return head.next;
 }
 
