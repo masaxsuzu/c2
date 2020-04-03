@@ -16,8 +16,23 @@ typedef struct Token Token;
 struct Token {
     TokenKind kind;
     Token *next;
-    int value;      // Number if kind is Number
+    int value;      // only for number
     char *str;
+};
+
+typedef enum {
+    ND_Add,
+    ND_Sub,
+    ND_Num,
+} NodeKind;
+
+typedef struct Node Node;
+
+struct Node {
+    NodeKind kind;
+    Node *left;
+    Node *right;
+    int value;      // only for number
 };
 
 Token *token;
@@ -84,7 +99,6 @@ bool at_eof() {
     return token->kind == TK_Eof;
 }
 
-// New a token, then chain it cur pointer.
 Token *new_token(TokenKind kind, Token *cur, char *str) {
     Token *tok = calloc(1, sizeof(Token));
     tok->kind = kind;
@@ -124,6 +138,82 @@ Token *tokenize() {
     return head.next;
 }
 
+Node *new_node(NodeKind kind, Node *left, Node *right) {
+    Node *node = calloc(1, sizeof(Node));
+    node->kind = kind;
+    node->left = left;
+    node->right = right;
+    return node;
+}
+
+Node *new_node_number(int number) {
+    Node *node = calloc(1, sizeof(Node));
+    node->kind = ND_Num;
+    node->value = number;
+    return node;
+}
+
+Node *expr();
+Node *mul();
+Node *primary();
+
+Node *mul() {
+    // WIP : multipier is not supported yet.
+    return primary();  
+}
+
+Node *primary() {
+    if(consume('(')) {
+        Node *node = expr();
+        expect(')');
+        return node;
+    }
+
+    return new_node_number(expect_number());
+}
+
+Node *expr() {
+    Node *node = mul();
+
+    for(;;) {
+        if(consume('+')) {
+            node = new_node(ND_Add, node, mul());
+        } else if(consume('-')) {
+            node = new_node(ND_Sub, node, mul());
+        } else
+        {
+            return node;
+        }
+    }
+}
+
+void gen(Node *node) {
+    if(node->kind == ND_Num) {
+        printf("    push %d\n", node->value);
+        return;
+    }
+    
+    gen(node->left);
+    gen(node->right);
+
+    printf("    pop rdi\n");
+    printf("    pop rax\n");
+
+    switch (node->kind)
+    {
+    case ND_Add:
+        printf("    add rax, rdi\n");
+        break;
+    case ND_Sub:
+        printf("    sub rax, rdi\n");
+        break;
+    default:
+        break;
+    }
+
+    printf("    push rax\n");
+}
+
 int main(int argc, char **argv) {
 
     if(argc != 2){
@@ -133,24 +223,17 @@ int main(int argc, char **argv) {
     user_input = argv[1];
     token = tokenize();
 
-    // Output the first parts of assembly
+    Node *node = expr();
+
+    // Output the first part of assembly
     printf(".intel_syntax noprefix\n");
     printf(".global main\n");
     printf("main:\n");
 
-    printf("    mov rax, %d\n", expect_number());
-
-    while(!at_eof()) {
-        if(consume('+')) {
-            printf("    add rax, %d\n", expect_number());
-            continue;
-        }
-
-        expect('-');
-        printf("    sub rax, %d\n", expect_number());
-    }
+    gen(node);
 
     // Output the last part of assembly
+    printf("    pop rax\n");
     printf("    ret\n");
 
     return 0;
