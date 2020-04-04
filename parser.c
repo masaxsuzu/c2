@@ -127,12 +127,19 @@ Node *new_node_number(int number) {
     return node;
 }
 
-void program() {
-  int i = 0;
-  while (!at_eof()) {
-    code[i++] = stmt();
-  }
-  code[i] = NULL;
+Program *program() {
+    Node head;
+    head.next = NULL;
+    Node *cur = &head;
+
+    while (!at_eof()) {
+        cur->next = stmt();
+        cur = cur->next;
+    }
+
+    Program *p = calloc(1, sizeof(Program));
+    p->node = head.next;
+    return p;
 }
 
 Node *stmt() { 

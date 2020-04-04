@@ -45,9 +45,9 @@ int main(int argc, char **argv) {
 
     user_input = argv[1];
     token = tokenize();
-    program();
+    Program *p = program();
 
-    codegen();
+    codegen(p);
 
     return 0;
 }

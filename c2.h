@@ -49,13 +49,20 @@ typedef struct Node Node;
 
 struct Node {
     NodeKind kind;
+    Node *next;
     Node *left;
     Node *right;
     int value;  // only for number
     int offset; // only for local variable
 };
 
-void program();
+typedef struct Program Program;
+
+struct Program {
+    Node *node;
+};
+
+Program *program();
 
 //
 // code generator
@@ -72,4 +79,3 @@ void debug_node(char *label, Node *node);
 
 extern Token *token;
 extern char *user_input;
-extern Node *code[100];

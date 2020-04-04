@@ -1,7 +1,5 @@
 #include "c2.h"
 
-Node *code[100];
-
 void gen_localVar(Node *node) {
     if(node->kind != ND_LocalVar) {
         error("Left side value is not variable, got: %d", node->kind);
@@ -80,7 +78,7 @@ void gen(Node *node) {
     printf("    push rax\n");
 }
 
-void codegen() {
+void codegen(Program *p) {
     printf(".intel_syntax noprefix\n");
     printf(".global main\n");
     printf("main:\n");
@@ -89,10 +87,10 @@ void codegen() {
     printf("    push rbp\n");
     printf("    mov rbp, rsp\n");
     printf("    sub rsp, 208\n");
-
-    for (int i = 0; code[i]; i++)
+    
+    for (Node *node = p->node; node; node = node->next)
     {
-        gen(code[i]);
+        gen(node);
         // Pop the evaluated value.
         printf("  pop rax\n");
     }
