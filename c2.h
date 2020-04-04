@@ -31,6 +31,15 @@ Token *tokenize(void);
 // 
 // Parser
 //
+
+typedef struct Variable Variable;
+
+struct Variable {
+    Variable *next;
+    char *name;
+    int offset;
+};
+
 typedef enum {
     ND_Add,
     ND_Sub,
@@ -53,13 +62,15 @@ struct Node {
     Node *left;
     Node *right;
     int value;  // only for number
-    int offset; // only for local variable
+    Variable *var;
 };
 
 typedef struct Program Program;
 
 struct Program {
+    Variable *locals;
     Node *node;
+    int static_offset;
 };
 
 Program *program();
@@ -67,7 +78,7 @@ Program *program();
 //
 // code generator
 //
-void codegen();
+void codegen(Program *prog);
 
 //
 // main program

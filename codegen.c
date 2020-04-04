@@ -4,8 +4,7 @@ void gen_localVar(Node *node) {
     if(node->kind != ND_LocalVar) {
         error("Left side value is not variable, got: %d", node->kind);
     }
-    printf("    mov rax, rbp\n");
-    printf("    sub rax, %d\n", node->offset);
+    printf("    lea rax, [rbp-%d]\n", node->var->offset);
     printf("    push rax\n");
 }
 
@@ -83,15 +82,12 @@ void codegen(Program *p) {
     printf(".global main\n");
     printf("main:\n");
 
-    // 26 local variables
     printf("    push rbp\n");
     printf("    mov rbp, rsp\n");
-    printf("    sub rsp, 208\n");
+    printf("    sub rsp, %d\n", p->static_offset);
     
-    for (Node *node = p->node; node; node = node->next)
-    {
+    for (Node *node = p->node; node; node = node->next) {
         gen(node);
-        // Pop the evaluated value.
         printf("  pop rax\n");
     }
 

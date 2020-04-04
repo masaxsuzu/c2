@@ -2,6 +2,7 @@
 
 char *user_input;
 Token *token;
+Variable *locals;
 
 Node *stmt();
 Node *expr();
@@ -12,6 +13,13 @@ Node *add();
 Node *mul();
 Node *unary();
 Node *primary();
+
+char *strndup(char *p, int len) {
+  char *buf = malloc(len + 1);
+  strncpy(buf, p, len);
+  buf[len] = '\0';
+  return buf;
+}
 
 // If next token is as expected, advance 1 token.
 // Then return true. Otherwise return false.
@@ -108,6 +116,15 @@ Token *tokenize() {
     return head.next;
 }
 
+Variable *find_var(Token *tok) {
+    for(Variable *var = locals; var;var = var->next) {
+        if(strlen(var->name) == tok->len && !memcmp(tok->str, var->name, tok->len)) {
+            return var;
+        }
+    }
+    return NULL;
+}
+
 Node *new_node(NodeKind kind) {
     Node *node = calloc(1, sizeof(Node));
     node->kind = kind;
@@ -127,18 +144,36 @@ Node *new_node_number(int number) {
     return node;
 }
 
+Node *new_var(Variable *var) {
+  Node *node = new_node(ND_LocalVar);
+  node->var = var;
+  return node;
+}
+
+Variable *push_var(char *name) {
+  Variable *var = calloc(1, sizeof(Variable));
+  var->next = locals;
+  var->name = name;
+  locals = var;
+  return var;
+}
+
 Program *program() {
+    locals = NULL;
+
     Node head;
     head.next = NULL;
     Node *cur = &head;
 
     while (!at_eof()) {
         cur->next = stmt();
+        debug_node("x",cur);
         cur = cur->next;
     }
 
     Program *p = calloc(1, sizeof(Program));
     p->node = head.next;
+    p->locals = locals;
     return p;
 }
 
@@ -227,10 +262,11 @@ Node *primary() {
 
     Token *tok = consume_identifier();
     if(tok) {
-        Node *node = calloc(1, sizeof(Node));
-        node->kind = ND_LocalVar;
-        node->offset = (tok->str[0] - 'a' + 1) *8;
-        return node;
+        Variable *var = find_var(tok);
+        if(!var) {
+            var = push_var(strndup(tok->str,tok->len));
+        }
+        return new_var(var);
     }
 
     return new_node_number(expect_number());
