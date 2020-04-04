@@ -48,7 +48,7 @@ int main(int argc, char **argv) {
     Program *p = program();
 
     int offset = 0;
-    for(Variable *var = p->locals; var;var = var->next) {
+    for (Variable *var = p->locals; var; var = var->next) {
         offset += 8;
         var->offset = offset;
     }

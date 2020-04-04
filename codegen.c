@@ -1,7 +1,7 @@
 #include "c2.h"
 
 void gen_localVar(Node *node) {
-    if(node->kind != ND_LocalVar) {
+    if (node->kind != ND_LocalVar) {
         error("Left side value is not variable, got: %d", node->kind);
     }
     printf("    lea rax, [rbp-%d]\n", node->var->offset);
@@ -9,7 +9,7 @@ void gen_localVar(Node *node) {
 }
 
 void gen(Node *node) {
-    switch(node->kind) {
+    switch (node->kind) {
     case ND_Num:
         printf("    push %d\n", node->value);
         return;
@@ -22,7 +22,7 @@ void gen(Node *node) {
     case ND_Assign:
         gen_localVar(node->left);
         gen(node->right);
-        
+
         printf("  pop rdi\n");
         printf("  pop rax\n");
         printf("  mov [rax], rdi\n");
@@ -85,7 +85,7 @@ void codegen(Program *p) {
     printf("    push rbp\n");
     printf("    mov rbp, rsp\n");
     printf("    sub rsp, %d\n", p->static_offset);
-    
+
     for (Node *node = p->node; node; node = node->next) {
         gen(node);
         printf("  pop rax\n");

@@ -15,10 +15,10 @@ Node *unary();
 Node *primary();
 
 char *strndup(char *p, int len) {
-  char *buf = malloc(len + 1);
-  strncpy(buf, p, len);
-  buf[len] = '\0';
-  return buf;
+    char *buf = malloc(len + 1);
+    strncpy(buf, p, len);
+    buf[len] = '\0';
+    return buf;
 }
 
 // If next token is as expected, advance 1 token.
@@ -73,13 +73,9 @@ Token *new_token(TokenKind kind, Token *cur, char *str, int len) {
 
 bool startswith(char *p, char *q) { return memcmp(p, q, strlen(q)) == 0; }
 
-bool is_alpha(char c ) {
-    return 'a' <= c && c <= 'z';
-}
+bool is_alpha(char c) { return 'a' <= c && c <= 'z'; }
 
-bool is_alnum(char c) {
-    return is_alpha(c) || '0' <= c && c <= '9';
-}
+bool is_alnum(char c) { return is_alpha(c) || '0' <= c && c <= '9'; }
 
 // Tokenize input 'p'.
 // Then return the token.
@@ -128,8 +124,9 @@ Token *tokenize() {
 }
 
 Variable *find_var(Token *tok) {
-    for(Variable *var = locals; var;var = var->next) {
-        if(strlen(var->name) == tok->len && !memcmp(tok->str, var->name, tok->len)) {
+    for (Variable *var = locals; var; var = var->next) {
+        if (strlen(var->name) == tok->len &&
+            !memcmp(tok->str, var->name, tok->len)) {
             return var;
         }
     }
@@ -156,17 +153,17 @@ Node *new_node_number(int number) {
 }
 
 Node *new_var(Variable *var) {
-  Node *node = new_node(ND_LocalVar);
-  node->var = var;
-  return node;
+    Node *node = new_node(ND_LocalVar);
+    node->var = var;
+    return node;
 }
 
 Variable *push_var(char *name) {
-  Variable *var = calloc(1, sizeof(Variable));
-  var->next = locals;
-  var->name = name;
-  locals = var;
-  return var;
+    Variable *var = calloc(1, sizeof(Variable));
+    var->next = locals;
+    var->name = name;
+    locals = var;
+    return var;
 }
 
 Program *program() {
@@ -187,7 +184,7 @@ Program *program() {
     return p;
 }
 
-Node *stmt() { 
+Node *stmt() {
     Node *node = expr();
     expect(";");
     return node;
@@ -195,13 +192,13 @@ Node *stmt() {
 
 Node *expr() { return assign(); }
 
-Node *assign() { 
+Node *assign() {
     Node *node = equality();
-    if(consume("=")) {
+    if (consume("=")) {
         node = new_binary(ND_Assign, node, assign());
     }
     return node;
- }
+}
 
 Node *equality() {
     Node *node = relational();
@@ -271,10 +268,10 @@ Node *primary() {
     }
 
     Token *tok = consume_identifier();
-    if(tok) {
+    if (tok) {
         Variable *var = find_var(tok);
-        if(!var) {
-            var = push_var(strndup(tok->str,tok->len));
+        if (!var) {
+            var = push_var(strndup(tok->str, tok->len));
         }
         return new_var(var);
     }
