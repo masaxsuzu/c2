@@ -18,6 +18,7 @@ struct Token {
     Token *next;
     int value; // only for number
     char *str;
+    int len;
 };
 
 typedef enum {
@@ -65,15 +66,24 @@ void error_at(char *loc, char *fmt, ...) {
 }
 
 // Show current token as json format.
-void debug_token(char *label) {
+void debug_token(char *label, Token *token) {
+    fprintf(stderr,
+            "{ \"label\": %s, \"str\": %s, \"kind\": %d, \"value\": %d, "
+            "\"len\": %d }\n",
+            label, token->str, token->kind, token->value, token->len);
+}
+
+// Show current node as json format.
+void debug_node(char *label, Node *node) {
     fprintf(stderr, "{ \"label\": %s, \"kind\": %d, \"value\": %d }\n", label,
-            token->kind, token->value);
+            node->kind, node->value);
 }
 
 // If next token is as expected, advance 1 token.
 // Then return true. Otherwise return false.
-bool consume(char op) {
-    if (token->kind != TK_Reserved || token->str[0] != op) {
+bool consume(char *op) {
+    if (token->kind != TK_Reserved || strlen(op) != token->len ||
+        memcmp(token->str, op, token->len)) {
         return false;
     }
     token = token->next;
@@ -82,9 +92,10 @@ bool consume(char op) {
 
 // If next token is as expected, advance 1 token.
 // Otherwise report an error.
-void expect(char op) {
-    if (token->kind != TK_Reserved || token->str[0] != op) {
-        error_at(token->str, "expected '%c'", op);
+void expect(char *op) {
+    if (token->kind != TK_Reserved || strlen(op) != token->len ||
+        memcmp(token->str, op, token->len)) {
+        error_at(token->str, "expected '%s'", op);
     }
     token = token->next;
 }
@@ -100,10 +111,11 @@ int expect_number() {
 
 bool at_eof() { return token->kind == TK_Eof; }
 
-Token *new_token(TokenKind kind, Token *cur, char *str) {
+Token *new_token(TokenKind kind, Token *cur, char *str, int len) {
     Token *tok = calloc(1, sizeof(Token));
     tok->kind = kind;
     tok->str = str;
+    tok->len = len;
     cur->next = tok;
     return tok;
 }
@@ -122,19 +134,20 @@ Token *tokenize() {
         }
 
         if (strchr("+-*/()", *p)) {
-            cur = new_token(TK_Reserved, cur, p++);
+            cur = new_token(TK_Reserved, cur, p++, 1);
             continue;
         }
-
         if (isdigit(*p)) {
-            cur = new_token(TK_Number, cur, p);
+            cur = new_token(TK_Number, cur, p, 0);
+            char *q = p;
             cur->value = strtol(p, &p, 10);
+            cur->len = p - q;
             continue;
         }
         error_at(p, "expected a number");
     }
 
-    new_token(TK_Eof, cur, p);
+    new_token(TK_Eof, cur, p, 0);
     return head.next;
 }
 
@@ -162,9 +175,9 @@ Node *expr() {
     Node *node = mul();
 
     for (;;) {
-        if (consume('+')) {
+        if (consume("+")) {
             node = new_node(ND_Add, node, mul());
-        } else if (consume('-')) {
+        } else if (consume("-")) {
             node = new_node(ND_Sub, node, mul());
         } else {
             return node;
@@ -176,9 +189,9 @@ Node *mul() {
     Node *node = unary();
 
     for (;;) {
-        if (consume('*')) {
+        if (consume("*")) {
             node = new_node(ND_Mul, node, unary());
-        } else if (consume('/')) {
+        } else if (consume("/")) {
             node = new_node(ND_Div, node, unary());
         } else {
             return node;
@@ -187,9 +200,9 @@ Node *mul() {
 }
 
 Node *primary() {
-    if (consume('(')) {
+    if (consume("(")) {
         Node *node = expr();
-        expect(')');
+        expect(")");
         return node;
     }
 
@@ -197,10 +210,10 @@ Node *primary() {
 }
 
 Node *unary() {
-    if (consume('+')) {
+    if (consume("+")) {
         return primary();
     }
-    if (consume('-')) {
+    if (consume("-")) {
         return new_node(ND_Sub, new_node_number(0), primary());
     }
     return primary();
