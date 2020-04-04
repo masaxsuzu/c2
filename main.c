@@ -156,15 +156,30 @@ Node *new_node_number(int number) {
 Node *expr();
 Node *mul();
 Node *primary();
+Node *unary();
+
+Node *expr() {
+    Node *node = mul();
+
+    for (;;) {
+        if (consume('+')) {
+            node = new_node(ND_Add, node, mul());
+        } else if (consume('-')) {
+            node = new_node(ND_Sub, node, mul());
+        } else {
+            return node;
+        }
+    }
+}
 
 Node *mul() {
-    Node *node = primary();
+    Node *node = unary();
 
     for (;;) {
         if (consume('*')) {
-            node = new_node(ND_Mul, node, primary());
+            node = new_node(ND_Mul, node, unary());
         } else if (consume('/')) {
-            node = new_node(ND_Div, node, primary());
+            node = new_node(ND_Div, node, unary());
         } else {
             return node;
         }
@@ -181,18 +196,14 @@ Node *primary() {
     return new_node_number(expect_number());
 }
 
-Node *expr() {
-    Node *node = mul();
-
-    for (;;) {
-        if (consume('+')) {
-            node = new_node(ND_Add, node, mul());
-        } else if (consume('-')) {
-            node = new_node(ND_Sub, node, mul());
-        } else {
-            return node;
-        }
+Node *unary() {
+    if (consume('+')) {
+        return primary();
     }
+    if (consume('-')) {
+        return new_node(ND_Sub, new_node_number(0), primary());
+    }
+    return primary();
 }
 
 void gen(Node *node) {

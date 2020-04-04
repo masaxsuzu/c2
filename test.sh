@@ -25,5 +25,7 @@ assert 8 "4*2"
 assert 33 "99/3"
 assert 128 "(128)"
 assert 6 "(1+2) * 4 / 2"
+assert 100 "+100"
+assert 100 "-100+200"
 
 echo OK
