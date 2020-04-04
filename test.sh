@@ -17,34 +17,34 @@ assert() {
   fi
 }
 
-assert 0 0
-assert 42 42
-assert 21 "5+20-4"
-assert 41 " 12 + 34 - 5 "
-assert 8 "4*2"
-assert 33 "99/3"
-assert 128 "(128)"
-assert 6 "(1+2) * 4 / 2"
-assert 100 "+100"
-assert 100 "-100+200"
+assert 0 "0;"
+assert 42 "42;"
+assert 21 "5+20-4;"
+assert 41 " 12 + 34 - 5 ;"
+assert 8 "4*2;"
+assert 33 "99/3;"
+assert 128 "(128);"
+assert 6 "(1+2) * 4 / 2;"
+assert 100 "+100;"
+assert 100 "-100+200;"
 
-assert 0 '0==1'
-assert 1 '42==42'
-assert 1 '0!=1'
-assert 0 '42!=42'
+assert 0 '0==1;'
+assert 1 '42==42;'
+assert 1 '0!=1;'
+assert 0 '42!=42;'
 
-assert 1 '0<1'
-assert 0 '1<1'
-assert 0 '2<1'
-assert 1 '0<=1'
-assert 1 '1<=1'
-assert 0 '2<=1'
+assert 1 '0<1;'
+assert 0 '1<1;'
+assert 0 '2<1;'
+assert 1 '0<=1;'
+assert 1 '1<=1;'
+assert 0 '2<=1;'
 
-assert 1 '1>0'
-assert 0 '1>1'
-assert 0 '1>2'
-assert 1 '1>=0'
-assert 1 '1>=1'
-assert 0 '1>=2'
+assert 1 '1>0;'
+assert 0 '1>1;'
+assert 0 '1>2;'
+assert 1 '1>=0;'
+assert 1 '1>=1;'
+assert 0 '1>=2;'
 
 echo OK

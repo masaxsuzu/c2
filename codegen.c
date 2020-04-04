@@ -1,5 +1,7 @@
 #include "c2.h"
 
+Node *code[100];
+
 void gen(Node *node) {
     if (node->kind == ND_Num) {
         printf("    push %d\n", node->value);
@@ -54,12 +56,15 @@ void gen(Node *node) {
     printf("    push rax\n");
 }
 
-void codegen(Node *node) {
+void codegen() {
     printf(".intel_syntax noprefix\n");
     printf(".global main\n");
     printf("main:\n");
 
-    gen(node);
+    for (int i = 0; code[i]; i++)
+    {
+        gen(code[i]);
+    }
 
     // A result must be at the top of the stack, so pop it
     // to RAX to make it a program exit code.
