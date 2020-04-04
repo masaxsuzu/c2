@@ -73,6 +73,14 @@ Token *new_token(TokenKind kind, Token *cur, char *str, int len) {
 
 bool startswith(char *p, char *q) { return memcmp(p, q, strlen(q)) == 0; }
 
+bool is_alpha(char c ) {
+    return 'a' <= c && c <= 'z';
+}
+
+bool is_alnum(char c) {
+    return is_alpha(c) || '0' <= c && c <= '9';
+}
+
 // Tokenize input 'p'.
 // Then return the token.
 Token *tokenize() {
@@ -97,8 +105,11 @@ Token *tokenize() {
             cur = new_token(TK_Reserved, cur, p++, 1);
             continue;
         }
-        if( 'a' <= *p && *p <= 'z' ) {
-            cur = new_token(TK_Identifier, cur, p++, 1);
+        if (is_alpha(*p)) {
+            char *q = p++;
+            while (is_alnum(*p))
+                p++;
+            cur = new_token(TK_Identifier, cur, q, p - q);
             continue;
         }
         if (isdigit(*p)) {
@@ -167,7 +178,6 @@ Program *program() {
 
     while (!at_eof()) {
         cur->next = stmt();
-        debug_node("x",cur);
         cur = cur->next;
     }
 
