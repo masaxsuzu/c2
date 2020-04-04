@@ -47,4 +47,8 @@ assert 1 '1>=0;'
 assert 1 '1>=1;'
 assert 0 '1>=2;'
 
+assert 1 'a=1;'
+assert 4 'a=b=2;b+a;'
+assert 6 'z=2;z+z*(z);'
+
 echo OK

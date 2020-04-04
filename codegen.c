@@ -2,9 +2,34 @@
 
 Node *code[100];
 
+void gen_localVar(Node *node) {
+    if(node->kind != ND_LocalVar) {
+        error("Left side value is not variable, got: %d", node->kind);
+    }
+    printf("    mov rax, rbp\n");
+    printf("    sub rax, %d\n", node->offset);
+    printf("    push rax\n");
+}
+
 void gen(Node *node) {
-    if (node->kind == ND_Num) {
+    switch(node->kind) {
+    case ND_Num:
         printf("    push %d\n", node->value);
+        return;
+    case ND_LocalVar:
+        gen_localVar(node);
+        printf("    pop rax\n");
+        printf("    mov rax, [rax]\n");
+        printf("    push rax\n");
+        return;
+    case ND_Assign:
+        gen_localVar(node->left);
+        gen(node->right);
+        
+        printf("  pop rdi\n");
+        printf("  pop rax\n");
+        printf("  mov [rax], rdi\n");
+        printf("  push rdi\n");
         return;
     }
 
@@ -48,7 +73,6 @@ void gen(Node *node) {
         printf("    setle al\n");
         printf("    movzb rax, al\n");
         break;
-
     default:
         break;
     }

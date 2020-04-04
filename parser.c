@@ -85,7 +85,7 @@ Token *tokenize() {
             continue;
         }
 
-        if (strchr("+-*/()<>;", *p)) {
+        if (strchr("+-*/()<>=;", *p)) {
             cur = new_token(TK_Reserved, cur, p++, 1);
             continue;
         }
@@ -100,6 +100,7 @@ Token *tokenize() {
             cur->len = p - q;
             continue;
         }
+
         error_at(p, "expected a number");
     }
 
