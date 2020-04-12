@@ -58,4 +58,9 @@ assert 102 'aa=1;b1=101;aa+b1;'
 assert 1 'return 1;'
 assert 2 'return1 = 2; return1;'
 
+assert 10 'if(1==1) return 10;'
+assert 200 'if(0==1) return 10; 200;'
+assert 1 'if(0==0) if(1==1) return 1; 200;'
+assert 200 'if(0==0) if(1==100) return 1; 200;'
+
 echo OK

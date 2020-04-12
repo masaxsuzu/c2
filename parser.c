@@ -41,6 +41,15 @@ Token *consume_identifier() {
     return tok;
 }
 
+Token *consume_if() {
+    if (token->kind != TK_If) {
+        return NULL;
+    }
+    Token *tok = token;
+    token = token->next;
+    return tok;
+}
+
 Token *consume_return() {
     if (token->kind != TK_Return) {
         return NULL;
@@ -110,6 +119,13 @@ Token *tokenize() {
             cur = new_token(TK_Reserved, cur, p++, 1);
             continue;
         }
+        
+        if(strncmp(p, "if", 2) == 0 && !is_alnum(p[2])) {
+            cur = new_token(TK_If, cur, p, 0);
+            p +=2;
+            continue;
+        }
+
         if(strncmp(p, "return", 6) == 0 && !is_alnum(p[6])) {
             cur = new_token(TK_Return, cur, p, 0);
             p +=6;
@@ -201,6 +217,25 @@ Program *program() {
 Node *stmt() {
     Node *node;
 
+    if(consume_if()) {
+        if(!consume("(")) {
+            error_at(token->str, "Not '('");
+        }
+        
+        Node *cond = expr();
+
+        if(!consume(")")) {
+            error_at(token->str, "Not ')'");
+        }
+
+        Node *block = stmt();
+        node = calloc(1,sizeof(Node));
+        node->kind = ND_If;
+        node->left = cond;
+        node->right = block;
+        return node;
+    }
+    
     if(consume_return()) {
         node = calloc(1, sizeof(Node));
         node->kind = ND_Return;
