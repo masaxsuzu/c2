@@ -10,6 +10,13 @@ void gen_localVar(Node *node) {
 
 void gen(Node *node) {
     switch (node->kind) {
+    case ND_Return:
+        gen(node->left);
+        printf("    pop rax\n");
+        printf("    mov rsp, rbp\n");
+        printf("    pop rbp\n");
+        printf("    ret\n");
+        return;
     case ND_Num:
         printf("    push %d\n", node->value);
         return;

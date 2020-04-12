@@ -11,6 +11,7 @@
 
 typedef enum {
     TK_Reserved,
+    TK_Return,
     TK_Identifier,
     TK_Number,
     TK_Eof,
@@ -41,6 +42,7 @@ struct Variable {
 };
 
 typedef enum {
+    ND_Return,
     ND_Add,
     ND_Sub,
     ND_Mul,

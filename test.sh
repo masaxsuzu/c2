@@ -55,4 +55,7 @@ assert 1 'za1=1;'
 assert 101 'b9=101;'
 assert 102 'aa=1;b1=101;aa+b1;'
 
+assert 1 'return 1;'
+assert 2 'return1 = 2; return1;'
+
 echo OK
