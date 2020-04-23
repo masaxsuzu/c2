@@ -23,35 +23,18 @@ char *strndup(char *p, int len) {
 
 // If next token is as expected, advance 1 token.
 // Then return true. Otherwise return false.
-bool consume(char *op) {
+Token *consume(char *op) {
     if (token->kind != TK_Reserved || strlen(op) != token->len ||
-        memcmp(token->str, op, token->len)) {
-        return false;
+        strncmp(token->str, op, token->len)) {
+        return NULL;
     }
+    Token *tok = token;
     token = token->next;
-    return true;
+    return tok;
 }
 
 Token *consume_identifier() {
     if (token->kind != TK_Identifier) {
-        return NULL;
-    }
-    Token *tok = token;
-    token = token->next;
-    return tok;
-}
-
-Token *consume_if() {
-    if (token->kind != TK_If) {
-        return NULL;
-    }
-    Token *tok = token;
-    token = token->next;
-    return tok;
-}
-
-Token *consume_return() {
-    if (token->kind != TK_Return) {
         return NULL;
     }
     Token *tok = token;
@@ -121,13 +104,13 @@ Token *tokenize() {
         }
         
         if(strncmp(p, "if", 2) == 0 && !is_alnum(p[2])) {
-            cur = new_token(TK_If, cur, p, 0);
+            cur = new_token(TK_Reserved, cur, p, 2);
             p +=2;
             continue;
         }
 
         if(strncmp(p, "return", 6) == 0 && !is_alnum(p[6])) {
-            cur = new_token(TK_Return, cur, p, 0);
+            cur = new_token(TK_Reserved, cur, p, 6);
             p +=6;
             continue;
         }
@@ -217,7 +200,7 @@ Program *program() {
 Node *stmt() {
     Node *node;
 
-    if(consume_if()) {
+    if(consume("if")) {
         if(!consume("(")) {
             error_at(token->str, "Not '('");
         }
@@ -236,7 +219,7 @@ Node *stmt() {
         return node;
     }
     
-    if(consume_return()) {
+    if(consume("return")) {
         node = calloc(1, sizeof(Node));
         node->kind = ND_Return;
         node->left = expr();
