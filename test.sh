@@ -4,9 +4,11 @@ assert() {
   expected="$1"
   input="$2"
 
-  ./c2 "$input" > tmp.s
-  cc -o tmp tmp.s
-  ./tmp
+  # IO on shared dir is too slow.
+  # ../ would be /workspaces/
+  ./c2 "$input" > ../tmp.s
+  cc -o ../tmp ../tmp.s
+  ../tmp
   actual="$?"
 
   if [ "$actual" = "$expected" ]; then
