@@ -76,37 +76,37 @@ Program *program() {
 Node *stmt() {
     Node *node;
 
-    if(consume("if")) {
-        if(!consume("(")) {
+    if (consume("if")) {
+        if (!consume("(")) {
             error_at(token->str, "Not '('");
         }
-        
+
         Node *cond = expr();
 
-        if(!consume(")")) {
+        if (!consume(")")) {
             error_at(token->str, "Not ')'");
         }
 
         Node *then = stmt();
-        node = calloc(1,sizeof(Node));
+        node = calloc(1, sizeof(Node));
         node->kind = ND_If;
         node->cond = cond;
         node->then = then;
 
-        if(consume("else")){
+        if (consume("else")) {
             node->otherwise = stmt();
         }
         return node;
     }
-    
-    if(consume("while")) {
-        if(!consume("(")) {
+
+    if (consume("while")) {
+        if (!consume("(")) {
             error_at(token->str, "Not '('");
         }
-        
+
         Node *cond = expr();
 
-        if(!consume(")")) {
+        if (!consume(")")) {
             error_at(token->str, "Not ')'");
         }
 
@@ -118,19 +118,19 @@ Node *stmt() {
         return node;
     }
 
-    if(consume("for")) {
+    if (consume("for")) {
 
         Node *node = new_node(ND_For);
         expect("(");
-        if(!consume(";")) {
+        if (!consume(";")) {
             node->init = expr();
             expect(";");
         }
-        if(!consume(";")) {
+        if (!consume(";")) {
             node->cond = expr();
             expect(";");
         }
-        if(!consume(")")) {
+        if (!consume(")")) {
             node->inc = expr();
             expect(")");
         }
@@ -140,7 +140,7 @@ Node *stmt() {
         return node;
     }
 
-    if(consume("return")) {
+    if (consume("return")) {
         node = calloc(1, sizeof(Node));
         node->kind = ND_Return;
         node->left = expr();
@@ -148,7 +148,7 @@ Node *stmt() {
         node = expr();
     }
 
-    if(!consume(";")) {
+    if (!consume(";")) {
         error_at(token->str, "expect ';'");
     }
     return node;
