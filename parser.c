@@ -121,6 +121,12 @@ Token *tokenize() {
             continue;
         }
 
+        if(strncmp(p, "for", 3) == 0 && !is_alnum(p[3])) {
+            cur = new_token(TK_Reserved, cur, p, 3);
+            p +=3;
+            continue;
+        }
+
         if(strncmp(p, "return", 6) == 0 && !is_alnum(p[6])) {
             cur = new_token(TK_Reserved, cur, p, 6);
             p +=6;
@@ -251,6 +257,28 @@ Node *stmt() {
         node->kind = ND_While;
         node->cond = cond;
         node->then = then;
+        return node;
+    }
+
+    if(consume("for")) {
+
+        Node *node = new_node(ND_For);
+        expect("(");
+        if(!consume(";")) {
+            node->init = expr();
+            expect(";");
+        }
+        if(!consume(";")) {
+            node->cond = expr();
+            expect(";");
+        }
+        if(!consume(")")) {
+            node->inc = expr();
+            expect(")");
+        }
+
+        node->then = stmt();
+
         return node;
     }
 

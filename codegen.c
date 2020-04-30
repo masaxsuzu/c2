@@ -39,6 +39,25 @@ void gen(Node *node) {
         printf(".L.end.%d:\n", labelId);
         labelId++;
         return;
+    case ND_For:
+        if(node->init){
+            gen(node->init);
+        }
+        printf(".L.begin.%d:\n", labelId);
+        if(node->cond){
+            gen(node->cond);
+        }
+        printf("  pop rax\n");
+        printf("  cmp rax, 0\n");
+        printf("  je .L.end.%d\n", labelId);
+        gen(node->then);
+        if(node->inc){
+            gen(node->inc);
+        }
+        printf("  jmp .L.begin.%d\n", labelId);
+        printf(".L.end.%d:\n", labelId);
+        labelId++;
+        return;
     case ND_Return:
         gen(node->left);
         printf("  pop rax\n");

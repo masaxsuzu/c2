@@ -43,6 +43,7 @@ struct Variable {
 typedef enum {
     ND_If,
     ND_While,
+    ND_For,
     ND_Return,
     ND_Add,
     ND_Sub,
@@ -69,6 +70,8 @@ struct Node {
     Node *cond; // if
     Node *then; // if
     Node *otherwise; // else
+    Node *init; // for
+    Node *inc; // for
 };
 
 typedef struct Program Program;
