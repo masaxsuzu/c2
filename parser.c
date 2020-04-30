@@ -115,6 +115,12 @@ Token *tokenize() {
             continue;
         }
 
+        if(strncmp(p, "while", 5) == 0 && !is_alnum(p[5])) {
+            cur = new_token(TK_Reserved, cur, p, 5);
+            p +=5;
+            continue;
+        }
+
         if(strncmp(p, "return", 6) == 0 && !is_alnum(p[6])) {
             cur = new_token(TK_Reserved, cur, p, 6);
             p +=6;
@@ -229,6 +235,25 @@ Node *stmt() {
         return node;
     }
     
+    if(consume("while")) {
+        if(!consume("(")) {
+            error_at(token->str, "Not '('");
+        }
+        
+        Node *cond = expr();
+
+        if(!consume(")")) {
+            error_at(token->str, "Not ')'");
+        }
+
+        Node *then = stmt();
+        node = calloc(1, sizeof(Node));
+        node->kind = ND_While;
+        node->cond = cond;
+        node->then = then;
+        return node;
+    }
+
     if(consume("return")) {
         node = calloc(1, sizeof(Node));
         node->kind = ND_Return;

@@ -28,6 +28,17 @@ void gen(Node *node) {
         printf(".Lend%d:\n", ifs);
         ifs++;
         return;
+    case ND_While:
+        printf(".Lbegin%d:\n", ifs);
+        gen(node->cond);
+        printf("  pop rax\n");
+        printf("  cmp rax, 0\n");
+        printf("  je .Lend%d\n", ifs);
+        gen(node->then);
+        printf("  jmp .Lbegin%d\n", ifs);
+        printf(".Lend%d:\n", ifs);
+        ifs++;
+        return;
     case ND_Return:
         gen(node->left);
         printf("  pop rax\n");

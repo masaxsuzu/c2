@@ -42,6 +42,7 @@ struct Variable {
 
 typedef enum {
     ND_If,
+    ND_While,
     ND_Return,
     ND_Add,
     ND_Sub,
