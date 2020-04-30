@@ -14,13 +14,6 @@ Node *mul();
 Node *unary();
 Node *primary();
 
-char *strndup(char *p, int len) {
-    char *buf = malloc(len + 1);
-    strncpy(buf, p, len);
-    buf[len] = '\0';
-    return buf;
-}
-
 // If next token is as expected, advance 1 token.
 // Then return true. Otherwise return false.
 Token *consume(char *op) {
