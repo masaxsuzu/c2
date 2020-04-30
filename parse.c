@@ -249,6 +249,13 @@ Node *primary() {
 
     Token *tok = consume_identifier();
     if (tok) {
+        // call function
+        if(consume("(")){
+            expect(")");
+            Node *node = new_node(ND_FuncCall);
+            node->funcName = strndup(tok->str, tok->len);
+            return node;
+        }
         Variable *var = find_var(tok);
         if (!var) {
             var = push_var(strndup(tok->str, tok->len));

@@ -78,6 +78,10 @@ void gen(Node *node) {
         printf("  mov rax, [rax]\n");
         printf("  push rax\n");
         return;
+    case ND_FuncCall:
+        printf("  call %s\n", node->funcName);
+        printf("  push rax\n");
+        return;
     case ND_Assign:
         gen_localVar(node->left);
         gen(node->right);

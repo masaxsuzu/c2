@@ -62,6 +62,7 @@ typedef enum {
     ND_Le,      // <=
     ND_Assign,  // =
     ND_LocalVar,
+    ND_FuncCall,
     ND_Num,
 } NodeKind;
 
@@ -80,6 +81,7 @@ struct Node {
     Node *init; // for
     Node *inc; // for
     Node *block;
+    char *funcName;
 };
 
 typedef struct Program Program;
