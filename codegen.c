@@ -92,6 +92,7 @@ void gen(Node *node) {
             printf("  pop %s\n", argreg[i]);
         }
         
+        // [x86-64] RSP register must a multiple of 16 before using function call.
         printf("  call %s\n", node->funcName);
         printf("  push rax\n");
         return;
