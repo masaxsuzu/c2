@@ -65,8 +65,9 @@ struct Node {
     Node *right;
     int value;  // only for number
     Variable *var;
-    Node *cond;
-    Node *then;
+    Node *cond; // if
+    Node *then; // if
+    Node *otherwise; // else
 };
 
 typedef struct Program Program;

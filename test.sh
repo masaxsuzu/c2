@@ -64,5 +64,7 @@ assert 10 'if(1==1) return 10;'
 assert 200 'if(0==1) return 10; 200;'
 assert 1 'if(0==0) if(1==1) return 1; 200;'
 assert 200 'if(0==0) if(1==100) return 1; 200;'
+assert 123 'if(0!=0) 1; else 123;'
+assert 2 'if(0==0) if(1!=1) 1; else 2; else 123;'
 
 echo OK

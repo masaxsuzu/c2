@@ -109,6 +109,12 @@ Token *tokenize() {
             continue;
         }
 
+        if(strncmp(p, "else", 4) == 0 && !is_alnum(p[4])) {
+            cur = new_token(TK_Reserved, cur, p, 4);
+            p +=4;
+            continue;
+        }
+
         if(strncmp(p, "return", 6) == 0 && !is_alnum(p[6])) {
             cur = new_token(TK_Reserved, cur, p, 6);
             p +=6;
@@ -216,6 +222,10 @@ Node *stmt() {
         node->kind = ND_If;
         node->cond = cond;
         node->then = then;
+
+        if(consume("else")){
+            node->otherwise = stmt();
+        }
         return node;
     }
     

@@ -1,5 +1,7 @@
 #include "c2.h"
 
+int ifs = 0;
+
 void gen_localVar(Node *node) {
     if (node->kind != ND_LocalVar) {
         error("Left side value is not variable, got: %d", node->kind);
@@ -14,9 +16,17 @@ void gen(Node *node) {
         gen(node->cond);
         printf("  pop rax\n");
         printf("  cmp rax, 0\n");
-        printf("  je .LendXXX\n");
+        printf("  je .Lendelse%d\n", ifs);
+
         gen(node->then);
-        printf("  .LendXXX:\n");
+        printf("  je .Lend%d\n", ifs);
+        printf(".Lendelse%d:\n", ifs);
+        
+        if(node->otherwise){
+            gen(node->otherwise);
+        }        
+        printf(".Lend%d:\n", ifs);
+        ifs++;
         return;
     case ND_Return:
         gen(node->left);
