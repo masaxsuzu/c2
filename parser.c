@@ -211,11 +211,11 @@ Node *stmt() {
             error_at(token->str, "Not ')'");
         }
 
-        Node *block = stmt();
+        Node *then = stmt();
         node = calloc(1,sizeof(Node));
         node->kind = ND_If;
-        node->left = cond;
-        node->right = block;
+        node->cond = cond;
+        node->then = then;
         return node;
     }
     
