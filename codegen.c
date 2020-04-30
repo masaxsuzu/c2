@@ -1,6 +1,6 @@
 #include "c2.h"
 
-int ifs = 0;
+int labelId = 0;
 
 void gen_localVar(Node *node) {
     if (node->kind != ND_LocalVar) {
@@ -16,28 +16,28 @@ void gen(Node *node) {
         gen(node->cond);
         printf("  pop rax\n");
         printf("  cmp rax, 0\n");
-        printf("  je .Lendelse%d\n", ifs);
+        printf("  je .L.end.else.%d\n", labelId);
 
         gen(node->then);
-        printf("  je .Lend%d\n", ifs);
-        printf(".Lendelse%d:\n", ifs);
+        printf("  je .L.end.%d\n", labelId);
+        printf(".L.end.else.%d:\n", labelId);
         
         if(node->otherwise){
             gen(node->otherwise);
         }        
-        printf(".Lend%d:\n", ifs);
-        ifs++;
+        printf(".L.end.%d:\n", labelId);
+        labelId++;
         return;
     case ND_While:
-        printf(".Lbegin%d:\n", ifs);
+        printf(".L.begin.%d:\n", labelId);
         gen(node->cond);
         printf("  pop rax\n");
         printf("  cmp rax, 0\n");
-        printf("  je .Lend%d\n", ifs);
+        printf("  je .L.end.%d\n", labelId);
         gen(node->then);
-        printf("  jmp .Lbegin%d\n", ifs);
-        printf(".Lend%d:\n", ifs);
-        ifs++;
+        printf("  jmp .L.begin.%d\n", labelId);
+        printf(".L.end.%d:\n", labelId);
+        labelId++;
         return;
     case ND_Return:
         gen(node->left);
