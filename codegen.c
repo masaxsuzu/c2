@@ -1,6 +1,8 @@
 #include "c2.h"
 
 int labelId = 0;
+// Copy args into the resiters.
+static char *argreg[] = {"rdi", "rsi", "rdx", "rcx", "r8", "r9"};
 
 void gen_localVar(Node *node) {
     if (node->kind != ND_LocalVar) {
@@ -78,10 +80,22 @@ void gen(Node *node) {
         printf("  mov rax, [rax]\n");
         printf("  push rax\n");
         return;
-    case ND_FuncCall:
+    case ND_FuncCall: {
+        int n = 0;
+        for(Node *arg = node->funcArgs; arg; arg=arg->next) {
+            gen(arg);
+            n++;
+        }
+        
+        for (int i = n -1; i>=0 ; i--)
+        {
+            printf("  pop %s\n", argreg[i]);
+        }
+        
         printf("  call %s\n", node->funcName);
         printf("  push rax\n");
         return;
+    }
     case ND_Assign:
         gen_localVar(node->left);
         gen(node->right);

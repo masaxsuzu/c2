@@ -82,6 +82,7 @@ struct Node {
     Node *inc; // for
     Node *block;
     char *funcName;
+    Node *funcArgs;
 };
 
 typedef struct Program Program;

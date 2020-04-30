@@ -22,6 +22,21 @@ Variable *find_var(Token *tok) {
     return NULL;
 }
 
+Node *funcArgs() {
+   if(consume(")")) {
+       return NULL;
+   }
+
+   Node *head = assign();
+   Node *cur = head;
+   while(consume(",")){
+       cur-> next = assign();
+       cur = cur->next;
+   }
+   expect(")");
+   return head;
+}
+
 Node *new_node(NodeKind kind) {
     Node *node = calloc(1, sizeof(Node));
     node->kind = kind;
@@ -251,9 +266,9 @@ Node *primary() {
     if (tok) {
         // call function
         if(consume("(")){
-            expect(")");
             Node *node = new_node(ND_FuncCall);
             node->funcName = strndup(tok->str, tok->len);
+            node->funcArgs = funcArgs();
             return node;
         }
         Variable *var = find_var(tok);
