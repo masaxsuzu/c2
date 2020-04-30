@@ -4,35 +4,35 @@ void gen_localVar(Node *node) {
     if (node->kind != ND_LocalVar) {
         error("Left side value is not variable, got: %d", node->kind);
     }
-    printf("    lea rax, [rbp-%d]\n", node->var->offset);
-    printf("    push rax\n");
+    printf("  lea rax, [rbp-%d]\n", node->var->offset);
+    printf("  push rax\n");
 }
 
 void gen(Node *node) {
     switch (node->kind) {
     case ND_If:
         gen(node->left);
-        printf("    pop rax\n");
-        printf("    cmp rax, 0\n");
-        printf("    je .LendXXX\n");
+        printf("  pop rax\n");
+        printf("  cmp rax, 0\n");
+        printf("  je .LendXXX\n");
         gen(node->right);
-        printf("    .LendXXX:\n");
+        printf("  .LendXXX:\n");
         return;
     case ND_Return:
         gen(node->left);
-        printf("    pop rax\n");
-        printf("    mov rsp, rbp\n");
-        printf("    pop rbp\n");
-        printf("    ret\n");
+        printf("  pop rax\n");
+        printf("  mov rsp, rbp\n");
+        printf("  pop rbp\n");
+        printf("  ret\n");
         return;
     case ND_Num:
-        printf("    push %d\n", node->value);
+        printf("  push %d\n", node->value);
         return;
     case ND_LocalVar:
         gen_localVar(node);
-        printf("    pop rax\n");
-        printf("    mov rax, [rax]\n");
-        printf("    push rax\n");
+        printf("  pop rax\n");
+        printf("  mov rax, [rax]\n");
+        printf("  push rax\n");
         return;
     case ND_Assign:
         gen_localVar(node->left);
@@ -48,48 +48,48 @@ void gen(Node *node) {
     gen(node->left);
     gen(node->right);
 
-    printf("    pop rdi\n");
-    printf("    pop rax\n");
+    printf("  pop rdi\n");
+    printf("  pop rax\n");
 
     switch (node->kind) {
     case ND_Add:
-        printf("    add rax, rdi\n");
+        printf("  add rax, rdi\n");
         break;
     case ND_Sub:
-        printf("    sub rax, rdi\n");
+        printf("  sub rax, rdi\n");
         break;
     case ND_Mul:
-        printf("    imul rax, rdi\n");
+        printf("  imul rax, rdi\n");
         break;
     case ND_Div:
-        printf("    cqo\n");
-        printf("    idiv rdi\n");
+        printf("  cqo\n");
+        printf("  idiv rdi\n");
         break;
     case ND_Eq:
-        printf("    cmp rax, rdi\n");
-        printf("    sete al\n");
-        printf("    movzb rax, al\n");
+        printf("  cmp rax, rdi\n");
+        printf("  sete al\n");
+        printf("  movzb rax, al\n");
         break;
     case ND_Ne:
-        printf("    cmp rax, rdi\n");
-        printf("    setne al\n");
-        printf("    movzb rax, al\n");
+        printf("  cmp rax, rdi\n");
+        printf("  setne al\n");
+        printf("  movzb rax, al\n");
         break;
     case ND_Lt:
-        printf("    cmp rax, rdi\n");
-        printf("    setl al\n");
-        printf("    movzb rax, al\n");
+        printf("  cmp rax, rdi\n");
+        printf("  setl al\n");
+        printf("  movzb rax, al\n");
         break;
     case ND_Le:
-        printf("    cmp rax, rdi\n");
-        printf("    setle al\n");
-        printf("    movzb rax, al\n");
+        printf("  cmp rax, rdi\n");
+        printf("  setle al\n");
+        printf("  movzb rax, al\n");
         break;
     default:
         break;
     }
 
-    printf("    push rax\n");
+    printf("  push rax\n");
 }
 
 void codegen(Program *p) {
@@ -97,9 +97,9 @@ void codegen(Program *p) {
     printf(".global main\n");
     printf("main:\n");
 
-    printf("    push rbp\n");
-    printf("    mov rbp, rsp\n");
-    printf("    sub rsp, %d\n", p->static_offset);
+    printf("  push rbp\n");
+    printf("  mov rbp, rsp\n");
+    printf("  sub rsp, %d\n", p->static_offset);
 
     for (Node *node = p->node; node; node = node->next) {
         gen(node);
