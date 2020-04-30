@@ -84,6 +84,25 @@ bool is_alnum(char c) { return is_alpha(c) || '0' <= c && c <= '9' || (c == '_')
 
 bool at_eof() { return token->kind == TK_Eof; }
 
+char *starts_with_reserved(char *p) {
+   // Keyword
+    static char *kw[] = {"return", "if", "else", "while", "for"};
+
+   for (int i = 0; i < sizeof(kw) / sizeof(*kw); i++) {
+    int len = strlen(kw[i]);
+    if (startswith(p, kw[i]) && !is_alnum(p[len]))
+      return kw[i];
+   }
+
+    static char *ops[] = {"==", "!=", "<=", ">="};
+
+  for (int i = 0; i < sizeof(ops) / sizeof(*ops); i++)
+    if (startswith(p, ops[i]))
+      return ops[i];
+
+  return NULL;
+}
+
 // Tokenize input 'p'.
 // Then return the token.
 Token *tokenize() {
@@ -97,52 +116,26 @@ Token *tokenize() {
             continue;
         }
 
-        if (startswith(p, "==") || startswith(p, "!=") || startswith(p, "<=") ||
-            startswith(p, ">=")) {
-            cur = new_token(TK_Reserved, cur, p, 2);
-            p += 2;
-            continue;
-        }
-
-        if (strchr("+-*/()<>=;", *p)) {
-            cur = new_token(TK_Reserved, cur, p++, 1);
+        // Keywords or multi-letter punctuators
+        char *kw = starts_with_reserved(p);
+        if (kw) {
+            int len = strlen(kw);
+            cur = new_token(TK_Reserved, cur, p, len);
+            p += len;
             continue;
         }
         
-        if(strncmp(p, "if", 2) == 0 && !is_alnum(p[2])) {
-            cur = new_token(TK_Reserved, cur, p, 2);
-            p +=2;
-            continue;
-        }
-
-        if(strncmp(p, "else", 4) == 0 && !is_alnum(p[4])) {
-            cur = new_token(TK_Reserved, cur, p, 4);
-            p +=4;
-            continue;
-        }
-
-        if(strncmp(p, "while", 5) == 0 && !is_alnum(p[5])) {
-            cur = new_token(TK_Reserved, cur, p, 5);
-            p +=5;
-            continue;
-        }
-
-        if(strncmp(p, "for", 3) == 0 && !is_alnum(p[3])) {
-            cur = new_token(TK_Reserved, cur, p, 3);
-            p +=3;
-            continue;
-        }
-
-        if(strncmp(p, "return", 6) == 0 && !is_alnum(p[6])) {
-            cur = new_token(TK_Reserved, cur, p, 6);
-            p +=6;
-            continue;
-        }
         if (is_alpha(*p)) {
             char *q = p++;
             while (is_alnum(*p))
                 p++;
             cur = new_token(TK_Identifier, cur, q, p - q);
+            continue;
+        }
+
+        // Single-letter punctuators
+        if (ispunct(*p)) {
+            cur = new_token(TK_Reserved, cur, p++, 1);
             continue;
         }
         if (isdigit(*p)) {
