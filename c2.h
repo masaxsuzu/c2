@@ -51,6 +51,7 @@ typedef enum {
     ND_While,
     ND_For,
     ND_Return,
+    ND_Block,
     ND_Add,
     ND_Sub,
     ND_Mul,
@@ -78,6 +79,7 @@ struct Node {
     Node *otherwise; // else
     Node *init; // for
     Node *inc; // for
+    Node *block;
 };
 
 typedef struct Program Program;

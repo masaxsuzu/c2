@@ -58,6 +58,10 @@ void gen(Node *node) {
         printf(".L.end.%d:\n", labelId);
         labelId++;
         return;
+    case ND_Block:
+        for (Node *n = node->block; n; n = n->next)
+          gen(n);
+        return;
     case ND_Return:
         gen(node->left);
         printf("  pop rax\n");
