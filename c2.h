@@ -27,6 +27,11 @@ struct Token {
     int len;
 };
 
+Token *consume(char *op);
+Token *consume_identifier(void);
+void expect(char *op);
+long expect_number(void);
+bool at_eof(void);
 Token *tokenize(void);
 
 // 

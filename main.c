@@ -1,29 +1,5 @@
 #include "c2.h"
 
-// Report an error.
-// Arguments are same as printf
-void error(char *fmt, ...) {
-    va_list ap;
-    va_start(ap, fmt);
-    vfprintf(stderr, fmt, ap);
-    fprintf(stderr, "\n");
-    exit(1);
-}
-
-// Report an error with human-readble format.
-void error_at(char *loc, char *fmt, ...) {
-    va_list ap;
-    va_start(ap, fmt);
-    int pos = loc - user_input;
-
-    fprintf(stderr, "%s\n", user_input);
-    fprintf(stderr, "%*s", pos, "");
-    fprintf(stderr, "^ ");
-    vfprintf(stderr, fmt, ap);
-    fprintf(stderr, "\n");
-    exit(1);
-}
-
 // Show current token as json format.
 void debug_token(char *label, Token *token) {
     fprintf(stderr,
