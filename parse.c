@@ -146,7 +146,7 @@ Node *stmt() {
         Node head = {};
         Node *cur = &head;
 
-        while(!consume("}")) {
+        while (!consume("}")) {
             cur->next = stmt();
             cur = cur->next;
         }

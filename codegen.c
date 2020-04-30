@@ -60,7 +60,7 @@ void gen(Node *node) {
         return;
     case ND_Block:
         for (Node *n = node->block; n; n = n->next)
-          gen(n);
+            gen(n);
         return;
     case ND_Return:
         gen(node->left);
@@ -141,6 +141,7 @@ void codegen(Program *p) {
     printf(".global main\n");
     printf("main:\n");
 
+    // Prologue
     printf("  push rbp\n");
     printf("  mov rbp, rsp\n");
     printf("  sub rsp, %d\n", p->static_offset);
@@ -150,8 +151,7 @@ void codegen(Program *p) {
         printf("  pop rax\n");
     }
 
-    // A result must be at the top of the stack, so pop it
-    // to RAX to make it a program exit code.
+    // Epilogue
     printf("  mov rsp, rbp\n");
     printf("  pop rbp\n");
     printf("  ret\n");
