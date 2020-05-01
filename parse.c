@@ -65,14 +65,14 @@ Node *new_var(Variable *var) {
 }
 
 Variable *new_lvar(char *name) {
-  Variable *var = calloc(1, sizeof(Variable));
-  var->name = name;
+    Variable *var = calloc(1, sizeof(Variable));
+    var->name = name;
 
-  Parameters *params = calloc(1, sizeof(Parameters));
-  params->var = var;
-  params->next = locals;
-  locals = params;
-  return var;
+    Parameters *params = calloc(1, sizeof(Parameters));
+    params->var = var;
+    params->next = locals;
+    locals = params;
+    return var;
 }
 
 Function *program() {
@@ -89,7 +89,7 @@ Function *program() {
 }
 
 Parameters *read_func_parameters() {
-    if(consume(")")) {
+    if (consume(")")) {
         return NULL;
     }
 
@@ -97,9 +97,9 @@ Parameters *read_func_parameters() {
     Parameters *cur = head;
     head->var = new_lvar(expect_identifier());
 
-    while(!consume(")")) {
+    while (!consume(")")) {
         expect(",");
-        cur->next = calloc(1,sizeof(Parameters));
+        cur->next = calloc(1, sizeof(Parameters));
         cur->next->var = new_lvar(expect_identifier());
         cur = cur->next;
     }

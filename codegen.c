@@ -181,7 +181,7 @@ void codegen(Function *p) {
         printf("  mov rbp, rsp\n");
         printf("  sub rsp, %d\n", fn->stack_size);
 
-        // Push parameters as variables 
+        // Push parameters as variables
         int i = 0;
         for (Parameters *params = fn->params; params; params = params->next) {
             Variable *var = params->var;
