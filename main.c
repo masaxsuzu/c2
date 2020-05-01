@@ -21,14 +21,16 @@ int main(int argc, char **argv) {
 
     user_input = argv[1];
     token = tokenize();
-    Program *p = program();
+    Function *p = program();
 
-    int offset = 0;
-    for (Variable *var = p->locals; var; var = var->next) {
-        offset += 8;
-        var->offset = offset;
+    for (Function *fn = p; fn; fn = fn->next) {
+        int offset = 0;
+        for (Variable *var = p->locals; var; var = var->next) {
+            offset += 8;
+            var->offset = offset;
+        }
+        fn->stack_size = offset;
     }
-    p->static_offset = offset;
     codegen(p);
     return 0;
 }

@@ -67,6 +67,15 @@ long expect_number() {
     return number;
 }
 
+char *expect_identifier() {
+    if (token->kind != TK_Identifier) {
+        error_at(token->str, "Not an identifier");
+    }
+    char *s = strndup(token->str, token->len);
+    token = token->next;
+    return s;
+}
+
 Token *new_token(TokenKind kind, Token *cur, char *str, int len) {
     Token *tok = calloc(1, sizeof(Token));
     tok->kind = kind;

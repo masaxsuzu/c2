@@ -2,6 +2,7 @@
 
 Variable *locals;
 
+Function *function();
 Node *stmt();
 Node *expr();
 Node *assign();
@@ -23,18 +24,18 @@ Variable *find_var(Token *tok) {
 }
 
 Node *funcArgs() {
-   if(consume(")")) {
-       return NULL;
-   }
+    if (consume(")")) {
+        return NULL;
+    }
 
-   Node *head = assign();
-   Node *cur = head;
-   while(consume(",")){
-       cur-> next = assign();
-       cur = cur->next;
-   }
-   expect(")");
-   return head;
+    Node *head = assign();
+    Node *cur = head;
+    while (consume(",")) {
+        cur->next = assign();
+        cur = cur->next;
+    }
+    expect(")");
+    return head;
 }
 
 Node *new_node(NodeKind kind) {
@@ -70,22 +71,40 @@ Variable *push_var(char *name) {
     return var;
 }
 
-Program *program() {
-    locals = NULL;
+Function *program() {
 
-    Node head;
-    head.next = NULL;
-    Node *cur = &head;
+    Function head = {};
+    Function *cur = &head;
 
     while (!at_eof()) {
+        cur->next = function();
+        cur = cur->next;
+    }
+
+    return head.next;
+}
+
+Function *function() {
+    locals = NULL;
+
+    char *name = expect_identifier();
+    expect("(");
+    expect(")");
+    expect("{");
+
+    Node head = {};
+    Node *cur = &head;
+
+    while (!consume("}")) {
         cur->next = stmt();
         cur = cur->next;
     }
 
-    Program *p = calloc(1, sizeof(Program));
-    p->node = head.next;
-    p->locals = locals;
-    return p;
+    Function *f = calloc(1, sizeof(Function));
+    f->name = name;
+    f->node = head.next;
+    f->locals = locals;
+    return f;
 }
 
 Node *stmt() {
@@ -265,7 +284,7 @@ Node *primary() {
     Token *tok = consume_identifier();
     if (tok) {
         // call function
-        if(consume("(")){
+        if (consume("(")) {
             Node *node = new_node(ND_FuncCall);
             node->funcName = strndup(tok->str, tok->len);
             node->funcArgs = funcArgs();

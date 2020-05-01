@@ -1,6 +1,7 @@
 #include "c2.h"
 
 int labelId = 0;
+char *functionName;
 // Copy args into the resiters.
 static char *argreg[] = {"rdi", "rsi", "rdx", "rcx", "r8", "r9"};
 
@@ -67,9 +68,7 @@ void gen(Node *node) {
     case ND_Return:
         gen(node->left);
         printf("  pop rax\n");
-        printf("  mov rsp, rbp\n");
-        printf("  pop rbp\n");
-        printf("  ret\n");
+        printf("  jmp .L.return.%s\n", functionName);
         return;
     case ND_Num:
         printf("  push %d\n", node->value);
@@ -82,25 +81,25 @@ void gen(Node *node) {
         return;
     case ND_FuncCall: {
         int n = 0;
-        for(Node *arg = node->funcArgs; arg; arg=arg->next) {
+        for (Node *arg = node->funcArgs; arg; arg = arg->next) {
             gen(arg);
             n++;
         }
-        
-        for (int i = n -1; i>=0 ; i--)
-        {
+
+        for (int i = n - 1; i >= 0; i--) {
             printf("  pop %s\n", argreg[i]);
         }
-        
-        // [x86-64] RSP register must a multiple of 16 before using function call.
-        printf("  mov rax, rsp\n");             
-        printf("  and rax, 15\n");              
-        printf("  jnz .L.call.%d\n", labelId);  // if rsp % 16 !=  0, then jump
-        printf("  mov rax, 0\n");               // rsp is aligned
+
+        // [x86-64] RSP register must a multiple of 16 before using function
+        // call.
+        printf("  mov rax, rsp\n");
+        printf("  and rax, 15\n");
+        printf("  jnz .L.call.%d\n", labelId); // if rsp % 16 !=  0, then jump
+        printf("  mov rax, 0\n");              // rsp is aligned
         printf("  call %s\n", node->funcName);
         printf("  jmp .L.end.%d\n", labelId);
-        printf(".L.call.%d:\n", labelId);       // rsp is not aligned
-        printf("  sub rsp, 8\n");               
+        printf(".L.call.%d:\n", labelId); // rsp is not aligned
+        printf("  sub rsp, 8\n");
         printf("  mov rax, 0\n");
         printf("  call %s\n", node->funcName);
         printf("  add rsp, 8\n");
@@ -168,23 +167,28 @@ void gen(Node *node) {
     printf("  push rax\n");
 }
 
-void codegen(Program *p) {
+void codegen(Function *p) {
     printf(".intel_syntax noprefix\n");
-    printf(".global main\n");
-    printf("main:\n");
 
-    // Prologue
-    printf("  push rbp\n");
-    printf("  mov rbp, rsp\n");
-    printf("  sub rsp, %d\n", p->static_offset);
+    for (Function *fn = p; fn; fn = fn->next) {
+        printf(".global %s\n", fn->name);
+        printf("%s:\n", fn->name);
 
-    for (Node *node = p->node; node; node = node->next) {
-        gen(node);
-        printf("  pop rax\n");
+        functionName = fn->name;
+
+        // Prologue
+        printf("  push rbp\n");
+        printf("  mov rbp, rsp\n");
+        printf("  sub rsp, %d\n", fn->stack_size);
+
+        for (Node *node = fn->node; node; node = node->next) {
+            gen(node);
+        }
+
+        // Epilogue
+        printf(".L.return.%s:\n", functionName);
+        printf("  mov rsp, rbp\n");
+        printf("  pop rbp\n");
+        printf("  ret\n");
     }
-
-    // Epilogue
-    printf("  mov rsp, rbp\n");
-    printf("  pop rbp\n");
-    printf("  ret\n");
 }

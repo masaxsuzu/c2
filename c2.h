@@ -31,6 +31,7 @@ Token *consume(char *op);
 Token *consume_identifier(void);
 void expect(char *op);
 long expect_number(void);
+char *expect_identifier(void);
 bool at_eof(void);
 Token *tokenize(void);
 
@@ -85,6 +86,15 @@ struct Node {
     Node *funcArgs;
 };
 
+typedef struct Function Function;
+struct Function {
+  Function *next;
+  char *name;
+  Node *node;
+  Variable *locals;
+  int stack_size;
+};
+
 typedef struct Program Program;
 
 struct Program {
@@ -93,12 +103,12 @@ struct Program {
     int static_offset;
 };
 
-Program *program();
+Function *program();
 
 //
 // code generator
 //
-void codegen(Program *prog);
+void codegen(Function *prog);
 
 //
 // main program
