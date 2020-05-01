@@ -93,8 +93,21 @@ void gen(Node *node) {
         }
         
         // [x86-64] RSP register must a multiple of 16 before using function call.
+        printf("  mov rax, rsp\n");             
+        printf("  and rax, 15\n");              
+        printf("  jnz .L.call.%d\n", labelId);  // if rsp % 16 !=  0, then jump
+        printf("  mov rax, 0\n");               // rsp is aligned
         printf("  call %s\n", node->funcName);
+        printf("  jmp .L.end.%d\n", labelId);
+        printf(".L.call.%d:\n", labelId);       // rsp is not aligned
+        printf("  sub rsp, 8\n");               
+        printf("  mov rax, 0\n");
+        printf("  call %s\n", node->funcName);
+        printf("  add rsp, 8\n");
+        printf(".L.end.%d:\n", labelId);
         printf("  push rax\n");
+
+        labelId++;
         return;
     }
     case ND_Assign:
