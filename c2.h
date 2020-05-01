@@ -47,6 +47,12 @@ struct Variable {
     int offset;
 };
 
+typedef struct Parameters Parameters;
+struct Parameters {
+  Parameters *next;
+  Variable *var;
+};
+
 typedef enum {
     ND_If,
     ND_While,
@@ -91,7 +97,7 @@ struct Function {
   Function *next;
   char *name;
   Node *node;
-  Variable *locals;
+  Parameters *params;
   int stack_size;
 };
 

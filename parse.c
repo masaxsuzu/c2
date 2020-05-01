@@ -1,6 +1,6 @@
 #include "c2.h"
 
-Variable *locals;
+Parameters *locals;
 
 Function *function();
 Node *stmt();
@@ -14,7 +14,8 @@ Node *unary();
 Node *primary();
 
 Variable *find_var(Token *tok) {
-    for (Variable *var = locals; var; var = var->next) {
+    for (Parameters *params = locals; params; params = params->next) {
+        Variable *var = params->var;
         if (strlen(var->name) == tok->len &&
             !memcmp(tok->str, var->name, tok->len)) {
             return var;
@@ -63,12 +64,15 @@ Node *new_var(Variable *var) {
     return node;
 }
 
-Variable *push_var(char *name) {
-    Variable *var = calloc(1, sizeof(Variable));
-    var->next = locals;
-    var->name = name;
-    locals = var;
-    return var;
+Variable *new_lvar(char *name) {
+  Variable *var = calloc(1, sizeof(Variable));
+  var->name = name;
+
+  Parameters *params = calloc(1, sizeof(Parameters));
+  params->var = var;
+  params->next = locals;
+  locals = params;
+  return var;
 }
 
 Function *program() {
@@ -84,12 +88,33 @@ Function *program() {
     return head.next;
 }
 
+Parameters *read_func_parameters() {
+    if(consume(")")) {
+        return NULL;
+    }
+
+    Parameters *head = calloc(1, sizeof(Parameters));
+    Parameters *cur = head;
+    head->var = new_lvar(expect_identifier());
+
+    while(!consume(")")) {
+        expect(",");
+        cur->next = calloc(1,sizeof(Parameters));
+        cur->next->var = new_lvar(expect_identifier());
+        cur = cur->next;
+    }
+
+    return head;
+}
+
 Function *function() {
     locals = NULL;
 
-    char *name = expect_identifier();
+    Function *f = calloc(1, sizeof(Function));
+    f->name = expect_identifier();
+
     expect("(");
-    expect(")");
+    f->params = read_func_parameters();
     expect("{");
 
     Node head = {};
@@ -100,10 +125,8 @@ Function *function() {
         cur = cur->next;
     }
 
-    Function *f = calloc(1, sizeof(Function));
-    f->name = name;
     f->node = head.next;
-    f->locals = locals;
+    f->params = locals;
     return f;
 }
 
@@ -292,7 +315,7 @@ Node *primary() {
         }
         Variable *var = find_var(tok);
         if (!var) {
-            var = push_var(strndup(tok->str, tok->len));
+            var = new_lvar(strndup(tok->str, tok->len));
         }
         return new_var(var);
     }

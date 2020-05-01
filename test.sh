@@ -81,8 +81,10 @@ assert 55 'main(){ i=0; j=0; while(i<=10) {j=i+j; i=i+1;} return j; }'
 
 assert 3 'main(){ return ret3(); }'
 assert 5 'main(){ return ret5(); }'
-assert 42 'main(){ return ret42(6,7); }'
 
 assert 32 'main() { return ret32(); } ret32() { return 32; }'
+assert 42 'main(){ return ret42(6,7); }'
+assert 43 'main() { return ret43(1,42); } ret43(x,y) { return x+y; }'
+assert 55 'main() { return fib(9); } fib(x) { if (x<=1) return 1; return fib(x-1) + fib(x-2); }'
 
 echo OK
