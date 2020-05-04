@@ -48,11 +48,18 @@ Token *consume_identifier() {
     return tok;
 }
 
+Token *peek(char *op) {
+    if (token->kind != TK_Reserved || strlen(op) != token->len ||
+        strncmp(token->str, op, token->len)) {
+        return NULL;
+    }
+    return token;
+}
+
 // If next token is as expected, advance 1 token.
 // Otherwise report an error.
 void expect(char *op) {
-    if (token->kind != TK_Reserved || strlen(op) != token->len ||
-        strncmp(token->str, op, token->len)) {
+    if (!peek(op)){
         error_at(token->str, "expected '%s'", op);
     }
     token = token->next;

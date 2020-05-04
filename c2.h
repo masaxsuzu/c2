@@ -29,6 +29,7 @@ struct Token {
 
 Token *consume(char *op);
 Token *consume_identifier(void);
+Token *peek(char *op);
 void expect(char *op);
 long expect_number(void);
 char *expect_identifier(void);
@@ -73,6 +74,7 @@ typedef enum {
     ND_LocalVar,
     ND_FuncCall,
     ND_Num,
+    ND_Null,
 } NodeKind;
 
 typedef struct Node Node;

@@ -101,11 +101,13 @@ Parameters *read_func_parameters() {
 
     Parameters *head = calloc(1, sizeof(Parameters));
     Parameters *cur = head;
+    expect("int");
     head->var = new_lvar(expect_identifier());
 
     while (!consume(")")) {
         expect(",");
         cur->next = calloc(1, sizeof(Parameters));
+        expect("int");
         cur->next->var = new_lvar(expect_identifier());
         cur = cur->next;
     }
@@ -119,7 +121,7 @@ Function *function() {
     Function *f = calloc(1, sizeof(Function));
 
     expect("int");
-    
+
     f->name = expect_identifier();
 
     expect("(");
@@ -137,6 +139,16 @@ Function *function() {
     f->node = head.next;
     f->params = locals;
     return f;
+}
+
+Node *declaration() {
+    Token *tok = token;
+
+    expect("int");
+    Variable *var = new_lvar(expect_identifier());
+
+    expect(";");
+    return new_node(ND_Null);
 }
 
 Node *stmt() {
@@ -226,13 +238,16 @@ Node *stmt() {
         node = calloc(1, sizeof(Node));
         node->kind = ND_Return;
         node->left = expr();
-    } else {
-        node = expr();
+        expect(";");
+        return node;
     }
 
-    if (!consume(";")) {
-        error_at(token->str, "expect ';'");
+    if(peek("int")){
+        return declaration();
     }
+    
+    node = expr();
+    expect(";");
     return node;
 }
 
@@ -324,7 +339,7 @@ Node *primary() {
         }
         Variable *var = find_var(tok);
         if (!var) {
-            var = new_lvar(strndup(tok->str, tok->len));
+            error("undefined variable");
         }
         return new_var(var);
     }
