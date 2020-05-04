@@ -117,6 +117,9 @@ Function *function() {
     locals = NULL;
 
     Function *f = calloc(1, sizeof(Function));
+
+    expect("int");
+    
     f->name = expect_identifier();
 
     expect("(");
