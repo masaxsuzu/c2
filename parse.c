@@ -4,6 +4,7 @@ Parameters *locals;
 
 Function *function();
 Node *stmt();
+Node *stmt2();
 Node *expr();
 Node *assign();
 Node *equality();
@@ -56,6 +57,38 @@ Node *new_binary(NodeKind kind, Node *left, Node *right) {
     node->left = left;
     node->right = right;
     return node;
+}
+
+Node *new_add(Node *left, Node *right) {
+    assign_type(left);
+    assign_type(right);
+
+    if(is_integer(left->ty) && is_integer(right->ty)){
+        return new_binary(ND_Add, left, right);
+    }
+    if(left->ty->base && is_integer(right->ty)){
+        return new_binary(ND_Add_Ptr, left, right);
+    }
+    if(is_integer(left->ty) && right->ty->base){
+        return new_binary(ND_Add_Ptr, left, right);
+    }
+    error("invalid operand");
+}
+
+Node *new_sub(Node *left, Node *right) {
+    assign_type(left);
+    assign_type(right);
+
+    if(is_integer(left->ty) && is_integer(right->ty)){
+        return new_binary(ND_Sub, left, right);
+    }
+    if(left->ty->base && is_integer(right->ty)){
+        return new_binary(ND_Sub_Ptr, left, right);
+    }
+    if(left->ty->base && right->ty->base){
+        return new_binary(ND_Diff_Ptr, left, right);
+    }
+    error("invalid operand");
 }
 
 Node *new_node_number(int number) {
@@ -152,6 +185,12 @@ Node *declaration() {
 }
 
 Node *stmt() {
+    Node *node = stmt2();
+    assign_type(node);
+    return node;
+}
+
+Node *stmt2() {
     Node *node;
 
     if (consume("if")) {
@@ -286,9 +325,9 @@ Node *add() {
 
     for (;;) {
         if (consume("+")) {
-            node = new_binary(ND_Add, node, mul());
+            node = new_add(node, mul());
         } else if (consume("-")) {
-            node = new_binary(ND_Sub, node, mul());
+            node = new_sub(node, mul());
         } else {
             return node;
         }

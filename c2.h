@@ -6,6 +6,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+typedef struct Type Type;
+
 //
 // Tokenizer
 //
@@ -61,7 +63,10 @@ typedef enum {
     ND_Return,
     ND_Block,
     ND_Add,
+    ND_Add_Ptr,
     ND_Sub,
+    ND_Sub_Ptr,
+    ND_Diff_Ptr,
     ND_Mul,
     ND_Div,
     ND_Eq,      // ==
@@ -82,15 +87,16 @@ typedef struct Node Node;
 struct Node {
     NodeKind kind;
     Node *next;
+    Type *ty;
     Node *left;
     Node *right;
-    int value;  // only for number
+    int value;          // only for number
     Variable *var;
-    Node *cond; // if
-    Node *then; // if
-    Node *otherwise; // else
-    Node *init; // for
-    Node *inc; // for
+    Node *cond;         // if
+    Node *then;         // if
+    Node *otherwise;    // else
+    Node *init;         // for(*;_;_)
+    Node *inc;          // for(_;_;*)
     Node *block;
     char *funcName;
     Node *funcArgs;
@@ -114,6 +120,17 @@ struct Program {
 };
 
 Function *program();
+
+//
+// Type, e.g. int, pointer to int, pointer to pointer to int, ...
+//
+typedef enum {TY_Int, TY_Ptr} TypeKind;
+struct Type {
+    TypeKind kind;
+    Type *base;
+};
+bool is_integer(Type *ty);
+void assign_type(Node *node);
 
 //
 // code generator

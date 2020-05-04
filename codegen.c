@@ -150,9 +150,23 @@ void gen(Node *node) {
     case ND_Add:
         printf("  add rax, rdi\n");
         break;
+    case ND_Add_Ptr:
+        printf("  imul rdi, 8\n");
+        printf("  add rax, rdi\n");
+        break;
     case ND_Sub:
         printf("  sub rax, rdi\n");
         break;
+    case ND_Sub_Ptr:
+        printf("  imul rdi, 8\n");
+        printf("  sub rax, rdi\n");
+        break;
+    case ND_Diff_Ptr:
+        printf("  sub rax, rdi\n");
+        printf("  cqo\n");
+        printf("  mov rdi, 8\n");
+        printf("  idiv rdi\n");
+
     case ND_Mul:
         printf("  imul rax, rdi\n");
         break;
