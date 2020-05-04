@@ -2,6 +2,9 @@ CFLAGS=-std=c11 -g -static
 SRCS=$(wildcard *.c)
 OBJS=$(SRCS:.c=.o)
 
+clean: test
+	rm -f c2 *.o *~ ../tmp*
+
 test: c2
 	./test.sh
 
@@ -12,8 +15,5 @@ $(OBJS): c2.h
 
 fmt:
 	clang-format *.c -i
-
-clean:
-	rm -f c2 *.o *~ tmp*
 
 .PHONY: test fmt clean
