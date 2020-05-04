@@ -70,7 +70,8 @@ Node *new_add(Node *left, Node *right) {
         return new_binary(ND_Add_Ptr, left, right);
     }
     if(is_integer(left->ty) && right->ty->base){
-        return new_binary(ND_Add_Ptr, left, right);
+        // reverse left and right.
+        return new_binary(ND_Add_Ptr, right, left);
     }
     error("invalid operand");
 }
@@ -103,15 +104,25 @@ Node *new_var(Variable *var) {
     return node;
 }
 
-Variable *new_lvar(char *name) {
+Variable *new_lvar(char *name, Type *ty) {
     Variable *var = calloc(1, sizeof(Variable));
     var->name = name;
-
+    var->ty = ty;
     Parameters *params = calloc(1, sizeof(Parameters));
     params->var = var;
     params->next = locals;
     locals = params;
     return var;
+}
+
+// basetype = "int" "*"*
+Type *basetype() {
+    expect("int");
+    Type *ty = int_type;
+    while (consume("*")) {
+        ty = pointer_to(ty);
+    }
+    return ty;
 }
 
 Function *program() {
@@ -127,21 +138,23 @@ Function *program() {
     return head.next;
 }
 
+Parameters *read_func_parameter() {
+    Parameters *p = calloc(1, sizeof(Parameters));
+    Type *ty = basetype();
+    p->var = new_lvar(expect_identifier(), ty);
+    return p;
+} 
 Parameters *read_func_parameters() {
     if (consume(")")) {
         return NULL;
     }
 
-    Parameters *head = calloc(1, sizeof(Parameters));
+    Parameters *head = read_func_parameter();
     Parameters *cur = head;
-    expect("int");
-    head->var = new_lvar(expect_identifier());
 
     while (!consume(")")) {
         expect(",");
-        cur->next = calloc(1, sizeof(Parameters));
-        expect("int");
-        cur->next->var = new_lvar(expect_identifier());
+        cur->next = read_func_parameter();
         cur = cur->next;
     }
 
@@ -152,9 +165,7 @@ Function *function() {
     locals = NULL;
 
     Function *f = calloc(1, sizeof(Function));
-
-    expect("int");
-
+    basetype();
     f->name = expect_identifier();
 
     expect("(");
@@ -170,15 +181,14 @@ Function *function() {
     }
 
     f->node = head.next;
-    f->params = locals;
+    f->locals = locals;
     return f;
 }
 
 Node *declaration() {
     Token *tok = token;
-
-    expect("int");
-    Variable *var = new_lvar(expect_identifier());
+    Type *ty= basetype();
+    Variable *var = new_lvar(expect_identifier(), ty);
 
     expect(";");
     return new_node(ND_Null);
@@ -262,9 +272,7 @@ Node *stmt2() {
     }
 
     if (consume("return")) {
-        node = calloc(1, sizeof(Node));
-        node->kind = ND_Return;
-        node->left = expr();
+        node = new_unary(ND_Return, expr());
         expect(";");
         return node;
     }

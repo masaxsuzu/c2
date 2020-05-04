@@ -41,12 +41,11 @@ void assign_type(Node *node) {
     case ND_Sub:    
     case ND_Diff_Ptr:    
     case ND_Mul:
-    case ND_Div:    
+    case ND_Div:
     case ND_Eq:
     case ND_Ne:
     case ND_Lt:
     case ND_Le:
-    case ND_LocalVar:
     case ND_FuncCall:
     case ND_Num:
         node->ty = int_type;
@@ -56,6 +55,9 @@ void assign_type(Node *node) {
     case ND_Assign:
         node->ty = node->left->ty;
         return;
+    case ND_LocalVar:
+        node->ty = node->var->ty;
+        return;
     case ND_Addr:
         node->ty = pointer_to(node->left->ty);
         return;
@@ -64,7 +66,7 @@ void assign_type(Node *node) {
             node->ty = node->left->ty->base;
         }
         else {
-            node->ty = int_type;
+            error("%d: invalid pointer deference", node->left->ty->kind);
         }
         return;
     default:

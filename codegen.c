@@ -132,7 +132,6 @@ void gen(Node *node) {
     case ND_Assign:
         gen_addr(node->left);
         gen(node->right);
-
         printf("  pop rdi\n");
         printf("  pop rax\n");
         printf("  mov [rax], rdi\n");
@@ -166,7 +165,7 @@ void gen(Node *node) {
         printf("  cqo\n");
         printf("  mov rdi, 8\n");
         printf("  idiv rdi\n");
-
+        break;
     case ND_Mul:
         printf("  imul rax, rdi\n");
         break;
@@ -217,6 +216,7 @@ void codegen(Function *p) {
 
         // Push parameters as variables
         int i = 0;
+
         for (Parameters *params = fn->params; params; params = params->next) {
             Variable *var = params->var;
             printf("  mov [rbp-%d], %s\n", var->offset, argreg[i++]);

@@ -47,6 +47,7 @@ typedef struct Variable Variable;
 struct Variable {
     Variable *next;
     char *name;
+    Type *ty;
     int offset;
 };
 
@@ -108,6 +109,7 @@ struct Function {
   char *name;
   Node *node;
   Parameters *params;
+  Parameters *locals;
   int stack_size;
 };
 
@@ -129,8 +131,11 @@ struct Type {
     TypeKind kind;
     Type *base;
 };
+
+extern Type *int_type;
 bool is_integer(Type *ty);
 void assign_type(Node *node);
+Type *pointer_to(Type *base);
 
 //
 // code generator

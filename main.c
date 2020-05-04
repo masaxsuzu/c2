@@ -25,9 +25,9 @@ int main(int argc, char **argv) {
 
     for (Function *fn = p; fn; fn = fn->next) {
         int offset = 0;
-        for (Parameters *params = fn->params; params; params = params->next) {
+        for (Parameters *local = fn->locals; local; local = local->next) {
             offset += 8;
-            params->var->offset = offset;
+            local->var->offset = offset;
         }
         fn->stack_size = offset;
     }
