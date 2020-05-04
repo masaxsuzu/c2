@@ -155,15 +155,9 @@ Node *stmt() {
     Node *node;
 
     if (consume("if")) {
-        if (!consume("(")) {
-            error_at(token->str, "Not '('");
-        }
-
+        expect("(");
         Node *cond = expr();
-
-        if (!consume(")")) {
-            error_at(token->str, "Not ')'");
-        }
+        expect(")");
 
         Node *then = stmt();
         node = calloc(1, sizeof(Node));
@@ -178,15 +172,9 @@ Node *stmt() {
     }
 
     if (consume("while")) {
-        if (!consume("(")) {
-            error_at(token->str, "Not '('");
-        }
-
+        expect("(");
         Node *cond = expr();
-
-        if (!consume(")")) {
-            error_at(token->str, "Not ')'");
-        }
+        expect(")");
 
         Node *then = stmt();
         node = calloc(1, sizeof(Node));
