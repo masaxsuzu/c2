@@ -101,4 +101,8 @@ assert 8 'int main() { int x; x=3; int y; y=5; return foo(&x, y); } int foo(int 
 assert 0 'int main() { int x; x=3; return &x-&x; }'
 assert 2 'int main() { int x; x=3; return &x+2-&x; }'
 
+assert 8 'int main() { return sizeof(1);}'
+assert 8 'int main() { return sizeof 1 ;}'
+assert 8 'int main() { int x; return sizeof(&x);}'
+
 echo OK

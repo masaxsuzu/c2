@@ -395,6 +395,11 @@ Node *unary() {
     if (consume("*")) {
         return new_unary(ND_Deref, unary());
     }
+    if(consume("sizeof")) {
+        unary(); 
+        // now int is 64 bit.
+        return new_node_number(8);
+    }
 
     return primary();
 }
