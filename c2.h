@@ -68,6 +68,8 @@ typedef enum {
     ND_Lt,      // <
     ND_Le,      // <=
     ND_Assign,  // =
+    ND_Addr,    // *
+    ND_Deref,   // &
     ND_LocalVar,
     ND_FuncCall,
     ND_Num,

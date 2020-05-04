@@ -5,12 +5,21 @@ char *functionName;
 // Copy args into the resiters.
 static char *argreg[] = {"rdi", "rsi", "rdx", "rcx", "r8", "r9"};
 
+void gen(Node *node);
+
 void gen_localVar(Node *node) {
-    if (node->kind != ND_LocalVar) {
-        error("Left side value is not variable, got: %d", node->kind);
+    if (node->kind == ND_LocalVar) {
+        printf("  lea rax, [rbp-%d]\n", node->var->offset);
+        printf("  push rax\n");
+        return;
     }
-    printf("  lea rax, [rbp-%d]\n", node->var->offset);
-    printf("  push rax\n");
+
+    if(node->kind == ND_Deref) {
+        gen(node->left);
+        return;
+    }
+
+    error("Left side value is not variable, got: %d", node->kind);
 }
 
 void gen(Node *node) {
@@ -72,6 +81,15 @@ void gen(Node *node) {
         return;
     case ND_Num:
         printf("  push %d\n", node->value);
+        return;
+    case ND_Addr:
+        gen_localVar(node->left);
+        return;
+    case ND_Deref:
+        gen(node->left);
+        printf("  pop rax\n");
+        printf("  mov rax, [rax]\n");
+        printf("  push rax\n");
         return;
     case ND_LocalVar:
         gen_localVar(node);

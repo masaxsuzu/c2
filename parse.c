@@ -45,6 +45,12 @@ Node *new_node(NodeKind kind) {
     return node;
 }
 
+Node *new_unary(NodeKind kind, Node *left) {
+    Node *node = new_node(kind);
+    node->left = left;
+    return node;
+}
+
 Node *new_binary(NodeKind kind, Node *left, Node *right) {
     Node *node = new_node(kind);
     node->left = left;
@@ -330,5 +336,12 @@ Node *unary() {
     if (consume("-")) {
         return new_binary(ND_Sub, new_node_number(0), primary());
     }
+    if (consume("&")) {
+        return new_unary(ND_Addr, unary());
+    }
+    if (consume("*")) {
+        return new_unary(ND_Deref, unary());
+    }
+
     return primary();
 }
