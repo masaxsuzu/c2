@@ -100,7 +100,7 @@ Node *new_node_number(int number) {
 }
 
 Node *new_var(Variable *var) {
-    Node *node = new_node(ND_LocalVar);
+    Node *node = new_node(ND_Var);
     node->var = var;
     return node;
 }

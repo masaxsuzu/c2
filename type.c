@@ -65,7 +65,7 @@ void assign_type(Node *node) {
     case ND_Assign:
         node->ty = node->left->ty;
         return;
-    case ND_LocalVar:
+    case ND_Var:
         node->ty = node->var->ty;
         return;
     case ND_Addr:
