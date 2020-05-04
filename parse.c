@@ -13,6 +13,7 @@ Node *add();
 Node *mul();
 Node *unary();
 Node *primary();
+Node *postfix();
 
 Variable *find_var(Token *tok) {
     for (Parameters *params = locals; params; params = params->next) {
@@ -414,6 +415,15 @@ Node *unary() {
         // now int is 64 bit.
         return new_node_number(n->ty->size);
     }
+    return postfix();
+}
 
-    return primary();
+Node *postfix() {
+    Node *node = primary();
+    while(consume("[")){
+        Node *exp = new_add(node, expr());
+        expect("]");
+        node = new_unary(ND_Deref, exp);
+    }
+    return node;
 }
