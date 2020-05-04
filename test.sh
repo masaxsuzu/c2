@@ -15,6 +15,10 @@ assert() {
   # ../ would be /workspaces/
   ./c2 "$input" > ../tmp.s
   cc -o ../tmp ../tmp.s ../tmp2.o
+  if [ $? -ne 0 ]; then
+    echo "compile error"
+    exit 1
+  fi
   ../tmp
   actual="$?"
 
