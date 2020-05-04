@@ -39,6 +39,8 @@ Token *consume(char *op) {
     return tok;
 }
 
+// If next token is identifier, advance 1 token.
+// Then return the identifier. Otherwise return NULL.
 Token *consume_identifier() {
     if (token->kind != TK_Identifier) {
         return NULL;
@@ -48,6 +50,8 @@ Token *consume_identifier() {
     return tok;
 }
 
+// If next token is as expected,
+// then the token, otherwise return NULL.
 Token *peek(char *op) {
     if (token->kind != TK_Reserved || strlen(op) != token->len ||
         strncmp(token->str, op, token->len)) {
@@ -65,6 +69,8 @@ void expect(char *op) {
     token = token->next;
 }
 
+// If next token is a number, advance 1 token.
+// Then return the number. Otherwise report an error.
 long expect_number() {
     if (token->kind != TK_Number) {
         error_at(token->str, "Not a number");
@@ -74,6 +80,8 @@ long expect_number() {
     return number;
 }
 
+// If next token is a identifier, advance 1 token.
+// Then return the symbol. Otherwise report an error.
 char *expect_identifier() {
     if (token->kind != TK_Identifier) {
         error_at(token->str, "Not an identifier");
