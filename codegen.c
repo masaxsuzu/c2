@@ -7,7 +7,7 @@ static char *argreg[] = {"rdi", "rsi", "rdx", "rcx", "r8", "r9"};
 
 void gen(Node *node);
 
-void gen_localVar(Node *node) {
+void gen_addr(Node *node) {
     if (node->kind == ND_LocalVar) {
         printf("  lea rax, [rbp-%d]\n", node->var->offset);
         printf("  push rax\n");
@@ -85,7 +85,7 @@ void gen(Node *node) {
         printf("  push %d\n", node->value);
         return;
     case ND_Addr:
-        gen_localVar(node->left);
+        gen_addr(node->left);
         return;
     case ND_Deref:
         gen(node->left);
@@ -94,7 +94,7 @@ void gen(Node *node) {
         printf("  push rax\n");
         return;
     case ND_LocalVar:
-        gen_localVar(node);
+        gen_addr(node);
         printf("  pop rax\n");
         printf("  mov rax, [rax]\n");
         printf("  push rax\n");
@@ -130,7 +130,7 @@ void gen(Node *node) {
         return;
     }
     case ND_Assign:
-        gen_localVar(node->left);
+        gen_addr(node->left);
         gen(node->right);
 
         printf("  pop rdi\n");
