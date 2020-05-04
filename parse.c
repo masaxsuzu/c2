@@ -204,9 +204,22 @@ Node *declaration() {
     char *name = expect_identifier();
     ty = read_type_suffix(ty);
     Variable *var = new_lvar(name, ty);
+    
+    if(consume(";")) {
+        return new_node(ND_Null);
+    }
 
+    expect("=");
+    Node *left = new_var(var);
+    Node *right = expr();
     expect(";");
-    return new_node(ND_Null);
+    Node *node = new_binary(ND_Assign,left, right);
+    return new_unary(ND_Expr_Stmt, node);
+}
+
+Node *read_expr_stmt(void) {
+  Token *tok = token;
+  return new_unary(ND_Expr_Stmt, expr());
 }
 
 Node *stmt() {
@@ -253,7 +266,7 @@ Node *stmt2() {
         Node *node = new_node(ND_For);
         expect("(");
         if (!consume(";")) {
-            node->init = expr();
+            node->init = read_expr_stmt();
             expect(";");
         }
         if (!consume(";")) {
@@ -261,7 +274,7 @@ Node *stmt2() {
             expect(";");
         }
         if (!consume(")")) {
-            node->inc = expr();
+            node->inc = read_expr_stmt();
             expect(")");
         }
 
@@ -296,7 +309,7 @@ Node *stmt2() {
         return declaration();
     }
     
-    node = expr();
+    node = read_expr_stmt();
     expect(";");
     return node;
 }

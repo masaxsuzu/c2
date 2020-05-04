@@ -125,4 +125,7 @@ assert 4 'int main() { int x[2][3]; int *y; y=x; y[4]=4; return x[1][1]; }'
 assert 5 'int main() { int x[2][3]; int *y; y=x; y[5]=5; return x[1][2]; }'
 assert 6 'int main() { int x[2][3]; int *y; y=x; y[6]=6; return x[2][0]; }'
 
+assert 1 'int main() { int x = 1; return x;}'
+assert 10 'int main() { int x = 10; int *y = &x; return *y;}'
+
 echo OK

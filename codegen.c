@@ -99,6 +99,10 @@ void gen(Node *node) {
     case ND_Num:
         printf("  push %d\n", node->value);
         return;
+    case ND_Expr_Stmt:
+        gen(node->left);
+        printf("  add rsp, 8\n");
+    return;
     case ND_Addr:
         gen_addr(node->left);
         return;
