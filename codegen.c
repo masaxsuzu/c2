@@ -8,6 +8,7 @@ static char *argreg[] = {"rdi", "rsi", "rdx", "rcx", "r8", "r9"};
 void gen(Node *node);
 
 void gen_addr(Node *node) {
+
     if (node->kind == ND_LocalVar) {
         printf("  lea rax, [rbp-%d]\n", node->var->offset);
         printf("  push rax\n");
@@ -20,6 +21,20 @@ void gen_addr(Node *node) {
     }
 
     error("Left side value is not variable, got: %d", node->kind);
+}
+
+void gen_lVal(Node *node) {
+    if(node->ty->kind == TY_Array) {
+        error("Array is not a lvalue");
+    }
+    gen_addr(node);
+}
+
+
+void load(){
+    printf("  pop rax\n");
+    printf("  mov rax, [rax]\n");
+    printf("  push rax\n");
 }
 
 void gen(Node *node) {
@@ -89,15 +104,15 @@ void gen(Node *node) {
         return;
     case ND_Deref:
         gen(node->left);
-        printf("  pop rax\n");
-        printf("  mov rax, [rax]\n");
-        printf("  push rax\n");
+        if(node->ty->kind != TY_Array){
+            load();
+        }
         return;
     case ND_LocalVar:
         gen_addr(node);
-        printf("  pop rax\n");
-        printf("  mov rax, [rax]\n");
-        printf("  push rax\n");
+        if(node->ty->kind != TY_Array){
+            load();
+        }
         return;
     case ND_FuncCall: {
         int n = 0;
@@ -130,7 +145,7 @@ void gen(Node *node) {
         return;
     }
     case ND_Assign:
-        gen_addr(node->left);
+        gen_lVal(node->left);
         gen(node->right);
         printf("  pop rdi\n");
         printf("  pop rax\n");
@@ -150,20 +165,20 @@ void gen(Node *node) {
         printf("  add rax, rdi\n");
         break;
     case ND_Add_Ptr:
-        printf("  imul rdi, 8\n");
+        printf("  imul rdi, %d\n", node->ty->base->size);
         printf("  add rax, rdi\n");
         break;
     case ND_Sub:
         printf("  sub rax, rdi\n");
         break;
     case ND_Sub_Ptr:
-        printf("  imul rdi, 8\n");
+        printf("  imul rdi, %d\n", node->ty->base->size);
         printf("  sub rax, rdi\n");
         break;
     case ND_Diff_Ptr:
         printf("  sub rax, rdi\n");
         printf("  cqo\n");
-        printf("  mov rdi, 8\n");
+        printf("  mov rdi, %d\n", node->left->ty->base->size);
         printf("  idiv rdi\n");
         break;
     case ND_Mul:

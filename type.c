@@ -1,6 +1,6 @@
 #include "c2.h"
 
-Type *int_type = &(Type) {TY_Int};
+Type *int_type = &(Type) {TY_Int, 8};
 
 bool is_integer(Type *ty) {
     return ty->kind == TY_Int;
@@ -10,7 +10,17 @@ Type *pointer_to(Type *base) {
     Type *ty = calloc(1, sizeof(Type));
     ty->kind = TY_Ptr;
     ty->base = base;
+    ty->size = 8;
     return ty; 
+}
+
+Type *array_of(Type *base, int size) {
+    Type *ty = calloc(1, sizeof(Type));
+    ty->kind = TY_Array;
+    ty->size = base->size * size;
+    ty->base = base;
+    ty->array_size = size;
+    return ty;
 }
 
 // Assign type to the give node recursively.
@@ -59,10 +69,15 @@ void assign_type(Node *node) {
         node->ty = node->var->ty;
         return;
     case ND_Addr:
-        node->ty = pointer_to(node->left->ty);
+        if(node->left->ty->kind == TY_Array) {
+           node->ty = pointer_to(node->left->ty->base);
+        } 
+        else{ 
+           node->ty = pointer_to(node->left->ty);
+        }
         return;
     case ND_Deref:
-        if(node->left->ty->kind == TY_Ptr){
+        if(node->left->ty->base){
             node->ty = node->left->ty->base;
         }
         else {

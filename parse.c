@@ -138,10 +138,21 @@ Function *program() {
     return head.next;
 }
 
+Type *read_type_suffix(Type *base) {
+    if(!consume("[")){
+        return base;
+    }
+    int size = expect_number();
+    expect("]");
+    return array_of(base, size);
+}
+
 Parameters *read_func_parameter() {
     Parameters *p = calloc(1, sizeof(Parameters));
     Type *ty = basetype();
-    p->var = new_lvar(expect_identifier(), ty);
+    char *name = expect_identifier();
+    ty = read_type_suffix(ty);
+    p->var = new_lvar(name, ty);
     return p;
 } 
 Parameters *read_func_parameters() {
@@ -188,7 +199,9 @@ Function *function() {
 Node *declaration() {
     Token *tok = token;
     Type *ty= basetype();
-    Variable *var = new_lvar(expect_identifier(), ty);
+    char *name = expect_identifier();
+    ty = read_type_suffix(ty);
+    Variable *var = new_lvar(name, ty);
 
     expect(";");
     return new_node(ND_Null);
@@ -396,9 +409,10 @@ Node *unary() {
         return new_unary(ND_Deref, unary());
     }
     if(consume("sizeof")) {
-        unary(); 
+        Node *n = unary(); 
+        assign_type(n);
         // now int is 64 bit.
-        return new_node_number(8);
+        return new_node_number(n->ty->size);
     }
 
     return primary();

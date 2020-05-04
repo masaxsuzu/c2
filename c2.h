@@ -126,16 +126,19 @@ Function *program();
 //
 // Type, e.g. int, pointer to int, pointer to pointer to int, ...
 //
-typedef enum {TY_Int, TY_Ptr} TypeKind;
+typedef enum {TY_Int, TY_Ptr, TY_Array} TypeKind;
 struct Type {
     TypeKind kind;
+    int size;
     Type *base;
+    int array_size;
 };
 
 extern Type *int_type;
 bool is_integer(Type *ty);
 void assign_type(Node *node);
 Type *pointer_to(Type *base);
+Type *array_of(Type *base, int size);
 
 //
 // code generator
