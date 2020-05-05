@@ -32,6 +32,8 @@ assert() {
   fi
 }
 
+assert 1 'int funcinfunc(int x) { return x; } int f(int x, int y) { if (x==y) return funcinfunc(x); return 1; } int main() { return f(1,2); }'
+
 assert 97 'int main() { return "abc"[0]; }'
 
 assert 1 'int main() { char x = 1; return sizeof(x); }'

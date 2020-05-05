@@ -57,52 +57,50 @@ void store(Type *ty) {
 }
 
 void gen(Node *node) {
+    int id = labelId++;
     switch (node->kind) {
     case ND_If:
         gen(node->cond);
         printf("  pop rax\n");
         printf("  cmp rax, 0\n");
-        printf("  je .L.end.else.%d\n", labelId);
+        printf("  je .L.end.else.%d\n", id);
 
         gen(node->then);
-        printf("  je .L.end.%d\n", labelId);
-        printf(".L.end.else.%d:\n", labelId);
+        printf("  je .L.end.%d\n", id);
+        printf(".L.end.else.%d:\n", id);
 
         if (node->otherwise) {
             gen(node->otherwise);
         }
-        printf(".L.end.%d:\n", labelId);
-        labelId++;
+        printf(".L.end.%d:\n", id);
         return;
     case ND_While:
-        printf(".L.begin.%d:\n", labelId);
+        printf(".L.begin.%d:\n", id);
         gen(node->cond);
         printf("  pop rax\n");
         printf("  cmp rax, 0\n");
-        printf("  je .L.end.%d\n", labelId);
+        printf("  je .L.end.%d\n", id);
         gen(node->then);
-        printf("  jmp .L.begin.%d\n", labelId);
-        printf(".L.end.%d:\n", labelId);
-        labelId++;
+        printf("  jmp .L.begin.%d\n", id);
+        printf(".L.end.%d:\n", id);
         return;
     case ND_For:
         if (node->init) {
             gen(node->init);
         }
-        printf(".L.begin.%d:\n", labelId);
+        printf(".L.begin.%d:\n", id);
         if (node->cond) {
             gen(node->cond);
         }
         printf("  pop rax\n");
         printf("  cmp rax, 0\n");
-        printf("  je .L.end.%d\n", labelId);
+        printf("  je .L.end.%d\n", id);
         gen(node->then);
         if (node->inc) {
             gen(node->inc);
         }
-        printf("  jmp .L.begin.%d\n", labelId);
-        printf(".L.end.%d:\n", labelId);
-        labelId++;
+        printf("  jmp .L.begin.%d\n", id);
+        printf(".L.end.%d:\n", id);
         return;
     case ND_Block:
         for (Node *n = node->block; n; n = n->next)
@@ -152,19 +150,17 @@ void gen(Node *node) {
         // call.
         printf("  mov rax, rsp\n");
         printf("  and rax, 15\n");
-        printf("  jnz .L.call.%d\n", labelId); // if rsp % 16 !=  0, then jump
+        printf("  jnz .L.call.%d\n", id); // if rsp % 16 !=  0, then jump
         printf("  mov rax, 0\n");              // rsp is aligned
         printf("  call %s\n", node->funcName);
-        printf("  jmp .L.end.%d\n", labelId);
-        printf(".L.call.%d:\n", labelId); // rsp is not aligned
+        printf("  jmp .L.end.%d\n", id);
+        printf(".L.call.%d:\n", id); // rsp is not aligned
         printf("  sub rsp, 8\n");
         printf("  mov rax, 0\n");
         printf("  call %s\n", node->funcName);
         printf("  add rsp, 8\n");
-        printf(".L.end.%d:\n", labelId);
+        printf(".L.end.%d:\n", id);
         printf("  push rax\n");
-
-        labelId++;
         return;
     }
     case ND_Assign:
