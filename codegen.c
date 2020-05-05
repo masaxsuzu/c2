@@ -103,6 +103,7 @@ void gen(Node *node) {
         printf(".L.end.%d:\n", id);
         return;
     case ND_Block:
+    case ND_Stmt_Expr:
         for (Node *n = node->block; n; n = n->next)
             gen(n);
         return;

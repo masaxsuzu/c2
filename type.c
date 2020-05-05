@@ -80,6 +80,14 @@ void assign_type(Node *node) {
             error("%d: invalid pointer deference", node->left->ty->kind);
         }
         return;
+    case ND_Stmt_Expr: {
+        Node *last = node->block;
+        while(last->next) {
+            last = last->next;
+        }
+        node->ty = last->ty;
+        return;
+    }
     default:
         return;
     }

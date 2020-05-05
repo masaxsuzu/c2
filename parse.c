@@ -378,6 +378,25 @@ Node *stmt2() {
     return node;
 }
 
+Node *stmt_expr(Token *tok) {
+    Node *node = new_node(ND_Stmt_Expr);
+    node->block = stmt();
+    Node *cur = node->block;
+
+    while(!consume("}")) {
+        cur->next = stmt();
+        cur = cur->next;
+    }
+    expect(")");
+
+    if(cur->kind != ND_Expr_Stmt) {
+        error_at(tok->str, "stmt expr returning void is not supported");
+    }
+    memcpy(cur, cur->left, sizeof(Node));
+    return node;
+}
+
+
 Node *expr() { return assign(); }
 
 Node *assign() {
@@ -449,13 +468,17 @@ Node *mul() {
 }
 
 Node *primary() {
-    if (consume("(")) {
+    Token *tok;
+    if (tok = consume("(")) {
+        if(consume("{")){
+            return stmt_expr(tok);
+        }
         Node *node = expr();
         expect(")");
         return node;
     }
 
-    Token *tok = consume_identifier();
+    tok = consume_identifier();
     if (tok) {
         // call function
         if (consume("(")) {

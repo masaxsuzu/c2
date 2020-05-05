@@ -85,6 +85,7 @@ typedef enum {
     ND_Deref,   // &
     ND_Var,
     ND_Expr_Stmt,
+    ND_Stmt_Expr,   // ({int x = 1; x;} => 1)
     ND_FuncCall,
     ND_Num,
     ND_Null,
