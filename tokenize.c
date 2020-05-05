@@ -201,6 +201,15 @@ Token *tokenize() {
             continue;
         }
 
+        // skip line comment
+        if (strncmp(p, "//", 2) == 0) {
+            p +=2;
+            while(*p != '\n') {
+                p++;
+            }
+            continue;
+        }
+
         if (*p == '"') {
             cur = read_string_literal(cur, p);
             p += cur->len;

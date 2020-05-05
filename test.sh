@@ -32,6 +32,11 @@ assert() {
   fi
 }
 
+assert 7 'int main() { 
+  //  this is a line comment
+  return "\a"[0]; 
+}'
+
 assert 7 'int main() { return "\a"[0]; }'
 assert 8 'int main() { return "\b"[0]; }'
 assert 9 'int main() { return "\t"[0]; }'
