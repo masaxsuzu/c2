@@ -44,6 +44,10 @@ assert 2 'int main() {
   return 2; 
 }'
 
+assert 1 'int main() { int x = 1; {int x = 2;} return x;}'
+assert 2 'int main() { int x = 1; {int x = 2; return x;} return x;}'
+assert 3 'int x; int main() { x = 1; { x =3;} return x;}'
+
 assert 7 'int main() { return "\a"[0]; }'
 assert 8 'int main() { return "\b"[0]; }'
 assert 9 'int main() { return "\t"[0]; }'

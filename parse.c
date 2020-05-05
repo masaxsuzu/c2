@@ -2,6 +2,7 @@
 
 Parameters *locals;
 Parameters *globals;
+Parameters *scope;
 
 Function *function();
 void *global_variable();
@@ -18,15 +19,7 @@ Node *primary();
 Node *postfix();
 
 Variable *find_var(Token *tok) {
-    for (Parameters *params = locals; params; params = params->next) {
-        Variable *var = params->var;
-        if (strlen(var->name) == tok->len &&
-            !memcmp(tok->str, var->name, tok->len)) {
-            return var;
-        }
-    }
-
-    for (Parameters *params = globals; params; params = params->next) {
+    for (Parameters *params = scope; params; params = params->next) {
         Variable *var = params->var;
         if (strlen(var->name) == tok->len &&
             !memcmp(tok->str, var->name, tok->len)) {
@@ -110,17 +103,27 @@ Node *new_node_number(int number) {
     return node;
 }
 
-Node *new_var(Variable *var) {
+Node *new_node_var(Variable *var) {
     Node *node = new_node(ND_Var);
     node->var = var;
     return node;
 }
 
-Variable *new_lvar(char *name, Type *ty, bool is_local) {
+Variable *new_var(char *name, Type *ty, bool is_local) {
     Variable *var = calloc(1, sizeof(Variable));
     var->name = name;
     var->ty = ty;
     var->is_local = is_local;
+    Parameters *params = calloc(1, sizeof(Parameters));
+    params->var = var;
+    params->next = scope;
+    scope = params;
+    return var;
+}
+
+
+Variable *new_lvar(char *name, Type *ty, bool is_local) {
+    Variable *var = new_var(name, ty, true);
     Parameters *params = calloc(1, sizeof(Parameters));
     params->var = var;
     params->next = locals;
@@ -129,7 +132,7 @@ Variable *new_lvar(char *name, Type *ty, bool is_local) {
 }
 
 Variable *new_gvar(char *name, Type *ty) {
-    Variable *var = new_lvar(name, ty, false);
+    Variable *var = new_var(name,ty, false);
     Parameters *params = calloc(1, sizeof(Parameters));
     params->var = var;
     params->next = globals;
@@ -138,18 +141,20 @@ Variable *new_gvar(char *name, Type *ty) {
 }
 
 char *new_label() {
-    static int c = 0;
-    char buf[20];
-    sprintf(buf, ".L.data.%d", c++);
-    return strndup(buf, 20);
+   static int c = 0;
+   char buf[20];
+   sprintf(buf, ".L.data.%d", c++); 
+   return strndup(buf, 20);
 }
 
 // basetype = "int" "*"*
 Type *basetype() {
     Type *ty;
-    if (consume("int")) {
+    if(consume("int")){
         ty = int_type;
-    } else {
+    }
+    else
+    {
         expect("char");
         ty = char_type;
     }
@@ -159,7 +164,7 @@ Type *basetype() {
     return ty;
 }
 
-bool is_func() {
+bool is_func(){
     Token *tok = token;
     basetype();
     bool isfunc = consume_identifier() && consume("(");
@@ -173,7 +178,7 @@ Program *program() {
     Function *cur = &head;
 
     while (!at_eof()) {
-        if (is_func()) {
+        if(is_func()){
             cur->next = function();
             cur = cur->next;
         } else {
@@ -230,6 +235,7 @@ Function *function() {
     f->name = expect_identifier();
 
     expect("(");
+    Parameters *sc = scope;
     f->params = read_func_parameters();
     expect("{");
 
@@ -240,6 +246,7 @@ Function *function() {
         cur->next = stmt();
         cur = cur->next;
     }
+    scope = sc;
 
     f->node = head.next;
     f->locals = locals;
@@ -266,7 +273,7 @@ Node *declaration() {
     }
 
     expect("=");
-    Node *left = new_var(var);
+    Node *left = new_node_var(var);
     Node *right = expr();
     expect(";");
     Node *node = new_binary(ND_Assign, left, right);
@@ -345,13 +352,14 @@ Node *stmt2() {
         Node head = {};
         Node *cur = &head;
 
+        Parameters *sc = scope;
         while (!consume("}")) {
             cur->next = stmt();
             cur = cur->next;
         }
+        scope = sc;
         Node *node = new_node(ND_Block);
         node->block = head.next;
-
         return node;
     }
 
@@ -460,17 +468,17 @@ Node *primary() {
         if (!var) {
             error("undefined variable");
         }
-        return new_var(var);
+        return new_node_var(var);
     }
 
     tok = token;
-    if (tok->kind == TK_String) {
+    if(tok->kind == TK_String) {
         token = token->next;
         Type *ty = array_of(char_type, tok->cont_len);
         Variable *var = new_gvar(new_label(), ty);
         var->contents = tok->contents;
         var->cont_len = tok->cont_len;
-        return new_var(var);
+        return new_node_var(var);
     }
 
     return new_node_number(expect_number());
