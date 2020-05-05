@@ -21,9 +21,9 @@ int main(int argc, char **argv) {
 
     user_input = argv[1];
     token = tokenize();
-    Function *p = program();
+    Program *prog = program();
 
-    for (Function *fn = p; fn; fn = fn->next) {
+    for (Function *fn = prog->next; fn; fn = fn->next) {
         int offset = 0;
         for (Parameters *local = fn->locals; local; local = local->next) {
             offset += local->var->ty->size;
@@ -31,6 +31,6 @@ int main(int argc, char **argv) {
         }
         fn->stack_size = offset;
     }
-    codegen(p);
+    codegen(prog->next);
     return 0;
 }

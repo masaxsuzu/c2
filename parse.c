@@ -126,7 +126,7 @@ Type *basetype() {
     return ty;
 }
 
-Function *program() {
+Program *program() {
 
     Function head = {};
     Function *cur = &head;
@@ -136,7 +136,9 @@ Function *program() {
         cur = cur->next;
     }
 
-    return head.next;
+    Program *p = calloc(1, sizeof(Program));
+    p->next = head.next;
+    return p;
 }
 
 Type *read_type_suffix(Type *base) {

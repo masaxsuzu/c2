@@ -117,12 +117,10 @@ struct Function {
 typedef struct Program Program;
 
 struct Program {
-    Variable *locals;
-    Node *node;
-    int static_offset;
+    Function *next;
 };
 
-Function *program();
+Program *program();
 
 //
 // Type, e.g. int, pointer to int, pointer to pointer to int, ...
