@@ -6,6 +6,9 @@ clean: test
 	rm -f c2 *.o *~ ../tmp*
 
 test: c2
+	./c2 ./tests/test.c > ../tmp.s
+	gcc -static -o ../tmp ../tmp.s
+	../tmp
 	./test.sh
 
 c2: $(OBJS)

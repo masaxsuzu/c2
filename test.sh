@@ -32,74 +32,17 @@ assert() {
   fi
 }
 
-assert 1 'int main() { 
-  //  return 2; this is a line comment
-  return 1; 
-}'
-assert 2 'int main() { 
-  /* 
-    return 3; 
-    this is a block comment
-  */
-  return 2; 
-}'
-
 assert 1 'int main() { int x = 1; {int x = 2;} return x;}'
 assert 2 'int main() { int x = 1; {int x = 2; return x;} return x;}'
 assert 3 'int x; int main() { x = 1; { x =3;} return x;}'
 
-assert 7 'int main() { return "\a"[0]; }'
-assert 8 'int main() { return "\b"[0]; }'
-assert 9 'int main() { return "\t"[0]; }'
-assert 10 'int main() { return "\n"[0]; }'
-assert 11 'int main() { return "\v"[0]; }'
-assert 12 'int main() { return "\f"[0]; }'
-assert 13 'int main() { return "\r"[0]; }'
-assert 27 'int main() { return "\e"[0]; }'
-assert 0 'int main() { return "\0"[0]; }'
-assert 106 'int main() { return "\j"[0]; }'
-assert 107 'int main() { return "\k"[0]; }'
-assert 108 'int main() { return "\l"[0]; }'
-
 assert 1 'int funcinfunc(int x) { return x; } int f(int x, int y) { if (x==y) return funcinfunc(x); return 1; } int main() { return f(1,2); }'
-
-assert 97 'int main() { return "abc"[0]; }'
 
 assert 1 'int main() { char x = 1; return sizeof(x); }'
 assert 4 'int main() { char x[4]; return sizeof(x); }'
 assert 2 'int main() { char x = 2; return x; }'
 assert 8 'char x; int main() { x = 8; return 8; }'
 assert 3 'char x; int main() { x = 8; return sub(x, 5); } int sub(char a, char b) {return a-b;}'
-
-assert 0 'int main(){ return 0; }'
-assert 42 'int main(){ return 42; }'
-assert 21 'int main(){ return 5+20-4; }'
-assert 41 'int main(){ return  12 + 34 - 5 ; }'
-assert 8 'int main(){ return 4*2; }'
-assert 33 'int main(){ return 99/3; }'
-assert 128 'int main(){ return (128); }'
-assert 6 'int main(){ return (1+2) * 4 / 2; }'
-assert 100 'int main(){ return +100; }'
-assert 100 'int main(){ return -100+200; }'
-
-assert 0 'int main(){ return 0==1; }'
-assert 1 'int main(){ return 42==42; }'
-assert 1 'int main(){ return 0!=1; }'
-assert 0 'int main(){ return 42!=42; }'
-
-assert 1 'int main(){ return 0<1; }'
-assert 0 'int main(){ return 1<1; }'
-assert 0 'int main(){ return 2<1; }'
-assert 1 'int main(){ return 0<=1; }'
-assert 1 'int main(){ return 1<=1; }'
-assert 0 'int main(){ return 2<=1; }'
-
-assert 1 'int main(){ return 1>0; }'
-assert 0 'int main(){ return 1>1; }'
-assert 0 'int main(){ return 1>2; }'
-assert 1 'int main(){ return 1>=0; }'
-assert 1 'int main(){ return 1>=1; }'
-assert 0 'int main(){ return 1>=2; }'
 
 assert 1 'int main(){ int a; return a=1; }'
 assert 4 'int main(){ int a; int b;a=b=2; return b+a; }'
@@ -123,14 +66,6 @@ assert 55 'int main(){ int i; int j;i=0; j=0; for (i=0; i<=10; i=i+1) j=i+j; ret
 assert 3 'int main(){ for (;;) return 3; return 5; }'
 assert 3 'int main(){ {1; {2;} return 3;} }'
 assert 55 'int main(){ int i; int j; i=0; j=0; while(i<=10) {j=i+j; i=i+1;} return j; }'
-
-assert 3 'int main(){ return ret3(); }'
-assert 5 'int main(){ return ret5(); }'
-
-assert 32 'int main() { return ret32(); } int ret32() { return 32; }'
-assert 42 'int main(){ return ret42(6,7); }'
-assert 43 'int main() { return ret43(1,42); } int ret43(int x,int y) { return x+y; }'
-assert 55 'int main() { return fib(9); } int fib(int x) { if (x<=1) return 1; return fib(x-1) + fib(x-2); }'
 
 assert 5 'int main() { int x; int *y;x=3; y=&x; *y=5; return x; }'
 assert 7 'int main() { int x; int y;x=3; y=5; *(&x+1)=7; return y; }'
