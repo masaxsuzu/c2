@@ -4,7 +4,7 @@ Parameters *locals;
 Parameters *globals;
 
 Function *function();
-Parameters *global_variable();
+void *global_variable();
 Node *stmt();
 Node *stmt2();
 Node *expr();
@@ -128,23 +128,28 @@ Variable *new_lvar(char *name, Type *ty, bool is_local) {
     return var;
 }
 
-void *new_gvar(char *name, Type *ty) {
-    Variable *var = new_lvar(name,ty, false);
+Variable *new_gvar(char *name, Type *ty) {
+    Variable *var = new_lvar(name, ty, false);
     Parameters *params = calloc(1, sizeof(Parameters));
     params->var = var;
     params->next = globals;
     globals = params;
+    return var;
 }
 
+char *new_label() {
+    static int c = 0;
+    char buf[20];
+    sprintf(buf, ".L.data.%d", c++);
+    return strndup(buf, 20);
+}
 
 // basetype = "int" "*"*
 Type *basetype() {
     Type *ty;
-    if(consume("int")){
+    if (consume("int")) {
         ty = int_type;
-    }
-    else
-    {
+    } else {
         expect("char");
         ty = char_type;
     }
@@ -154,7 +159,7 @@ Type *basetype() {
     return ty;
 }
 
-bool is_func(){
+bool is_func() {
     Token *tok = token;
     basetype();
     bool isfunc = consume_identifier() && consume("(");
@@ -168,7 +173,7 @@ Program *program() {
     Function *cur = &head;
 
     while (!at_eof()) {
-        if(is_func()){
+        if (is_func()) {
             cur->next = function();
             cur = cur->next;
         } else {
@@ -241,12 +246,12 @@ Function *function() {
     return f;
 }
 
-Parameters *global_variable() {
+void *global_variable() {
     Type *ty = basetype();
     char *name = expect_identifier();
     ty = read_type_suffix(ty);
     expect(";");
-    return new_gvar(name, ty);
+    new_gvar(name, ty);
 }
 
 Node *declaration() {
@@ -455,6 +460,16 @@ Node *primary() {
         if (!var) {
             error("undefined variable");
         }
+        return new_var(var);
+    }
+
+    tok = token;
+    if (tok->kind == TK_String) {
+        token = token->next;
+        Type *ty = array_of(char_type, tok->cont_len);
+        Variable *var = new_gvar(new_label(), ty);
+        var->contents = tok->contents;
+        var->cont_len = tok->cont_len;
         return new_var(var);
     }
 

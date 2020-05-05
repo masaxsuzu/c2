@@ -114,7 +114,7 @@ bool at_eof() { return token->kind == TK_Eof; }
 
 char *starts_with_reserved(char *p) {
     // Keyword
-    static char *kw[] = {"return", "if",  "else",  "while",
+    static char *kw[] = {"return", "if",  "else",   "while",
                          "for",    "int", "sizeof", "char"};
 
     for (int i = 0; i < sizeof(kw) / sizeof(*kw); i++) {
@@ -142,6 +142,21 @@ Token *tokenize() {
     while (*p) {
         if (isspace(*p)) {
             p++;
+            continue;
+        }
+
+        if (*p == '"') {
+            char *q = p++;
+            while (*p && *p != '"') {
+                p++;
+            }
+            if (!*p) {
+                error_at(q, "unclosed string literal");
+            }
+            p++;
+            cur = new_token(TK_String, cur, q, p - q);
+            cur->contents = strndup(q + 1, p - q - 2);
+            cur->cont_len = p - q - 1;
             continue;
         }
 

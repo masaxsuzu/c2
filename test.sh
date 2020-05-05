@@ -30,6 +30,8 @@ assert() {
   fi
 }
 
+assert 97 'int main() { return "abc"[0]; }'
+
 assert 1 'int main() { char x = 1; return sizeof(x); }'
 assert 4 'int main() { char x[4]; return sizeof(x); }'
 assert 2 'int main() { char x = 2; return x; }'

@@ -11,11 +11,10 @@ void gen(Node *node);
 void gen_addr(Node *node) {
 
     if (node->kind == ND_Var) {
-        if(node->var->is_local){
+        if (node->var->is_local) {
             printf("  lea rax, [rbp-%d]\n", node->var->offset);
             printf("  push rax\n");
-        }
-        else {
+        } else {
             printf("  push offset %s\n", node->var->name);
         }
         return;
@@ -38,22 +37,20 @@ void gen_lVal(Node *node) {
 
 void load(Type *ty) {
     printf("  pop rax\n");
-    if(ty->size == 1) {
+    if (ty->size == 1) {
         printf("  movsx rax, byte ptr [rax]\n");
-    }
-    else {
+    } else {
         printf("  mov rax, [rax]\n");
     }
     printf("  push rax\n");
 }
 
-void store(Type *ty){
+void store(Type *ty) {
     printf("  pop rdi\n");
     printf("  pop rax\n");
-    if(ty->size == 1){
+    if (ty->size == 1) {
         printf("  mov [rax], dil\n");
-    }
-    else {
+    } else {
         printf("  mov [rax], rdi\n");
     }
     printf("  push rdi\n");
@@ -239,10 +236,9 @@ void gen(Node *node) {
 }
 
 void load_arg(Variable *var, int index) {
-    if(var->ty->size == 1) {
+    if (var->ty->size == 1) {
         printf("  mov [rbp-%d], %s\n", var->offset, argreg1[index]);
-    }
-    else {
+    } else {
         printf("  mov [rbp-%d], %s\n", var->offset, argreg8[index]);
     }
 }
@@ -283,7 +279,13 @@ void emit_data(Program *p) {
     printf(".data\n");
     for (Parameters *global = p->globals; global; global = global->next) {
         printf("%s:\n", global->var->name);
-        printf("  .zero %d\n", global->var->ty->size);
+        if (!global->var->contents) {
+            printf("  .zero %d\n", global->var->ty->size);
+            continue;
+        }
+        for (int i = 0; i < global->var->cont_len; i++) {
+            printf("  .byte %d\n", global->var->contents[i]);
+        }
     }
 }
 void codegen(Program *p) {

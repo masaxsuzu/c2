@@ -15,6 +15,7 @@ typedef struct Type Type;
 typedef enum {
     TK_Reserved,
     TK_Identifier,
+    TK_String,
     TK_Number,
     TK_Eof,
 } TokenKind;
@@ -27,6 +28,8 @@ struct Token {
     int value; // only for number
     char *str;
     int len;
+    char *contents;
+    char cont_len;
 };
 
 Token *consume(char *op);
@@ -50,6 +53,8 @@ struct Variable {
     Type *ty;
     int offset;
     bool is_local;
+    char *contents;
+    char cont_len;
 };
 
 typedef struct Parameters Parameters;
