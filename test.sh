@@ -32,9 +32,16 @@ assert() {
   fi
 }
 
-assert 7 'int main() { 
-  //  this is a line comment
-  return "\a"[0]; 
+assert 1 'int main() { 
+  //  return 2; this is a line comment
+  return 1; 
+}'
+assert 2 'int main() { 
+  /* 
+    return 3; 
+    this is a block comment
+  */
+  return 2; 
 }'
 
 assert 7 'int main() { return "\a"[0]; }'

@@ -210,6 +210,16 @@ Token *tokenize() {
             continue;
         }
 
+        // skip block comment
+        if (strncmp(p, "/*", 2) == 0) {
+            char *q = strstr(p + 2, "*/");
+            if(!q) {
+                error_at(p, "unclosed block comment");
+            }
+            p = q +2;
+            continue;
+        }
+
         if (*p == '"') {
             cur = read_string_literal(cur, p);
             p += cur->len;
