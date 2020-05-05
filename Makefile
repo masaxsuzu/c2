@@ -2,19 +2,18 @@ CFLAGS=-std=c11 -g -static -fno-common
 SRCS=$(wildcard *.c)
 OBJS=$(SRCS:.c=.o)
 
-clean: test
-	rm -f c2 *.o *~ ../tmp*
-
 test: c2
-	./c2 ./tests/test.c > ../tmp.s
-	gcc -static -o ../tmp ../tmp.s
-	../tmp
-	./test.sh
+	./c2 ./tests/test.c > ./tmp.s
+	gcc -static -o ./tmp ./tmp.s
+	./tmp
 
 c2: $(OBJS)
 	$(CC) -o c2 $(OBJS) $(LDFLAGS)
 
 $(OBJS): c2.h
+
+clean:
+	rm -f c2 *.o *~ tmp*
 
 fmt:
 	clang-format *.c -i
