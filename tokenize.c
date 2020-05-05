@@ -63,7 +63,7 @@ Token *peek(char *op) {
 // If next token is as expected, advance 1 token.
 // Otherwise report an error.
 void expect(char *op) {
-    if (!peek(op)){
+    if (!peek(op)) {
         error_at(token->str, "expected '%s'", op);
     }
     token = token->next;
@@ -114,7 +114,8 @@ bool at_eof() { return token->kind == TK_Eof; }
 
 char *starts_with_reserved(char *p) {
     // Keyword
-    static char *kw[] = {"return", "if", "else", "while", "for", "int", "sizeof"};
+    static char *kw[] = {"return", "if",  "else",  "while",
+                         "for",    "int", "sizeof"};
 
     for (int i = 0; i < sizeof(kw) / sizeof(*kw); i++) {
         int len = strlen(kw[i]);

@@ -15,7 +15,7 @@ void gen_addr(Node *node) {
         return;
     }
 
-    if(node->kind == ND_Deref) {
+    if (node->kind == ND_Deref) {
         gen(node->left);
         return;
     }
@@ -24,14 +24,13 @@ void gen_addr(Node *node) {
 }
 
 void gen_lVal(Node *node) {
-    if(node->ty->kind == TY_Array) {
+    if (node->ty->kind == TY_Array) {
         error("Array is not a lvalue");
     }
     gen_addr(node);
 }
 
-
-void load(){
+void load() {
     printf("  pop rax\n");
     printf("  mov rax, [rax]\n");
     printf("  push rax\n");
@@ -102,19 +101,19 @@ void gen(Node *node) {
     case ND_Expr_Stmt:
         gen(node->left);
         printf("  add rsp, 8\n");
-    return;
+        return;
     case ND_Addr:
         gen_addr(node->left);
         return;
     case ND_Deref:
         gen(node->left);
-        if(node->ty->kind != TY_Array){
+        if (node->ty->kind != TY_Array) {
             load();
         }
         return;
     case ND_Var:
         gen_addr(node);
-        if(node->ty->kind != TY_Array){
+        if (node->ty->kind != TY_Array) {
             load();
         }
         return;

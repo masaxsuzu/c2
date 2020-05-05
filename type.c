@@ -1,17 +1,15 @@
 #include "c2.h"
 
-Type *int_type = &(Type) {TY_Int, 8};
+Type *int_type = &(Type){TY_Int, 8};
 
-bool is_integer(Type *ty) {
-    return ty->kind == TY_Int;
-}
+bool is_integer(Type *ty) { return ty->kind == TY_Int; }
 
 Type *pointer_to(Type *base) {
     Type *ty = calloc(1, sizeof(Type));
     ty->kind = TY_Ptr;
     ty->base = base;
     ty->size = 8;
-    return ty; 
+    return ty;
 }
 
 Type *array_of(Type *base, int size) {
@@ -25,7 +23,7 @@ Type *array_of(Type *base, int size) {
 
 // Assign type to the give node recursively.
 void assign_type(Node *node) {
-    if(!node || node->ty) {
+    if (!node || node->ty) {
         return;
     }
 
@@ -37,19 +35,18 @@ void assign_type(Node *node) {
     assign_type(node->init);
     assign_type(node->inc);
 
-    for(Node *n = node->block; n;n = n->next){
+    for (Node *n = node->block; n; n = n->next) {
         assign_type(n);
     }
 
-    for(Node *n = node->funcArgs; n;n = n->next){
+    for (Node *n = node->funcArgs; n; n = n->next) {
         assign_type(n);
     }
 
-    switch (node->kind)
-    {
-    case ND_Add:    
-    case ND_Sub:    
-    case ND_Diff_Ptr:    
+    switch (node->kind) {
+    case ND_Add:
+    case ND_Sub:
+    case ND_Diff_Ptr:
     case ND_Mul:
     case ND_Div:
     case ND_Eq:
@@ -69,18 +66,16 @@ void assign_type(Node *node) {
         node->ty = node->var->ty;
         return;
     case ND_Addr:
-        if(node->left->ty->kind == TY_Array) {
-           node->ty = pointer_to(node->left->ty->base);
-        } 
-        else{ 
-           node->ty = pointer_to(node->left->ty);
+        if (node->left->ty->kind == TY_Array) {
+            node->ty = pointer_to(node->left->ty->base);
+        } else {
+            node->ty = pointer_to(node->left->ty);
         }
         return;
     case ND_Deref:
-        if(node->left->ty->base){
+        if (node->left->ty->base) {
             node->ty = node->left->ty->base;
-        }
-        else {
+        } else {
             error("%d: invalid pointer deference", node->left->ty->kind);
         }
         return;

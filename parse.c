@@ -64,13 +64,13 @@ Node *new_add(Node *left, Node *right) {
     assign_type(left);
     assign_type(right);
 
-    if(is_integer(left->ty) && is_integer(right->ty)){
+    if (is_integer(left->ty) && is_integer(right->ty)) {
         return new_binary(ND_Add, left, right);
     }
-    if(left->ty->base && is_integer(right->ty)){
+    if (left->ty->base && is_integer(right->ty)) {
         return new_binary(ND_Add_Ptr, left, right);
     }
-    if(is_integer(left->ty) && right->ty->base){
+    if (is_integer(left->ty) && right->ty->base) {
         // reverse left and right.
         return new_binary(ND_Add_Ptr, right, left);
     }
@@ -81,13 +81,13 @@ Node *new_sub(Node *left, Node *right) {
     assign_type(left);
     assign_type(right);
 
-    if(is_integer(left->ty) && is_integer(right->ty)){
+    if (is_integer(left->ty) && is_integer(right->ty)) {
         return new_binary(ND_Sub, left, right);
     }
-    if(left->ty->base && is_integer(right->ty)){
+    if (left->ty->base && is_integer(right->ty)) {
         return new_binary(ND_Sub_Ptr, left, right);
     }
-    if(left->ty->base && right->ty->base){
+    if (left->ty->base && right->ty->base) {
         return new_binary(ND_Diff_Ptr, left, right);
     }
     error("invalid operand");
@@ -140,7 +140,7 @@ Function *program() {
 }
 
 Type *read_type_suffix(Type *base) {
-    if(!consume("[")){
+    if (!consume("[")) {
         return base;
     }
     int size = expect_number();
@@ -156,7 +156,7 @@ Parameters *read_func_parameter() {
     ty = read_type_suffix(ty);
     p->var = new_lvar(name, ty);
     return p;
-} 
+}
 Parameters *read_func_parameters() {
     if (consume(")")) {
         return NULL;
@@ -200,12 +200,12 @@ Function *function() {
 
 Node *declaration() {
     Token *tok = token;
-    Type *ty= basetype();
+    Type *ty = basetype();
     char *name = expect_identifier();
     ty = read_type_suffix(ty);
     Variable *var = new_lvar(name, ty);
-    
-    if(consume(";")) {
+
+    if (consume(";")) {
         return new_node(ND_Null);
     }
 
@@ -213,13 +213,13 @@ Node *declaration() {
     Node *left = new_var(var);
     Node *right = expr();
     expect(";");
-    Node *node = new_binary(ND_Assign,left, right);
+    Node *node = new_binary(ND_Assign, left, right);
     return new_unary(ND_Expr_Stmt, node);
 }
 
 Node *read_expr_stmt(void) {
-  Token *tok = token;
-  return new_unary(ND_Expr_Stmt, expr());
+    Token *tok = token;
+    return new_unary(ND_Expr_Stmt, expr());
 }
 
 Node *stmt() {
@@ -305,10 +305,10 @@ Node *stmt2() {
         return node;
     }
 
-    if(peek("int")){
+    if (peek("int")) {
         return declaration();
     }
-    
+
     node = read_expr_stmt();
     expect(";");
     return node;
@@ -423,8 +423,8 @@ Node *unary() {
     if (consume("*")) {
         return new_unary(ND_Deref, unary());
     }
-    if(consume("sizeof")) {
-        Node *n = unary(); 
+    if (consume("sizeof")) {
+        Node *n = unary();
         assign_type(n);
         // now int is 64 bit.
         return new_node_number(n->ty->size);
@@ -434,7 +434,7 @@ Node *unary() {
 
 Node *postfix() {
     Node *node = primary();
-    while(consume("[")){
+    while (consume("[")) {
         Node *exp = new_add(node, expr());
         expect("]");
         node = new_unary(ND_Deref, exp);
