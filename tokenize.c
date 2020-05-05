@@ -203,8 +203,8 @@ Token *tokenize() {
 
         // skip line comment
         if (strncmp(p, "//", 2) == 0) {
-            p +=2;
-            while(*p != '\n') {
+            p += 2;
+            while (*p != '\n') {
                 p++;
             }
             continue;
@@ -213,10 +213,10 @@ Token *tokenize() {
         // skip block comment
         if (strncmp(p, "/*", 2) == 0) {
             char *q = strstr(p + 2, "*/");
-            if(!q) {
+            if (!q) {
                 error_at(p, "unclosed block comment");
             }
-            p = q +2;
+            p = q + 2;
             continue;
         }
 

@@ -152,7 +152,7 @@ void gen(Node *node) {
         printf("  mov rax, rsp\n");
         printf("  and rax, 15\n");
         printf("  jnz .L.call.%d\n", id); // if rsp % 16 !=  0, then jump
-        printf("  mov rax, 0\n");              // rsp is aligned
+        printf("  mov rax, 0\n");         // rsp is aligned
         printf("  call %s\n", node->funcName);
         printf("  jmp .L.end.%d\n", id);
         printf(".L.call.%d:\n", id); // rsp is not aligned

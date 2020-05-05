@@ -82,7 +82,7 @@ void assign_type(Node *node) {
         return;
     case ND_Stmt_Expr: {
         Node *last = node->block;
-        while(last->next) {
+        while (last->next) {
             last = last->next;
         }
         node->ty = last->ty;

@@ -121,7 +121,6 @@ Variable *new_var(char *name, Type *ty, bool is_local) {
     return var;
 }
 
-
 Variable *new_lvar(char *name, Type *ty, bool is_local) {
     Variable *var = new_var(name, ty, true);
     Parameters *params = calloc(1, sizeof(Parameters));
@@ -132,7 +131,7 @@ Variable *new_lvar(char *name, Type *ty, bool is_local) {
 }
 
 Variable *new_gvar(char *name, Type *ty) {
-    Variable *var = new_var(name,ty, false);
+    Variable *var = new_var(name, ty, false);
     Parameters *params = calloc(1, sizeof(Parameters));
     params->var = var;
     params->next = globals;
@@ -141,20 +140,18 @@ Variable *new_gvar(char *name, Type *ty) {
 }
 
 char *new_label() {
-   static int c = 0;
-   char buf[20];
-   sprintf(buf, ".L.data.%d", c++); 
-   return strndup(buf, 20);
+    static int c = 0;
+    char buf[20];
+    sprintf(buf, ".L.data.%d", c++);
+    return strndup(buf, 20);
 }
 
 // basetype = "int" "*"*
 Type *basetype() {
     Type *ty;
-    if(consume("int")){
+    if (consume("int")) {
         ty = int_type;
-    }
-    else
-    {
+    } else {
         expect("char");
         ty = char_type;
     }
@@ -164,7 +161,7 @@ Type *basetype() {
     return ty;
 }
 
-bool is_func(){
+bool is_func() {
     Token *tok = token;
     basetype();
     bool isfunc = consume_identifier() && consume("(");
@@ -178,7 +175,7 @@ Program *program() {
     Function *cur = &head;
 
     while (!at_eof()) {
-        if(is_func()){
+        if (is_func()) {
             cur->next = function();
             cur = cur->next;
         } else {
@@ -383,19 +380,18 @@ Node *stmt_expr(Token *tok) {
     node->block = stmt();
     Node *cur = node->block;
 
-    while(!consume("}")) {
+    while (!consume("}")) {
         cur->next = stmt();
         cur = cur->next;
     }
     expect(")");
 
-    if(cur->kind != ND_Expr_Stmt) {
+    if (cur->kind != ND_Expr_Stmt) {
         error_at(tok->str, "stmt expr returning void is not supported");
     }
     memcpy(cur, cur->left, sizeof(Node));
     return node;
 }
-
 
 Node *expr() { return assign(); }
 
@@ -470,7 +466,7 @@ Node *mul() {
 Node *primary() {
     Token *tok;
     if (tok = consume("(")) {
-        if(consume("{")){
+        if (consume("{")) {
             return stmt_expr(tok);
         }
         Node *node = expr();
@@ -495,7 +491,7 @@ Node *primary() {
     }
 
     tok = token;
-    if(tok->kind == TK_String) {
+    if (tok->kind == TK_String) {
         token = token->next;
         Type *ty = array_of(char_type, tok->cont_len);
         Variable *var = new_gvar(new_label(), ty);
