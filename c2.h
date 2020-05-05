@@ -162,3 +162,4 @@ void debug_node(char *label, Node *node);
 
 extern Token *token;
 extern char *user_input;
+extern char *filename;

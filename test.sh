@@ -13,7 +13,9 @@ assert() {
 
   # IO on shared dir is too slow.
   # ../ would be /workspaces/
-  ./c2 "$input" > ../tmp.s
+  rm ../tmp.test.input -f
+  echo "$input" | tee > ../tmp.test.input
+  ./c2 ../tmp.test.input > ../tmp.s
   gcc -static -o ../tmp ../tmp.s ../tmp2.o
   if [ $? -ne 0 ]; then
     echo "compile error"
