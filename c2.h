@@ -49,6 +49,7 @@ struct Variable {
     char *name;
     Type *ty;
     int offset;
+    bool is_local;
 };
 
 typedef struct Parameters Parameters;
@@ -118,6 +119,7 @@ typedef struct Program Program;
 
 struct Program {
     Function *next;
+    Parameters *globals;
 };
 
 Program *program();
@@ -142,7 +144,7 @@ Type *array_of(Type *base, int size);
 //
 // code generator
 //
-void codegen(Function *prog);
+void codegen(Program *prog);
 
 //
 // main program

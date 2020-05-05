@@ -1,8 +1,10 @@
 #include "c2.h"
 
 Parameters *locals;
+Parameters *globals;
 
 Function *function();
+Parameters *global_variable();
 Node *stmt();
 Node *stmt2();
 Node *expr();
@@ -23,6 +25,15 @@ Variable *find_var(Token *tok) {
             return var;
         }
     }
+
+    for (Parameters *params = globals; params; params = params->next) {
+        Variable *var = params->var;
+        if (strlen(var->name) == tok->len &&
+            !memcmp(tok->str, var->name, tok->len)) {
+            return var;
+        }
+    }
+
     return NULL;
 }
 
@@ -105,16 +116,26 @@ Node *new_var(Variable *var) {
     return node;
 }
 
-Variable *new_lvar(char *name, Type *ty) {
+Variable *new_lvar(char *name, Type *ty, bool is_local) {
     Variable *var = calloc(1, sizeof(Variable));
     var->name = name;
     var->ty = ty;
+    var->is_local = is_local;
     Parameters *params = calloc(1, sizeof(Parameters));
     params->var = var;
     params->next = locals;
     locals = params;
     return var;
 }
+
+void *new_gvar(char *name, Type *ty) {
+    Variable *var = new_lvar(name,ty, false);
+    Parameters *params = calloc(1, sizeof(Parameters));
+    params->var = var;
+    params->next = globals;
+    globals = params;
+}
+
 
 // basetype = "int" "*"*
 Type *basetype() {
@@ -126,18 +147,31 @@ Type *basetype() {
     return ty;
 }
 
+bool is_func(){
+    Token *tok = token;
+    basetype();
+    bool isfunc = consume_identifier() && consume("(");
+    token = tok;
+    return isfunc;
+}
+
 Program *program() {
 
     Function head = {};
     Function *cur = &head;
 
     while (!at_eof()) {
-        cur->next = function();
-        cur = cur->next;
+        if(is_func()){
+            cur->next = function();
+            cur = cur->next;
+        } else {
+            global_variable();
+        }
     }
 
     Program *p = calloc(1, sizeof(Program));
     p->next = head.next;
+    p->globals = globals;
     return p;
 }
 
@@ -156,7 +190,7 @@ Parameters *read_func_parameter() {
     Type *ty = basetype();
     char *name = expect_identifier();
     ty = read_type_suffix(ty);
-    p->var = new_lvar(name, ty);
+    p->var = new_lvar(name, ty, true);
     return p;
 }
 Parameters *read_func_parameters() {
@@ -200,12 +234,20 @@ Function *function() {
     return f;
 }
 
+Parameters *global_variable() {
+    Type *ty = basetype();
+    char *name = expect_identifier();
+    ty = read_type_suffix(ty);
+    expect(";");
+    return new_gvar(name, ty);
+}
+
 Node *declaration() {
     Token *tok = token;
     Type *ty = basetype();
     char *name = expect_identifier();
     ty = read_type_suffix(ty);
-    Variable *var = new_lvar(name, ty);
+    Variable *var = new_lvar(name, ty, true);
 
     if (consume(";")) {
         return new_node(ND_Null);

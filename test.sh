@@ -14,7 +14,7 @@ assert() {
   # IO on shared dir is too slow.
   # ../ would be /workspaces/
   ./c2 "$input" > ../tmp.s
-  cc -o ../tmp ../tmp.s ../tmp2.o
+  gcc -static -o ../tmp ../tmp.s ../tmp2.o
   if [ $? -ne 0 ]; then
     echo "compile error"
     exit 1
@@ -131,5 +131,10 @@ assert 6 'int main() { int x[2][3]; int *y; y=x; y[6]=6; return x[2][0]; }'
 
 assert 1 'int main() { int x = 1; return x;}'
 assert 10 'int main() { int x = 10; int *y = &x; return *y;}'
+
+assert 10 'int z; int main() { int x = 10; int *y = &x; return *y;}'
+assert 20 'int z; int main() { z = 20; int x = 10; return z;}'
+assert 3 'int x[4]; int main() { x[0]=0; x[1]=1; x[2]=2; x[3]=3; return x[3]; }'
+assert 32 'int x[4]; int main() { return sizeof(x); }'
 
 echo OK

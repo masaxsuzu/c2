@@ -22,7 +22,6 @@ int main(int argc, char **argv) {
     user_input = argv[1];
     token = tokenize();
     Program *prog = program();
-
     for (Function *fn = prog->next; fn; fn = fn->next) {
         int offset = 0;
         for (Parameters *local = fn->locals; local; local = local->next) {
@@ -31,6 +30,6 @@ int main(int argc, char **argv) {
         }
         fn->stack_size = offset;
     }
-    codegen(prog->next);
+    codegen(prog);
     return 0;
 }

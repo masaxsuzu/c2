@@ -10,8 +10,13 @@ void gen(Node *node);
 void gen_addr(Node *node) {
 
     if (node->kind == ND_Var) {
-        printf("  lea rax, [rbp-%d]\n", node->var->offset);
-        printf("  push rax\n");
+        if(node->var->is_local){
+            printf("  lea rax, [rbp-%d]\n", node->var->offset);
+            printf("  push rax\n");
+        }
+        else {
+            printf("  push offset %s\n", node->var->name);
+        }
         return;
     }
 
@@ -217,11 +222,9 @@ void gen(Node *node) {
 
     printf("  push rax\n");
 }
-
-void codegen(Function *p) {
-    printf(".intel_syntax noprefix\n");
-
-    for (Function *fn = p; fn; fn = fn->next) {
+void emit_text(Program *p) {
+    printf(".text\n");
+    for (Function *fn = p->next; fn; fn = fn->next) {
         printf(".global %s\n", fn->name);
         printf("%s:\n", fn->name);
 
@@ -250,4 +253,17 @@ void codegen(Function *p) {
         printf("  pop rbp\n");
         printf("  ret\n");
     }
+}
+
+void emit_data(Program *p) {
+    printf(".data\n");
+    for (Parameters *global = p->globals; global; global = global->next) {
+        printf("%s:\n", global->var->name);
+        printf("  .zero %d\n", global->var->ty->size);
+    }
+}
+void codegen(Program *p) {
+    printf(".intel_syntax noprefix\n");
+    emit_data(p);
+    emit_text(p);
 }
