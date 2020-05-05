@@ -3,7 +3,8 @@
 int labelId = 0;
 char *functionName;
 // Copy args into the resiters.
-static char *argreg[] = {"rdi", "rsi", "rdx", "rcx", "r8", "r9"};
+static char *argreg1[] = {"dil", "sil", "dl", "cl", "r8b", "r9b"};
+static char *argreg8[] = {"rdi", "rsi", "rdx", "rcx", "r8", "r9"};
 
 void gen(Node *node);
 
@@ -35,10 +36,27 @@ void gen_lVal(Node *node) {
     gen_addr(node);
 }
 
-void load() {
+void load(Type *ty) {
     printf("  pop rax\n");
-    printf("  mov rax, [rax]\n");
+    if(ty->size == 1) {
+        printf("  movsx rax, byte ptr [rax]\n");
+    }
+    else {
+        printf("  mov rax, [rax]\n");
+    }
     printf("  push rax\n");
+}
+
+void store(Type *ty){
+    printf("  pop rdi\n");
+    printf("  pop rax\n");
+    if(ty->size == 1){
+        printf("  mov [rax], dil\n");
+    }
+    else {
+        printf("  mov [rax], rdi\n");
+    }
+    printf("  push rdi\n");
 }
 
 void gen(Node *node) {
@@ -113,13 +131,13 @@ void gen(Node *node) {
     case ND_Deref:
         gen(node->left);
         if (node->ty->kind != TY_Array) {
-            load();
+            load(node->ty);
         }
         return;
     case ND_Var:
         gen_addr(node);
         if (node->ty->kind != TY_Array) {
-            load();
+            load(node->ty);
         }
         return;
     case ND_FuncCall: {
@@ -130,7 +148,7 @@ void gen(Node *node) {
         }
 
         for (int i = n - 1; i >= 0; i--) {
-            printf("  pop %s\n", argreg[i]);
+            printf("  pop %s\n", argreg8[i]);
         }
 
         // [x86-64] RSP register must a multiple of 16 before using function
@@ -155,10 +173,7 @@ void gen(Node *node) {
     case ND_Assign:
         gen_lVal(node->left);
         gen(node->right);
-        printf("  pop rdi\n");
-        printf("  pop rax\n");
-        printf("  mov [rax], rdi\n");
-        printf("  push rdi\n");
+        store(node->ty);
         return;
     }
 
@@ -222,6 +237,15 @@ void gen(Node *node) {
 
     printf("  push rax\n");
 }
+
+void load_arg(Variable *var, int index) {
+    if(var->ty->size == 1) {
+        printf("  mov [rbp-%d], %s\n", var->offset, argreg1[index]);
+    }
+    else {
+        printf("  mov [rbp-%d], %s\n", var->offset, argreg8[index]);
+    }
+}
 void emit_text(Program *p) {
     printf(".text\n");
     for (Function *fn = p->next; fn; fn = fn->next) {
@@ -240,7 +264,7 @@ void emit_text(Program *p) {
 
         for (Parameters *params = fn->params; params; params = params->next) {
             Variable *var = params->var;
-            printf("  mov [rbp-%d], %s\n", var->offset, argreg[i++]);
+            load_arg(var, i++);
         }
 
         for (Node *node = fn->node; node; node = node->next) {

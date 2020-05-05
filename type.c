@@ -1,8 +1,9 @@
 #include "c2.h"
 
+Type *char_type = &(Type){TY_Char, 1};
 Type *int_type = &(Type){TY_Int, 8};
 
-bool is_integer(Type *ty) { return ty->kind == TY_Int; }
+bool is_integer(Type *ty) { return ty->kind == TY_Int || ty->kind == TY_Char; }
 
 Type *pointer_to(Type *base) {
     Type *ty = calloc(1, sizeof(Type));

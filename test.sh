@@ -30,6 +30,12 @@ assert() {
   fi
 }
 
+assert 1 'int main() { char x = 1; return sizeof(x); }'
+assert 4 'int main() { char x[4]; return sizeof(x); }'
+assert 2 'int main() { char x = 2; return x; }'
+assert 8 'char x; int main() { x = 8; return 8; }'
+assert 3 'char x; int main() { x = 8; return sub(x, 5); } int sub(char a, char b) {return a-b;}'
+
 assert 0 'int main(){ return 0; }'
 assert 42 'int main(){ return 42; }'
 assert 21 'int main(){ return 5+20-4; }'

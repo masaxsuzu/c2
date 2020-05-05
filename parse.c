@@ -139,8 +139,15 @@ void *new_gvar(char *name, Type *ty) {
 
 // basetype = "int" "*"*
 Type *basetype() {
-    expect("int");
-    Type *ty = int_type;
+    Type *ty;
+    if(consume("int")){
+        ty = int_type;
+    }
+    else
+    {
+        expect("char");
+        ty = char_type;
+    }
     while (consume("*")) {
         ty = pointer_to(ty);
     }
@@ -349,7 +356,7 @@ Node *stmt2() {
         return node;
     }
 
-    if (peek("int")) {
+    if (peek("char") || peek("int")) {
         return declaration();
     }
 
@@ -470,7 +477,6 @@ Node *unary() {
     if (consume("sizeof")) {
         Node *n = unary();
         assign_type(n);
-        // now int is 64 bit.
         return new_node_number(n->ty->size);
     }
     return postfix();

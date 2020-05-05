@@ -127,7 +127,7 @@ Program *program();
 //
 // Type, e.g. int, pointer to int, pointer to pointer to int, ...
 //
-typedef enum {TY_Int, TY_Ptr, TY_Array} TypeKind;
+typedef enum {TY_Int, TY_Ptr, TY_Array, TY_Char} TypeKind;
 struct Type {
     TypeKind kind;
     int size;
@@ -136,6 +136,7 @@ struct Type {
 };
 
 extern Type *int_type;
+extern Type *char_type;
 bool is_integer(Type *ty);
 void assign_type(Node *node);
 Type *pointer_to(Type *base);
