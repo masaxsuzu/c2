@@ -79,7 +79,7 @@ Node *new_add(Node *left, Node *right, Token *tok) {
         // reverse left and right.
         return new_binary(ND_Add_Ptr, right, left, tok);
     }
-    error("invalid operand");
+    error_at(tok->str, "invalid operand");
 }
 
 Node *new_sub(Node *left, Node *right, Token *tok) {
@@ -95,7 +95,7 @@ Node *new_sub(Node *left, Node *right, Token *tok) {
     if (left->ty->base && right->ty->base) {
         return new_binary(ND_Diff_Ptr, left, right, tok);
     }
-    error("invalid operand");
+    error_at(tok->str, "invalid operand");
 }
 
 Node *new_node_number(int number, Token *tok) {
@@ -488,7 +488,7 @@ Node *primary() {
         }
         Variable *var = find_var(tok);
         if (!var) {
-            error("undefined variable");
+            error_at(tok->str, "undefined variable");
         }
         return new_node_var(var, tok);
     }

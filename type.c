@@ -77,7 +77,7 @@ void assign_type(Node *node) {
         if (node->left->ty->base) {
             node->ty = node->left->ty->base;
         } else {
-            error("%d: invalid pointer deference", node->left->ty->kind);
+            error_at(node->token->str, "invalid pointer deference");
         }
         return;
     case ND_Stmt_Expr: {

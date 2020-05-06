@@ -25,12 +25,12 @@ void gen_addr(Node *node) {
         return;
     }
 
-    error("Left side value is not variable, got: %d", node->kind);
+    error_at(node->token->str, "Left side value is not variable, got: %d", node->kind);
 }
 
 void gen_lVal(Node *node) {
     if (node->ty->kind == TY_Array) {
-        error("Array is not a lvalue");
+        error_at(node->token->str, "Array is not a lvalue");
     }
     gen_addr(node);
 }

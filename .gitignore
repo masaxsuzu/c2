@@ -3,3 +3,4 @@ c2
 *~
 tmp*
 a.out
+tests/debug.c
