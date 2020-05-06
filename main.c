@@ -55,7 +55,7 @@ int main(int argc, char **argv) {
     for (Function *fn = prog->next; fn; fn = fn->next) {
         int offset = 0;
         for (Parameters *local = fn->locals; local; local = local->next) {
-            offset += local->var->ty->size;
+            offset += size_of(local->var->ty);
             local->var->offset = offset;
         }
         fn->stack_size = align_to(offset, 8);

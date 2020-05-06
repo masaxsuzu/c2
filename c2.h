@@ -63,6 +63,14 @@ struct Parameters {
   Variable *var;
 };
 
+typedef struct Member Member;
+struct Member {
+    Type *ty;
+    char *name;
+    Member *next;
+    int offset;
+};
+
 typedef enum {
     ND_If,
     ND_While,
@@ -88,6 +96,7 @@ typedef enum {
     ND_Stmt_Expr,   // ({int x = 1; x;} => 1)
     ND_FuncCall,
     ND_Num,
+    ND_Member,
     ND_Null,
 } NodeKind;
 
@@ -110,6 +119,9 @@ struct Node {
     Node *block;
     char *funcName;
     Node *funcArgs;
+    // Struct member access
+    char *member_name;
+    Member *member;
 };
 
 typedef struct Function Function;
@@ -134,17 +146,19 @@ Program *program();
 //
 // Type, e.g. int, pointer to int, pointer to pointer to int, ...
 //
-typedef enum {TY_Int, TY_Ptr, TY_Array, TY_Char} TypeKind;
+typedef enum {TY_Int, TY_Struct, TY_Ptr, TY_Array, TY_Char} TypeKind;
 struct Type {
     TypeKind kind;
     int size;
     Type *base;
     int array_size;
+    Member *members;
 };
 
 extern Type *int_type;
 extern Type *char_type;
 bool is_integer(Type *ty);
+int size_of(Type *ty);
 void assign_type(Node *node);
 Type *pointer_to(Type *base);
 Type *array_of(Type *base, int size);

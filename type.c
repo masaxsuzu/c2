@@ -13,13 +13,44 @@ Type *pointer_to(Type *base) {
     return ty;
 }
 
+int size_of(Type *ty) {
+    switch (ty->kind)
+    {
+    case TY_Char:
+        return 1;
+    case TY_Int:
+    case TY_Ptr:
+        return 8;
+    case TY_Array:
+        return size_of(ty->base) * ty->array_size;
+    case TY_Struct: {
+        Member *mem = ty->members;
+        while(mem->next){
+            mem = mem->next;
+        }
+        return mem->offset + size_of(mem->ty);
+    }
+    default:
+        error("x");
+        return 0;
+    }
+}
 Type *array_of(Type *base, int size) {
     Type *ty = calloc(1, sizeof(Type));
     ty->kind = TY_Array;
-    ty->size = base->size * size;
+    ty->size = size_of(base) * size;
     ty->base = base;
     ty->array_size = size;
     return ty;
+}
+
+Member *find_member(Type *ty, char *name) {
+    for(Member *mem = ty->members; mem; mem = mem->next) {
+        if(!strcmp(mem->name, name)) {
+            return mem;
+        }
+    }
+    return NULL;
 }
 
 // Assign type to the give node recursively.
@@ -63,6 +94,17 @@ void assign_type(Node *node) {
     case ND_Assign:
         node->ty = node->left->ty;
         return;
+    case ND_Member: {
+        if(node->left->ty->kind != TY_Struct) {
+            error_at(node->token->str, "not a stuct");
+        }
+        node->member = find_member(node->left->ty, node->member_name);
+        if(!node->member) {
+            error_at(node->token->str, "%s: not a member", node->member_name);
+        }
+        node->ty = node->member->ty;
+        return;
+    }
     case ND_Var:
         node->ty = node->var->ty;
         return;

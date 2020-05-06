@@ -18,6 +18,9 @@ Node *unary();
 Node *primary();
 Node *postfix();
 
+Type *read_type_suffix(Type *ty);
+Type *basetype();
+
 Variable *find_var(Token *tok) {
     for (Parameters *params = scope; params; params = params->next) {
         Variable *var = params->var;
@@ -147,14 +150,58 @@ char *new_label() {
     return strndup(buf, 20);
 }
 
+// struct-member = basetype ident ("[" num "]")* ";"
+Member *struct_member() {
+    Member *mem = calloc(1, sizeof(Member));
+    mem->ty = basetype();
+    mem->name = expect_identifier();
+    mem->ty = read_type_suffix(mem->ty);
+    expect(";");
+    return mem;
+}
+// struct-decl = "struct" "{" struct-member "}"
+Type *struct_decl() {
+    expect("struct");
+    expect("{");
+
+    Member head;
+    head.next = NULL;
+    Member *cur = &head;
+
+    while(!(consume("}"))) {
+        cur->next = struct_member();
+        cur = cur->next;
+    }
+    Type *ty = calloc(1, sizeof(Type));
+    ty->kind = TY_Struct;
+    ty->members = head.next;
+
+    int offset = 0;
+    for(Member *mem = ty->members; mem; mem = mem->next) {
+        mem->offset = offset;
+        offset += size_of(mem->ty);
+    }
+    return ty;
+}
+
+bool is_typename() {
+    return peek("int") || peek("char") || peek("struct");
+}
+
 // basetype = "int" "*"*
 Type *basetype() {
     Type *ty;
+
+    if(!is_typename()) {
+        error_at(token->str, "incorrect type");
+    }
+
     if (consume("int")) {
         ty = int_type;
-    } else {
-        expect("char");
+    } else if(consume("char")) {
         ty = char_type;
+    } else {
+        ty = struct_decl();
     }
     while (consume("*")) {
         ty = pointer_to(ty);
@@ -367,7 +414,7 @@ Node *stmt2() {
         return node;
     }
 
-    if (peek("char") || peek("int")) {
+    if (is_typename()) {
         return declaration();
     }
 
@@ -523,7 +570,7 @@ Node *unary() {
     if (tok = consume("sizeof")) {
         Node *n = unary();
         assign_type(n);
-        return new_node_number(n->ty->size, tok);
+        return new_node_number(size_of(n->ty), tok);
     }
     return postfix();
 }
@@ -531,10 +578,20 @@ Node *unary() {
 Node *postfix() {
     Node *node = primary();
     Token *tok;
-    while (tok = consume("[")) {
-        Node *exp = new_add(node, expr(), tok);
-        expect("]");
-        node = new_unary(ND_Deref, exp, tok);
+    for(;;){
+        // x[y] -> *(x+y)
+        if (tok = consume("[")) {
+            Node *exp = new_add(node, expr(), tok);
+            expect("]");
+            node = new_unary(ND_Deref, exp, tok);
+            continue;
+        }
+        // struct's member
+        if(tok = consume(".")) {
+            node = new_unary(ND_Member, node, tok);
+            node->member_name = expect_identifier();
+            continue;
+        }
+        return node;
     }
-    return node;
 }

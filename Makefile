@@ -19,6 +19,8 @@ fmt:
 	clang-format *.c -i
 
 debug: c2
-	./c2 ./tests/debug.c
+	./c2 ./tests/debug.c > ./tmp.s
+	gcc -static -o ./tmp ./tmp.s
+	./tmp
 
 .PHONY: test fmt clean debug
