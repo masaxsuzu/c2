@@ -95,6 +95,7 @@ typedef struct Node Node;
 
 struct Node {
     NodeKind kind;
+    Token *token;
     Node *next;
     Type *ty;
     Node *left;
