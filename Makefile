@@ -18,4 +18,7 @@ clean:
 fmt:
 	clang-format *.c -i
 
-.PHONY: test fmt clean
+debug: c2
+	./c2 ./tests/debug.c
+
+.PHONY: test fmt clean debug
