@@ -149,16 +149,18 @@ Program *program();
 typedef enum {TY_Int, TY_Struct, TY_Ptr, TY_Array, TY_Char} TypeKind;
 struct Type {
     TypeKind kind;
+    int align;
     int size;
     Type *base;
     int array_size;
     Member *members;
 };
 
-extern Type *int_type;
-extern Type *char_type;
+Type *int_type();
+Type *char_type();
 bool is_integer(Type *ty);
 int size_of(Type *ty);
+int align_to(int n, int align);
 void assign_type(Node *node);
 Type *pointer_to(Type *base);
 Type *array_of(Type *base, int size);

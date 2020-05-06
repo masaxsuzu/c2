@@ -1,13 +1,30 @@
 #include "c2.h"
 
-Type *char_type = &(Type){TY_Char, 1};
-Type *int_type = &(Type){TY_Int, 8};
+int align_to(int n, int align) { return (n + align - 1) & ~(align - 1); }
 
 bool is_integer(Type *ty) { return ty->kind == TY_Int || ty->kind == TY_Char; }
 
-Type *pointer_to(Type *base) {
+Type *new_type(TypeKind kind, int align) {
     Type *ty = calloc(1, sizeof(Type));
-    ty->kind = TY_Ptr;
+    ty->kind = kind;
+    ty->align = align;
+    return ty;
+}
+
+Type *char_type() {
+    Type *ty = new_type(TY_Char, 1);
+    ty->size = 1;
+    return ty;
+}
+
+Type *int_type() {
+    Type *ty = new_type(TY_Int, 8);
+    ty->size = 8;
+    return ty;
+}
+
+Type *pointer_to(Type *base) {
+    Type *ty = new_type(TY_Ptr, 8);
     ty->base = base;
     ty->size = 8;
     return ty;
@@ -36,8 +53,7 @@ int size_of(Type *ty) {
     }
 }
 Type *array_of(Type *base, int size) {
-    Type *ty = calloc(1, sizeof(Type));
-    ty->kind = TY_Array;
+    Type *ty = new_type(TY_Array, base->align);
     ty->size = size_of(base) * size;
     ty->base = base;
     ty->array_size = size;
@@ -87,7 +103,7 @@ void assign_type(Node *node) {
     case ND_Le:
     case ND_FuncCall:
     case ND_Num:
-        node->ty = int_type;
+        node->ty = int_type();
         return;
     case ND_Add_Ptr:
     case ND_Sub_Ptr:

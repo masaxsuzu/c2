@@ -197,9 +197,9 @@ Type *basetype() {
     }
 
     if (consume("int")) {
-        ty = int_type;
+        ty = int_type();
     } else if(consume("char")) {
-        ty = char_type;
+        ty = char_type();
     } else {
         ty = struct_decl();
     }
@@ -543,7 +543,7 @@ Node *primary() {
     tok = token;
     if (tok->kind == TK_String) {
         token = token->next;
-        Type *ty = array_of(char_type, tok->cont_len);
+        Type *ty = array_of(char_type(), tok->cont_len);
         Variable *var = new_gvar(new_label(), ty);
         var->contents = tok->contents;
         var->cont_len = tok->cont_len;
