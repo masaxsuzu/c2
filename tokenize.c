@@ -15,17 +15,21 @@ void error(char *fmt, ...) {
 }
 
 // Report an error with human-readble format.
-void error_at(char *loc, char *fmt, ...) {
-    va_list ap;
-    va_start(ap, fmt);
+void verror_at(char *loc, char *fmt, va_list ap) {
     int pos = loc - user_input;
-
     fprintf(stderr, "%s\n", user_input);
     fprintf(stderr, "%*s", pos, "");
     fprintf(stderr, "^ ");
     vfprintf(stderr, fmt, ap);
     fprintf(stderr, "\n");
     exit(1);
+}
+
+// Report an error with human-readble format.
+void error_at(char *loc, char *fmt, ...) {
+    va_list ap;
+    va_start(ap, fmt);
+    verror_at(loc, fmt, ap);
 }
 
 // If next token is as expected, advance 1 token.
