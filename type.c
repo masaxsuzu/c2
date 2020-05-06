@@ -45,7 +45,8 @@ int size_of(Type *ty) {
         while(mem->next){
             mem = mem->next;
         }
-        return mem->offset + size_of(mem->ty);
+        int end = mem->offset + size_of(mem->ty);
+        return align_to(end, ty->align);
     }
     default:
         error("x");
