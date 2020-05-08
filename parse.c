@@ -633,7 +633,7 @@ Node *postfix() {
     Node *node = primary();
     Token *tok;
     for(;;){
-        // x[y] -> *(x+y)
+        // x[y] is *(x+y)
         if (tok = consume("[")) {
             Node *exp = new_add(node, expr(), tok);
             expect("]");
@@ -642,6 +642,13 @@ Node *postfix() {
         }
         // struct's member
         if(tok = consume(".")) {
+            node = new_unary(ND_Member, node, tok);
+            node->member_name = expect_identifier();
+            continue;
+        }
+        // x->y is (*x).y
+        if(tok = consume("->")) {
+            node = new_unary(ND_Deref, node, tok);
             node = new_unary(ND_Member, node, tok);
             node->member_name = expect_identifier();
             continue;
