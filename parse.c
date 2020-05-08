@@ -58,12 +58,24 @@ TagScope *find_tag(Token *tok) {
 
 VarScope *find_var(Token *tok) {
     for (VarScope *params = varscope; params; params = params->next) {
-        Variable *var = params->var;
-        if (strlen(var->name) == tok->len &&
-            !memcmp(tok->str, var->name, tok->len)) {
+        if (strlen(params->name) == tok->len &&
+            !memcmp(tok->str, params->name, tok->len)) {
             return params;
         }
     }
+
+    return NULL;
+}
+
+Type *find_typedef(Token *tok) {
+    if (tok->kind == TK_Identifier) {
+        VarScope *vs = find_var(tok);
+        if (vs) 
+        {
+            return vs->type_def;
+        }
+    }
+    printf("# %s\n", "yy");
 
     return NULL;
 }
@@ -196,7 +208,6 @@ Member *struct_member() {
 }
 // struct-decl = "struct" "{" struct-member "}"
 Type *struct_decl() {
-    expect("struct");
 
     // Read tag name
     Token *tag = consume_identifier();
@@ -241,7 +252,7 @@ Type *struct_decl() {
 }
 
 bool is_typename() {
-    return peek("int") || peek("char") || peek("struct");
+    return peek("int") || peek("char") || peek("struct") || find_typedef(token);
 }
 
 // basetype = "int" "*"*
@@ -256,8 +267,10 @@ Type *basetype() {
         ty = int_type();
     } else if(consume("char")) {
         ty = char_type();
-    } else {
+    } else if(consume("struct")) {
         ty = struct_decl();
+    } else {
+        ty = find_var(consume_identifier())->type_def;  
     }
     while (consume("*")) {
         ty = pointer_to(ty);
@@ -401,6 +414,7 @@ Node *stmt() {
 Node *stmt2() {
     Node *node;
     Token *tok;
+
     if (consume("if")) {
         expect("(");
         Node *cond = expr();
@@ -479,6 +493,17 @@ Node *stmt2() {
         return node;
     }
 
+    if (tok = consume("typedef")) {
+        // "typedef" basetype ident ("[" num "]")* ";"
+
+        Type *ty = basetype();
+        char *name = expect_identifier();
+        ty = read_type_suffix(ty);
+        expect(";");
+        push_var_scope(name)->type_def = ty;
+
+        return new_node(ND_Null, tok);
+    }
     if (is_typename()) {
         return declaration();
     }
@@ -604,11 +629,11 @@ Node *primary() {
             node->funcArgs = funcArgs();
             return node;
         }
-        Variable *var = find_var(tok)->var;
-        if (!var) {
-            error_at(tok->str, "undefined variable");
+        VarScope *vs = find_var(tok);
+        if (vs && vs->var) {
+            return new_var_node(vs->var, tok);
         }
-        return new_var_node(var, tok);
+        error_at(tok->str, "undefined variable");
     }
 
     tok = token;
