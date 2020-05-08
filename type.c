@@ -25,8 +25,16 @@ Type *int_type() {
 
 Type *pointer_to(Type *base) {
     Type *ty = new_type(TY_Ptr, 8);
-    ty->base = base;
     ty->size = 8;
+    ty->base = base;
+    return ty;
+}
+
+Type *array_of(Type *base, int size) {
+    Type *ty = new_type(TY_Array, base->align);
+    ty->size = size_of(base) * size;
+    ty->base = base;
+    ty->array_size = size;
     return ty;
 }
 
@@ -49,16 +57,8 @@ int size_of(Type *ty) {
         return align_to(end, ty->align);
     }
     default:
-        error("x");
         return 0;
     }
-}
-Type *array_of(Type *base, int size) {
-    Type *ty = new_type(TY_Array, base->align);
-    ty->size = size_of(base) * size;
-    ty->base = base;
-    ty->array_size = size;
-    return ty;
 }
 
 Member *find_member(Type *ty, char *name) {

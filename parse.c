@@ -101,13 +101,13 @@ Node *new_sub(Node *left, Node *right, Token *tok) {
     error_at(tok->str, "invalid operand");
 }
 
-Node *new_node_number(int number, Token *tok) {
+Node *new_number_node(int number, Token *tok) {
     Node *node = new_node(ND_Num, tok);
     node->value = number;
     return node;
 }
 
-Node *new_node_var(Variable *var, Token *tok) {
+Node *new_var_node(Variable *var, Token *tok) {
     Node *node = new_node(ND_Var, tok);
     node->var = var;
     return node;
@@ -323,7 +323,7 @@ Node *declaration() {
     }
 
     expect("=");
-    Node *left = new_node_var(var, tok);
+    Node *left = new_var_node(var, tok);
     Node *right = expr();
     expect(";");
     Node *node = new_binary(ND_Assign, left, right, tok);
@@ -542,7 +542,7 @@ Node *primary() {
         if (!var) {
             error_at(tok->str, "undefined variable");
         }
-        return new_node_var(var, tok);
+        return new_var_node(var, tok);
     }
 
     tok = token;
@@ -552,10 +552,10 @@ Node *primary() {
         Variable *var = new_gvar(new_label(), ty);
         var->contents = tok->contents;
         var->cont_len = tok->cont_len;
-        return new_node_var(var, tok);
+        return new_var_node(var, tok);
     }
 
-    return new_node_number(expect_number(), tok);
+    return new_number_node(expect_number(), tok);
 }
 
 Node *unary() {
@@ -564,7 +564,7 @@ Node *unary() {
         return primary();
     }
     if (tok = consume("-")) {
-        return new_binary(ND_Sub, new_node_number(0, tok), primary(), tok);
+        return new_binary(ND_Sub, new_number_node(0, tok), primary(), tok);
     }
     if (tok = consume("&")) {
         return new_unary(ND_Addr, unary(), tok);
@@ -575,7 +575,7 @@ Node *unary() {
     if (tok = consume("sizeof")) {
         Node *n = unary();
         assign_type(n);
-        return new_node_number(size_of(n->ty), tok);
+        return new_number_node(size_of(n->ty), tok);
     }
     return postfix();
 }

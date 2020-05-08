@@ -149,8 +149,8 @@ Program *program();
 typedef enum {TY_Int, TY_Struct, TY_Ptr, TY_Array, TY_Char} TypeKind;
 struct Type {
     TypeKind kind;
-    int align;
     int size;
+    int align;
     Type *base;
     int array_size;
     Member *members;
