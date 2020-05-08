@@ -8,14 +8,6 @@
 
 typedef struct Type Type;
 
-// Scope for struct tags
-typedef struct TagScope TagScope;
-struct TagScope {
-    TagScope *next;
-    char *name;
-    Type *ty;
-};
-
 //
 // Tokenizer
 //

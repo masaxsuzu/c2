@@ -1,5 +1,13 @@
 #include "c2.h"
 
+// Scope for struct tags
+typedef struct TagScope TagScope;
+struct TagScope {
+    TagScope *next;
+    char *name;
+    Type *ty;
+};
+
 // Scope for local variables, global variables or typedefs
 typedef struct VarScope VarScope;
 struct VarScope {
@@ -31,12 +39,13 @@ Node *postfix();
 Type *read_type_suffix(Type *ty);
 Type *basetype();
 
-void push_tag_scope(Token *tok, Type *ty) {
+TagScope *push_tag_scope(Token *tok, Type *ty) {
     TagScope *ts = calloc(1, sizeof(TagScope));
     ts->next = tagscope;
     ts->ty = ty;
     ts->name = strndup(tok->str, tok->len);
     tagscope = ts;
+    return ts;
 }
 
 VarScope *push_var_scope(char *name) {
@@ -44,6 +53,7 @@ VarScope *push_var_scope(char *name) {
     vs->next = varscope;
     vs->name = name;
     varscope = vs;
+    return vs;
 }
 
 TagScope *find_tag(Token *tok) {
