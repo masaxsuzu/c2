@@ -13,26 +13,22 @@ Type *new_type(TypeKind kind, int align) {
 
 Type *char_type() {
     Type *ty = new_type(TY_Char, 1);
-    ty->size = 1;
     return ty;
 }
 
 Type *int_type() {
     Type *ty = new_type(TY_Int, 8);
-    ty->size = 8;
     return ty;
 }
 
 Type *pointer_to(Type *base) {
     Type *ty = new_type(TY_Ptr, 8);
-    ty->size = 8;
     ty->base = base;
     return ty;
 }
 
 Type *array_of(Type *base, int size) {
     Type *ty = new_type(TY_Array, base->align);
-    ty->size = size_of(base) * size;
     ty->base = base;
     ty->array_size = size;
     return ty;

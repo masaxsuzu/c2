@@ -46,7 +46,7 @@ void gen_lVal(Node *node) {
 
 void load(Type *ty) {
     printf("  pop rax\n");
-    if (ty->size == 1) {
+    if (size_of(ty) == 1) {
         printf("  movsx rax, byte ptr [rax]\n");
     } else {
         printf("  mov rax, [rax]\n");
@@ -57,7 +57,7 @@ void load(Type *ty) {
 void store(Type *ty) {
     printf("  pop rdi\n");
     printf("  pop rax\n");
-    if (ty->size == 1) {
+    if (size_of(ty) == 1) {
         printf("  mov [rax], dil\n");
     } else {
         printf("  mov [rax], rdi\n");
@@ -243,7 +243,7 @@ void gen(Node *node) {
 }
 
 void load_arg(Variable *var, int index) {
-    if (var->ty->size == 1) {
+    if (size_of(var->ty) == 1) {
         printf("  mov [rbp-%d], %s\n", var->offset, argreg1[index]);
     } else {
         printf("  mov [rbp-%d], %s\n", var->offset, argreg8[index]);
@@ -287,7 +287,7 @@ void emit_data(Program *p) {
     for (Parameters *global = p->globals; global; global = global->next) {
         printf("%s:\n", global->var->name);
         if (!global->var->contents) {
-            printf("  .zero %d\n", global->var->ty->size);
+            printf("  .zero %d\n", size_of(global->var->ty));
             continue;
         }
         for (int i = 0; i < global->var->cont_len; i++) {
