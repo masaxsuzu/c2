@@ -29,7 +29,6 @@ void gen_addr(Node *node) {
     if(node->kind == ND_Member) {
         gen_addr(node->left);
         printf("  pop rax\n");
-        printf("# %s\n", node->member_name);
         printf("  add rax, %d\n", node->member->offset);
         printf("  push rax\n");
         return;

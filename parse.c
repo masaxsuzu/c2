@@ -75,7 +75,6 @@ Type *find_typedef(Token *tok) {
             return vs->type_def;
         }
     }
-    printf("# %s\n", "yy");
 
     return NULL;
 }
