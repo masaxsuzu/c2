@@ -53,6 +53,7 @@ int main(int argc, char **argv) {
     for (Function *fn = prog->next; fn; fn = fn->next) {
         int offset = 0;
         for (Parameters *local = fn->locals; local; local = local->next) {
+            offset = align_to(offset, local->var->ty->align);
             offset += size_of(local->var->ty);
             local->var->offset = offset;
         }
