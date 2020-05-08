@@ -82,6 +82,8 @@ int main() {
     assert(1, ({ int za1; za1=1; za1;}),"({ int za1; za1=1; za1;})");
     assert(101, ({ int b9;b9=101; b9;}),"({ int b9;b9=101; b9;})");
     assert(102, ({ int aa;int b1;aa=1;b1=101; aa+b1;}),"({ int aa;int b1;aa=1;b1=101; aa+b1;})");
+    assert(10, ({ int x_a = 10; x_a;}), "int x_a = 10; x_a;");
+    assert(10, ({ int A = 10; A;}), "int A = 10; A;");
 
     assert(10, ({ int a; if(1==1) a=10; a;}), "({ int a; if(1==1) a=10; a;})");
     assert(200,({ int a=200; if(0==1) a=10 ;a; }), "({ int a=200; if(0==1) a=10 ;a; })");
