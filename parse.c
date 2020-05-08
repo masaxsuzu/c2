@@ -1,8 +1,17 @@
 #include "c2.h"
 
+// Scope for local variables, global variables or typedefs
+typedef struct VarScope VarScope;
+struct VarScope {
+  VarScope *next;
+  char *name;
+  Variable *var;
+  Type *type_def;
+};
+
 Parameters *locals;
 Parameters *globals;
-Parameters *scope;
+VarScope *varscope;
 TagScope *tagscope;
 
 Function *function();
@@ -29,6 +38,14 @@ void push_tag_scope(Token *tok, Type *ty) {
     ts->name = strndup(tok->str, tok->len);
     tagscope = ts;
 }
+
+VarScope *push_var_scope(char *name) {
+    VarScope *vs = calloc(1, sizeof(VarScope));
+    vs->next = varscope;
+    vs->name = name;
+    varscope = vs;
+}
+
 TagScope *find_tag(Token *tok) {
     for (TagScope *ts = tagscope; ts; ts = ts->next) {
         if (strlen(ts->name) == tok->len &&
@@ -39,12 +56,12 @@ TagScope *find_tag(Token *tok) {
     return NULL;
 }
 
-Variable *find_var(Token *tok) {
-    for (Parameters *params = scope; params; params = params->next) {
+VarScope *find_var(Token *tok) {
+    for (VarScope *params = varscope; params; params = params->next) {
         Variable *var = params->var;
         if (strlen(var->name) == tok->len &&
             !memcmp(tok->str, var->name, tok->len)) {
-            return var;
+            return params;
         }
     }
 
@@ -136,15 +153,13 @@ Variable *new_var(char *name, Type *ty, bool is_local) {
     var->name = name;
     var->ty = ty;
     var->is_local = is_local;
-    Parameters *params = calloc(1, sizeof(Parameters));
-    params->var = var;
-    params->next = scope;
-    scope = params;
     return var;
 }
 
 Variable *new_lvar(char *name, Type *ty, bool is_local) {
     Variable *var = new_var(name, ty, true);
+    push_var_scope(name)->var = var;
+
     Parameters *params = calloc(1, sizeof(Parameters));
     params->var = var;
     params->next = locals;
@@ -154,6 +169,8 @@ Variable *new_lvar(char *name, Type *ty, bool is_local) {
 
 Variable *new_gvar(char *name, Type *ty) {
     Variable *var = new_var(name, ty, false);
+    push_var_scope(name)->var = var;
+
     Parameters *params = calloc(1, sizeof(Parameters));
     params->var = var;
     params->next = globals;
@@ -184,11 +201,11 @@ Type *struct_decl() {
     // Read tag name
     Token *tag = consume_identifier();
     if(tag && !peek("{")) {
-        TagScope *sc = find_tag(tag);
-        if (!sc) {
+        TagScope *vs = find_tag(tag);
+        if (!vs) {
             error_at(tag->str, "unknown struct type");
         }
-        return sc->ty;
+        return vs->ty;
     };
 
     expect("{");
@@ -319,7 +336,7 @@ Function *function() {
     f->name = expect_identifier();
 
     expect("(");
-    Parameters *sc = scope;
+    VarScope *vs = varscope;
     TagScope *ts = tagscope;
     f->params = read_func_parameters();
     expect("{");
@@ -331,7 +348,7 @@ Function *function() {
         cur->next = stmt();
         cur = cur->next;
     }
-    scope = sc;
+    varscope = vs;
     tagscope = ts;
 
     f->node = head.next;
@@ -442,13 +459,13 @@ Node *stmt2() {
         Node head = {};
         Node *cur = &head;
 
-        Parameters *sc = scope;
+        VarScope *vs = varscope;
         TagScope *ts = tagscope;
         while (!consume("}")) {
             cur->next = stmt();
             cur = cur->next;
         }
-        scope = sc;
+        varscope = vs;
         tagscope = ts;
 
         Node *node = new_node(ND_Block, tok);
@@ -472,7 +489,7 @@ Node *stmt2() {
 }
 
 Node *stmt_expr(Token *tok) {
-    Parameters *sc = scope;
+    VarScope *vs = varscope;
     TagScope *ts = tagscope;
 
     Node *node = new_node(ND_Stmt_Expr, tok);
@@ -485,7 +502,7 @@ Node *stmt_expr(Token *tok) {
     }
     expect(")");
 
-    scope = sc;
+    varscope = vs;
     tagscope = ts;
 
     if (cur->kind != ND_Expr_Stmt) {
@@ -587,7 +604,7 @@ Node *primary() {
             node->funcArgs = funcArgs();
             return node;
         }
-        Variable *var = find_var(tok);
+        Variable *var = find_var(tok)->var;
         if (!var) {
             error_at(tok->str, "undefined variable");
         }
