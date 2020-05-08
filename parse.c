@@ -3,6 +3,7 @@
 Parameters *locals;
 Parameters *globals;
 Parameters *scope;
+TagScope *tagscope;
 
 Function *function();
 void *global_variable();
@@ -20,6 +21,23 @@ Node *postfix();
 
 Type *read_type_suffix(Type *ty);
 Type *basetype();
+
+void push_tag_scope(Token *tok, Type *ty) {
+    TagScope *ts = calloc(1, sizeof(TagScope));
+    ts->next = tagscope;
+    ts->ty = ty;
+    ts->name = strndup(tok->str, tok->len);
+    tagscope = ts;
+}
+TagScope *find_tag(Token *tok) {
+    for (TagScope *ts = tagscope; ts; ts = ts->next) {
+        if (strlen(ts->name) == tok->len &&
+            !memcmp(tok->str, ts->name, tok->len)) {
+            return ts;
+        }
+    }
+    return NULL;
+}
 
 Variable *find_var(Token *tok) {
     for (Parameters *params = scope; params; params = params->next) {
@@ -162,6 +180,17 @@ Member *struct_member() {
 // struct-decl = "struct" "{" struct-member "}"
 Type *struct_decl() {
     expect("struct");
+
+    // Read tag name
+    Token *tag = consume_identifier();
+    if(tag && !peek("{")) {
+        TagScope *sc = find_tag(tag);
+        if (!sc) {
+            error_at(tag->str, "unknown struct type");
+        }
+        return sc->ty;
+    };
+
     expect("{");
 
     Member head;
@@ -186,6 +215,11 @@ Type *struct_decl() {
             ty->align = mem->ty->align;
         }
     }
+
+    if (tag) {
+        push_tag_scope(tag, ty);
+    }
+
     return ty;
 }
 
@@ -286,6 +320,7 @@ Function *function() {
 
     expect("(");
     Parameters *sc = scope;
+    TagScope *ts = tagscope;
     f->params = read_func_parameters();
     expect("{");
 
@@ -297,6 +332,7 @@ Function *function() {
         cur = cur->next;
     }
     scope = sc;
+    tagscope = ts;
 
     f->node = head.next;
     f->locals = locals;
@@ -314,6 +350,10 @@ void *global_variable() {
 Node *declaration() {
     Token *tok = token;
     Type *ty = basetype();
+    if (consume(";")) {
+        return new_node(ND_Null, tok);
+    }
+
     char *name = expect_identifier();
     ty = read_type_suffix(ty);
     Variable *var = new_lvar(name, ty, true);
@@ -403,11 +443,14 @@ Node *stmt2() {
         Node *cur = &head;
 
         Parameters *sc = scope;
+        TagScope *ts = tagscope;
         while (!consume("}")) {
             cur->next = stmt();
             cur = cur->next;
         }
         scope = sc;
+        tagscope = ts;
+
         Node *node = new_node(ND_Block, tok);
         node->block = head.next;
         return node;
@@ -429,6 +472,9 @@ Node *stmt2() {
 }
 
 Node *stmt_expr(Token *tok) {
+    Parameters *sc = scope;
+    TagScope *ts = tagscope;
+
     Node *node = new_node(ND_Stmt_Expr, tok);
     node->block = stmt();
     Node *cur = node->block;
@@ -438,6 +484,9 @@ Node *stmt_expr(Token *tok) {
         cur = cur->next;
     }
     expect(")");
+
+    scope = sc;
+    tagscope = ts;
 
     if (cur->kind != ND_Expr_Stmt) {
         error_at(tok->str, "stmt expr returning void is not supported");
