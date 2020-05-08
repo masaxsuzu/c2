@@ -17,7 +17,7 @@ Type *char_type() {
 }
 
 Type *int_type() {
-    Type *ty = new_type(TY_Int, 8);
+    Type *ty = new_type(TY_Int, 4);
     return ty;
 }
 
@@ -40,6 +40,7 @@ int size_of(Type *ty) {
     case TY_Char:
         return 1;
     case TY_Int:
+        return 4;
     case TY_Ptr:
         return 8;
     case TY_Array:

@@ -4,6 +4,7 @@ int labelId = 0;
 char *functionName;
 // Copy args into the resiters.
 static char *argreg1[] = {"dil", "sil", "dl", "cl", "r8b", "r9b"};
+static char *argreg4[] = {"edi", "esi", "edx", "ecx", "r8d", "r9d"};
 static char *argreg8[] = {"rdi", "rsi", "rdx", "rcx", "r8", "r9"};
 
 void gen(Node *node);
@@ -48,7 +49,11 @@ void load(Type *ty) {
     printf("  pop rax\n");
     if (size_of(ty) == 1) {
         printf("  movsx rax, byte ptr [rax]\n");
-    } else {
+    } 
+    else if(size_of(ty) == 4) {
+        printf("  movsxd rax, dword ptr [rax]\n");
+    }  
+    else {
         printf("  mov rax, [rax]\n");
     }
     printf("  push rax\n");
@@ -59,7 +64,12 @@ void store(Type *ty) {
     printf("  pop rax\n");
     if (size_of(ty) == 1) {
         printf("  mov [rax], dil\n");
-    } else {
+    } 
+    else if (size_of(ty) == 4) {
+        // int
+        printf("  mov [rax], edi\n");
+    } 
+    else {
         printf("  mov [rax], rdi\n");
     }
     printf("  push rdi\n");
@@ -245,7 +255,11 @@ void gen(Node *node) {
 void load_arg(Variable *var, int index) {
     if (size_of(var->ty) == 1) {
         printf("  mov [rbp-%d], %s\n", var->offset, argreg1[index]);
-    } else {
+    } 
+    else if(size_of(var->ty) == 4) {
+        printf("  mov [rbp-%d], %s\n", var->offset, argreg4[index]);
+    }
+    else {
         printf("  mov [rbp-%d], %s\n", var->offset, argreg8[index]);
     }
 }
