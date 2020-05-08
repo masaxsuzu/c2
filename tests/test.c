@@ -162,7 +162,7 @@ int main() {
     assert(108,"\l"[0], "\"\\l\"[0]\"");
 
     assert(1,({ int x = 1; {int x = 2;} x;}), "{ int x = 1; {int x = 2;} x;}");
-    //assert(2,({ int x = 1; int y = ({int x = 2; x;}); x;}), "({ int x = 1; int y = ({int x = 2; x;}); x;})");
+    assert(2,({ int x = 2; int y = ({int x = 1; x;}); x;}), "({ int x = 2; int y = ({int x = 1; x;}); x;})");
     assert(3,({ {gx = 3;} gx;}), "({ {gx = 3;} gx;})");
     
     assert(1,({ char x = 1; sizeof(x);}), "({ char x = 1; sizeof(x);})");
