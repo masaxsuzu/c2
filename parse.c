@@ -651,10 +651,10 @@ Node *primary() {
 Node *unary() {
     Token *tok;
     if (tok = consume("+")) {
-        return primary();
+        return unary();
     }
     if (tok = consume("-")) {
-        return new_binary(ND_Sub, new_number_node(0, tok), primary(), tok);
+        return new_binary(ND_Sub, new_number_node(0, tok), unary(), tok);
     }
     if (tok = consume("&")) {
         return new_unary(ND_Addr, unary(), tok);

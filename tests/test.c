@@ -219,6 +219,9 @@ int main() {
     assert(1, ({ typedef int t; t t=1; t; }), "typedef int t; t t=1; t;");
     assert(2, ({ typedef struct {int a;} t; { typedef int t; } t x; x.a=2; x.a; }), "typedef struct {int a;} t; { typedef int t; } t x; x.a=2; x.a;");
     
+    assert(1, ({ + + 1;}), "+ + 1");
+    assert(10, ({ - + - 10;}), "- + - 10");
+
     printf("OK\n");
     return 0;
 }
