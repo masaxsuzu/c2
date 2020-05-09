@@ -30,14 +30,14 @@ char *read_file(char *path) {
 // Show current token as json format.
 void debug_token(char *label, Token *token) {
     fprintf(stderr,
-            "{ \"label\": %s, \"str\": %s, \"kind\": %d, \"value\": %d, "
+            "{ \"label\": %s, \"str\": %s, \"kind\": %d, \"value\": %ld, "
             "\"len\": %d }\n",
             label, token->str, token->kind, token->value, token->len);
 }
 
 // Show current node as json format.
 void debug_node(char *label, Node *node) {
-    fprintf(stderr, "{ \"label\": %s, \"kind\": %d, \"value\": %d }\n", label,
+    fprintf(stderr, "{ \"label\": %s, \"kind\": %d, \"value\": %ld }\n", label,
             node->kind, node->value);
 }
 

@@ -173,7 +173,7 @@ Node *new_sub(Node *left, Node *right, Token *tok) {
     error_at(tok->str, "invalid operand");
 }
 
-Node *new_number_node(int number, Token *tok) {
+Node *new_number_node(long number, Token *tok) {
     Node *node = new_node(ND_Num, tok);
     node->value = number;
     return node;
@@ -277,7 +277,7 @@ Type *struct_decl() {
 }
 
 bool is_typename() {
-    return peek("int") || peek("char") || peek("struct") || find_typedef(token);
+    return peek("long") || peek("int") || peek("char") || peek("struct") || find_typedef(token);
 }
 
 // basetype = "int" "*"*
@@ -292,7 +292,10 @@ Type *basetype() {
         ty = int_type();
     } else if (consume("char")) {
         ty = char_type();
-    } else if (consume("struct")) {
+    } else if (consume("long")) {
+        ty = long_type();
+    }
+    else if (consume("struct")) {
         ty = struct_decl();
     } else {
         ty = find_var(consume_identifier())->type_def;

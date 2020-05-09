@@ -100,7 +100,7 @@ long expect_number() {
     if (token->kind != TK_Number) {
         error_at(token->str, "Not a number");
     }
-    int number = token->value;
+    long number = token->value;
     token = token->next;
     return number;
 }
@@ -140,7 +140,8 @@ bool at_eof() { return token->kind == TK_Eof; }
 char *starts_with_reserved(char *p) {
     // Keyword
     static char *kw[] = {"return", "if",  "else", "while",  "for",
-                         "struct", "int", "char", "sizeof", "typedef"};
+                         "struct", "char", "int", "long",
+                         "sizeof", "typedef"};
 
     for (int i = 0; i < sizeof(kw) / sizeof(*kw); i++) {
         int len = strlen(kw[i]);

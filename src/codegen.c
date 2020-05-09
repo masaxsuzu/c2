@@ -130,7 +130,7 @@ void gen(Node *node) {
     case ND_Null:
         return;
     case ND_Num:
-        printf("  push %d\n", node->value);
+        printf("  push %ld\n", node->value);
         return;
     case ND_Expr_Stmt:
         gen(node->left);

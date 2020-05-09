@@ -1,6 +1,6 @@
-int assert(int want, int got, char *code) {
+long assert(long want, long got, char *code) {
     if (want != got) {
-        printf("%s => %d expected but got %d\n", code, want, got);
+        printf("%s => %ld expected but got %d\n", code, want, got);
         exit(1);
     }
     printf("%s => %d\n", code, got);
@@ -237,6 +237,13 @@ int main() {
 
     assert(42, ({ decl(21);}), "decl(21);");
     assert(255, ({ only_decl(255);}), "only_decl(255);");
+
+    assert( 2147483647, ({ long x = 2147483647; x;}), "long x = 2147483647; x;");
+    /* Currenlty, I cannot compile it.
+    assert( 2147483649, ({ long x = 2147483647; long y = 2; x+y;}), "long x = 2147483647; long y = 2; x+y;");
+    */
+    assert(8, ({ long x; sizeof(x);}), "long x; sizeof(x);");
+    assert(128, ({ long x = 1; long y = 127; x+y;}), "long x = 1; long y = 127; x+y;");
 
     printf("OK\n");
     return 0;

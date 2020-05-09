@@ -25,7 +25,7 @@ typedef struct Token Token;
 struct Token {
     TokenKind kind;
     Token *next;
-    int value; // only for number
+    long value; // only for number
     char *str;
     int len;
     char *contents;
@@ -109,7 +109,7 @@ struct Node {
     Type *ty;
     Node *left;
     Node *right;
-    int value;          // only for number
+    long value;          // only for number
     Variable *var;
     Node *cond;         // if
     Node *then;         // if
@@ -146,7 +146,7 @@ Program *program();
 //
 // Type, e.g. int, pointer to int, pointer to pointer to int, ...
 //
-typedef enum {TY_Int, TY_Struct, TY_Ptr, TY_Array, TY_Char} TypeKind;
+typedef enum {TY_Char,TY_Int, TY_Long, TY_Struct, TY_Ptr, TY_Array} TypeKind;
 struct Type {
     TypeKind kind;
     int align;
@@ -155,6 +155,7 @@ struct Type {
     Member *members;
 };
 
+Type *long_type();
 Type *int_type();
 Type *char_type();
 bool is_integer(Type *ty);
