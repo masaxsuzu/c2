@@ -17,6 +17,11 @@ struct VarScope {
     Type *type_def;
 };
 
+typedef struct Scope {
+    VarScope *varscope;
+    TagScope *tagscope;
+} Scope;
+
 Parameters *locals;
 Parameters *globals;
 VarScope *varscope;
@@ -38,6 +43,18 @@ Node *postfix();
 
 Type *read_type_suffix(Type *ty);
 Type *basetype();
+
+Scope *enter_scope() {
+    Scope *sc = calloc(1, sizeof(Scope));
+    sc->varscope = varscope;
+    sc->tagscope = tagscope;
+    return sc;
+}
+
+void exit_scope(Scope *scope) {
+    varscope = scope->varscope;
+    tagscope = scope->tagscope;
+}
 
 TagScope *push_tag_scope(Token *tok, Type *ty) {
     TagScope *ts = calloc(1, sizeof(TagScope));
@@ -361,13 +378,12 @@ Function *function() {
     f->name = expect_identifier();
 
     expect("(");
-    VarScope *vs = varscope;
-    TagScope *ts = tagscope;
+
+    Scope *scope = enter_scope();
     f->params = read_func_parameters();
 
     if (consume(";")) {
-        varscope = vs;
-        tagscope = ts;
+        exit_scope(scope);
         return NULL;
     }
 
@@ -380,8 +396,7 @@ Function *function() {
         cur->next = stmt();
         cur = cur->next;
     }
-    varscope = vs;
-    tagscope = ts;
+    exit_scope(scope);
 
     f->node = head.next;
     f->locals = locals;
@@ -492,14 +507,13 @@ Node *stmt2() {
         Node head = {};
         Node *cur = &head;
 
-        VarScope *vs = varscope;
-        TagScope *ts = tagscope;
+        Scope *scope = enter_scope();
         while (!consume("}")) {
             cur->next = stmt();
             cur = cur->next;
         }
-        varscope = vs;
-        tagscope = ts;
+
+        exit_scope(scope);
 
         Node *node = new_node(ND_Block, tok);
         node->block = head.next;
@@ -533,9 +547,8 @@ Node *stmt2() {
 }
 
 Node *stmt_expr(Token *tok) {
-    VarScope *vs = varscope;
-    TagScope *ts = tagscope;
-
+    Scope *scope = enter_scope();
+    
     Node *node = new_node(ND_Stmt_Expr, tok);
     node->block = stmt();
     Node *cur = node->block;
@@ -546,8 +559,7 @@ Node *stmt_expr(Token *tok) {
     }
     expect(")");
 
-    varscope = vs;
-    tagscope = ts;
+    exit_scope(scope);
 
     if (cur->kind != ND_Expr_Stmt) {
         error_at(tok->str, "stmt expr returning void is not supported");
