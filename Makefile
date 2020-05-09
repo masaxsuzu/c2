@@ -1,5 +1,5 @@
 CFLAGS=-std=c11 -g -static -fno-common
-SRCS=$(wildcard *.c)
+SRCS=$(wildcard ./src/*.c)
 OBJS=$(SRCS:.c=.o)
 
 test: c2
@@ -11,10 +11,10 @@ test: c2
 c2: $(OBJS)
 	$(CC) -o c2 $(OBJS) $(LDFLAGS)
 
-$(OBJS): c2.h
+$(OBJS): ./src/c2.h
 
 clean:
-	rm -f c2 *.o *~ tmp*
+	rm -f c2 ./src/*.o *~ tmp*
 
 fmt:
 	clang-format *.c -i
