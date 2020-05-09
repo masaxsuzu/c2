@@ -138,10 +138,14 @@ void gen(Node *node) {
         return;
     case ND_Num:
         /*
-            node value is 64 bit, but currenty 64 bit integer is not supported.
             https://stackoverflow.com/questions/16917643/how-to-push-a-64bit-int-in-nasm
         */
-        printf("  push %ld\n", node->value);
+        if (node->value == (int)node->value) {
+            printf("  push %ld\n", node->value);
+        } else {
+            printf("  mov rax, %ld\n", node->value);
+            printf("  push rax\n");
+        }
         return;
     case ND_Expr_Stmt:
         gen(node->left);

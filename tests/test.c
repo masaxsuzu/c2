@@ -246,9 +246,8 @@ int main() {
     assert(2, ({ int y = 1; long x = 1; x+1;}), "int y = 1; long x = 1; x+1;");
     assert(2, ({ long x = 1;int y = 1; x+1;}), "long x = 1;int y = 1; x+1;");
     assert( 2147483647, ({ long x = 2147483647; x;}), "long x = 2147483647; x;");
-    /* Currenlty, I cannot compile it.
-    assert( 2147483649, ({ long x = 2147483647; long y = 2; x+y;}), "long x = 2147483647; long y = 2; x+y;");
-    */
+    assert( 2147483649, ({ long x = 2147483647; long y = 2; x+y;}), "long x = 2147483647; long y = 2; x+y;");    
+    assert( 1, ({ long x = -2147483649; long y = 2147483648; -x-y;}), "long x = 2147483649; long y = -2147483648; -x-y;");    
 
     printf("OK\n");
     return 0;
