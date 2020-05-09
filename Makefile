@@ -17,7 +17,7 @@ clean:
 	rm -f c2 ./src/*.o *~ tmp*
 
 fmt:
-	clang-format *.c -i
+	clang-format src/*.c -i
 
 debug: c2
 	./c2 ./tests/debug.c > ./tmp.s

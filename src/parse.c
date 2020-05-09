@@ -11,10 +11,10 @@ struct TagScope {
 // Scope for local variables, global variables or typedefs
 typedef struct VarScope VarScope;
 struct VarScope {
-  VarScope *next;
-  char *name;
-  Variable *var;
-  Type *type_def;
+    VarScope *next;
+    char *name;
+    Variable *var;
+    Type *type_def;
 };
 
 Parameters *locals;
@@ -80,8 +80,7 @@ VarScope *find_var(Token *tok) {
 Type *find_typedef(Token *tok) {
     if (tok->kind == TK_Identifier) {
         VarScope *vs = find_var(tok);
-        if (vs) 
-        {
+        if (vs) {
             return vs->type_def;
         }
     }
@@ -220,7 +219,7 @@ Type *struct_decl() {
 
     // Read tag name
     Token *tag = consume_identifier();
-    if(tag && !peek("{")) {
+    if (tag && !peek("{")) {
         TagScope *vs = find_tag(tag);
         if (!vs) {
             error_at(tag->str, "unknown struct type");
@@ -234,7 +233,7 @@ Type *struct_decl() {
     head.next = NULL;
     Member *cur = &head;
 
-    while(!(consume("}"))) {
+    while (!(consume("}"))) {
         cur->next = struct_member();
         cur = cur->next;
     }
@@ -243,12 +242,12 @@ Type *struct_decl() {
     ty->members = head.next;
 
     int offset = 0;
-    for(Member *mem = ty->members; mem; mem = mem->next) {
+    for (Member *mem = ty->members; mem; mem = mem->next) {
         offset = align_to(offset, mem->ty->align);
         mem->offset = offset;
         offset += size_of(mem->ty);
 
-        if(ty->align < mem->ty->align) {
+        if (ty->align < mem->ty->align) {
             ty->align = mem->ty->align;
         }
     }
@@ -268,18 +267,18 @@ bool is_typename() {
 Type *basetype() {
     Type *ty;
 
-    if(!is_typename()) {
+    if (!is_typename()) {
         error_at(token->str, "incorrect type");
     }
 
     if (consume("int")) {
         ty = int_type();
-    } else if(consume("char")) {
+    } else if (consume("char")) {
         ty = char_type();
-    } else if(consume("struct")) {
+    } else if (consume("struct")) {
         ty = struct_decl();
     } else {
-        ty = find_var(consume_identifier())->type_def;  
+        ty = find_var(consume_identifier())->type_def;
     }
     while (consume("*")) {
         ty = pointer_to(ty);
@@ -366,7 +365,7 @@ Function *function() {
     TagScope *ts = tagscope;
     f->params = read_func_parameters();
 
-    if(consume(";")){
+    if (consume(";")) {
         varscope = vs;
         tagscope = ts;
         return NULL;
@@ -694,7 +693,7 @@ Node *unary() {
 Node *postfix() {
     Node *node = primary();
     Token *tok;
-    for(;;){
+    for (;;) {
         // x[y] is *(x+y)
         if (tok = consume("[")) {
             Node *exp = new_add(node, expr(), tok);
@@ -703,13 +702,13 @@ Node *postfix() {
             continue;
         }
         // struct's member
-        if(tok = consume(".")) {
+        if (tok = consume(".")) {
             node = new_unary(ND_Member, node, tok);
             node->member_name = expect_identifier();
             continue;
         }
         // x->y is (*x).y
-        if(tok = consume("->")) {
+        if (tok = consume("->")) {
             node = new_unary(ND_Deref, node, tok);
             node = new_unary(ND_Member, node, tok);
             node->member_name = expect_identifier();

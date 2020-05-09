@@ -26,7 +26,7 @@ void gen_addr(Node *node) {
         return;
     }
 
-    if(node->kind == ND_Member) {
+    if (node->kind == ND_Member) {
         gen_addr(node->left);
         printf("  pop rax\n");
         printf("  add rax, %d\n", node->member->offset);
@@ -34,7 +34,8 @@ void gen_addr(Node *node) {
         return;
     }
 
-    error_at(node->token->str, "Left side value is not variable, got: %d", node->kind);
+    error_at(node->token->str, "Left side value is not variable, got: %d",
+             node->kind);
 }
 
 void gen_lVal(Node *node) {
@@ -48,11 +49,9 @@ void load(Type *ty) {
     printf("  pop rax\n");
     if (size_of(ty) == 1) {
         printf("  movsx rax, byte ptr [rax]\n");
-    } 
-    else if(size_of(ty) == 4) {
+    } else if (size_of(ty) == 4) {
         printf("  movsxd rax, dword ptr [rax]\n");
-    }  
-    else {
+    } else {
         printf("  mov rax, [rax]\n");
     }
     printf("  push rax\n");
@@ -63,12 +62,10 @@ void store(Type *ty) {
     printf("  pop rax\n");
     if (size_of(ty) == 1) {
         printf("  mov [rax], dil\n");
-    } 
-    else if (size_of(ty) == 4) {
+    } else if (size_of(ty) == 4) {
         // int
         printf("  mov [rax], edi\n");
-    } 
-    else {
+    } else {
         printf("  mov [rax], rdi\n");
     }
     printf("  push rdi\n");
@@ -254,11 +251,9 @@ void gen(Node *node) {
 void load_arg(Variable *var, int index) {
     if (size_of(var->ty) == 1) {
         printf("  mov [rbp-%d], %s\n", var->offset, argreg1[index]);
-    } 
-    else if(size_of(var->ty) == 4) {
+    } else if (size_of(var->ty) == 4) {
         printf("  mov [rbp-%d], %s\n", var->offset, argreg4[index]);
-    }
-    else {
+    } else {
         printf("  mov [rbp-%d], %s\n", var->offset, argreg8[index]);
     }
 }

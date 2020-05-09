@@ -35,8 +35,7 @@ Type *array_of(Type *base, int size) {
 }
 
 int size_of(Type *ty) {
-    switch (ty->kind)
-    {
+    switch (ty->kind) {
     case TY_Char:
         return 1;
     case TY_Int:
@@ -47,7 +46,7 @@ int size_of(Type *ty) {
         return size_of(ty->base) * ty->array_size;
     case TY_Struct: {
         Member *mem = ty->members;
-        while(mem->next){
+        while (mem->next) {
             mem = mem->next;
         }
         int end = mem->offset + size_of(mem->ty);
@@ -59,8 +58,8 @@ int size_of(Type *ty) {
 }
 
 Member *find_member(Type *ty, char *name) {
-    for(Member *mem = ty->members; mem; mem = mem->next) {
-        if(!strcmp(mem->name, name)) {
+    for (Member *mem = ty->members; mem; mem = mem->next) {
+        if (!strcmp(mem->name, name)) {
             return mem;
         }
     }
@@ -109,11 +108,11 @@ void assign_type(Node *node) {
         node->ty = node->left->ty;
         return;
     case ND_Member: {
-        if(node->left->ty->kind != TY_Struct) {
+        if (node->left->ty->kind != TY_Struct) {
             error_at(node->token->str, "not a stuct");
         }
         node->member = find_member(node->left->ty, node->member_name);
-        if(!node->member) {
+        if (!node->member) {
             error_at(node->token->str, "%s: not a member", node->member_name);
         }
         node->ty = node->member->ty;
