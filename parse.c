@@ -302,7 +302,11 @@ Program *program() {
 
     while (!at_eof()) {
         if (is_func()) {
-            cur->next = function();
+            Function *fn = function();
+            if (!fn) {
+                continue;
+            }
+            cur->next = fn;
             cur = cur->next;
         } else {
             global_variable();
@@ -361,6 +365,13 @@ Function *function() {
     VarScope *vs = varscope;
     TagScope *ts = tagscope;
     f->params = read_func_parameters();
+
+    if(consume(";")){
+        varscope = vs;
+        tagscope = ts;
+        return NULL;
+    }
+
     expect("{");
 
     Node head = {};

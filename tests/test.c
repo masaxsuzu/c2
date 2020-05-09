@@ -43,6 +43,17 @@ int gw[4];
 int sub(char a, char b) {return a-b;}
 int foo(int *x, int y) { return *x + y; }
 
+
+// this function would be linked.
+int only_decl(int x);
+int dec2(int x);
+int decl(int x) {
+    return decl2(x);
+}
+int decl2(int x) {
+    return 2*x;
+}
+
 int main() {
     assert(0, 0, "0");
     assert(42, 42, "42");
@@ -223,6 +234,9 @@ int main() {
     
     assert(1, ({ + + 1;}), "+ + 1");
     assert(10, ({ - + - 10;}), "- + - 10");
+
+    assert(42, ({ decl(21);}), "decl(21);");
+    assert(255, ({ only_decl(255);}), "only_decl(255);");
 
     printf("OK\n");
     return 0;

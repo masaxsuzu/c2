@@ -4,7 +4,8 @@ OBJS=$(SRCS:.c=.o)
 
 test: c2
 	./c2 ./tests/test.c > ./tmp.s
-	gcc -static -o ./tmp ./tmp.s
+	echo 'int only_decl(int x) { return x; }' | gcc -o tmp2.o -xc -c -
+	gcc -static -o ./tmp ./tmp.s ./tmp2.o
 	./tmp
 
 c2: $(OBJS)
