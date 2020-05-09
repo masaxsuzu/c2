@@ -277,7 +277,7 @@ Type *struct_decl() {
 }
 
 bool is_typename() {
-    return peek("long") || peek("int") || peek("char") || peek("struct") || find_typedef(token);
+    return peek("long") || peek("int") || peek("short") || peek("char") || peek("struct") || find_typedef(token);
 }
 
 // basetype = "int" "*"*
@@ -288,11 +288,16 @@ Type *basetype() {
         error_at(token->str, "incorrect type");
     }
 
-    if (consume("int")) {
-        ty = int_type();
-    } else if (consume("char")) {
+    if (consume("char")) {
         ty = char_type();
-    } else if (consume("long")) {
+    } 
+    else if (consume("short")) {
+        ty = short_type();
+    } 
+    else if (consume("int")) {
+        ty = int_type();
+    } 
+    else if (consume("long")) {
         ty = long_type();
     }
     else if (consume("struct")) {

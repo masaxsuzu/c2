@@ -146,7 +146,7 @@ Program *program();
 //
 // Type, e.g. int, pointer to int, pointer to pointer to int, ...
 //
-typedef enum {TY_Char,TY_Int, TY_Long, TY_Struct, TY_Ptr, TY_Array} TypeKind;
+typedef enum {TY_Char,TY_Short, TY_Int, TY_Long, TY_Struct, TY_Ptr, TY_Array} TypeKind;
 struct Type {
     TypeKind kind;
     int align;
@@ -157,6 +157,7 @@ struct Type {
 
 Type *long_type();
 Type *int_type();
+Type *short_type();
 Type *char_type();
 bool is_integer(Type *ty);
 int size_of(Type *ty);

@@ -238,12 +238,17 @@ int main() {
     assert(42, ({ decl(21);}), "decl(21);");
     assert(255, ({ only_decl(255);}), "only_decl(255);");
 
+    assert( 255, ({ short x = 255; x;}), "short x = 255; x;");
     assert( 2147483647, ({ long x = 2147483647; x;}), "long x = 2147483647; x;");
     /* Currenlty, I cannot compile it.
     assert( 2147483649, ({ long x = 2147483647; long y = 2; x+y;}), "long x = 2147483647; long y = 2; x+y;");
     */
+    assert(2, ({ short x; sizeof(x);}), "short x; sizeof(x);");
     assert(8, ({ long x; sizeof(x);}), "long x; sizeof(x);");
-    assert(128, ({ long x = 1; long y = 127; x+y;}), "long x = 1; long y = 127; x+y;");
+    assert(2, ({ int y = 1; short x = 1; x+1;}), "int y = 1; short x = 1; x+1;");
+    assert(2, ({ short x = 1;int y = 1; x+1;}), "short x = 1;int y = 1; x+1;");
+    assert(2, ({ int y = 1; long x = 1; x+1;}), "int y = 1; long x = 1; x+1;");
+    assert(2, ({ long x = 1;int y = 1; x+1;}), "long x = 1;int y = 1; x+1;");
 
     printf("OK\n");
     return 0;
