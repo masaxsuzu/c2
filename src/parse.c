@@ -285,6 +285,7 @@ Type *struct_decl() {
 
 bool is_typename() {
     return peek("long") || peek("int") || peek("short") || peek("char") || peek("struct") || 
+    peek("_Bool") ||
     peek("void") || find_typedef(token);
 }
 
@@ -307,6 +308,9 @@ Type *basetype() {
 
     if (consume("void")) {
         return void_type();
+    }
+    if(consume("_Bool")) {
+        return bool_type();
     }
     if (consume("char")) {
         return char_type();

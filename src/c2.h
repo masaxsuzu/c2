@@ -147,6 +147,7 @@ Program *program();
 // Type, e.g. int, pointer to int, pointer to pointer to int, ...
 //
 typedef enum {
+    TY_Bool,
     TY_Char,
     TY_Short, 
     TY_Int, 
@@ -167,6 +168,7 @@ struct Type {
     Type *return_ty;
 };
 
+Type *bool_type();
 Type *void_type();
 Type *func_type(Type *return_ty);
 Type *long_type();

@@ -3,14 +3,20 @@
 int align_to(int n, int align) { return (n + align - 1) & ~(align - 1); }
 
 bool is_integer(Type *ty) { 
-    return ty->kind == TY_Long || // Is it ok?
-        ty->kind == TY_Int || ty->kind == TY_Short || ty->kind == TY_Char; 
+    return ty->kind == TY_Bool || 
+        ty->kind == TY_Long || ty->kind == TY_Int || 
+        ty->kind == TY_Short || ty->kind == TY_Char; 
 }
 
 Type *new_type(TypeKind kind, int align) {
     Type *ty = calloc(1, sizeof(Type));
     ty->kind = kind;
     ty->align = align;
+    return ty;
+}
+
+Type *bool_type() {
+    Type *ty = new_type(TY_Bool, 1);
     return ty;
 }
 
@@ -60,6 +66,7 @@ Type *array_of(Type *base, int size) {
 int size_of(Type *ty) {
     switch (ty->kind) {
     case TY_Void:
+    case TY_Bool:
     case TY_Char:
         return 1;
     case TY_Short:

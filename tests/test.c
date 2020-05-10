@@ -274,6 +274,11 @@ int main() {
     assert(8, ({ void *x; sizeof(x);}), "void *x; sizeof(x);");
     assert(123, ({ nop(); 123;}), "nop(); 123;");
 
+    assert(0, ({ _Bool x=0; x; }), "_Bool x=0; x;");
+    assert(1, ({ _Bool x=1; x; }), "_Bool x=1; x;");
+    assert(1, ({ _Bool x=2; x; }), "_Bool x=2; x;");
+    assert(1, ({ _Bool x; sizeof(x);}), "_Bool x; sizeof(x);");
+
     printf("OK\n");
     return 0;
 }

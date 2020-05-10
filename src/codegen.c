@@ -65,6 +65,13 @@ void load(Type *ty) {
 void store(Type *ty) {
     printf("  pop rdi\n");
     printf("  pop rax\n");
+
+    if (ty->kind == TY_Bool) {
+        printf("  cmp rdi, 0\n");
+        printf("  setne dil\n");
+        printf("  movzb rdi, dil\n");
+    }
+
     if (size_of(ty) == 1) {
         printf("  mov [rax], dil\n");
     } else if (size_of(ty) == 2) {
