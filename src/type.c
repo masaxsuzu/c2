@@ -34,6 +34,11 @@ Type *long_type() {
     return ty;
 }
 
+Type *func_type(Type *return_ty) {
+    Type *ty = new_type(TY_Func, 1);
+    ty->return_ty = return_ty;
+    return ty;
+}
 Type *pointer_to(Type *base) {
     Type *ty = new_type(TY_Ptr, 8);
     ty->base = base;
@@ -114,7 +119,6 @@ void assign_type(Node *node) {
     case ND_Ne:
     case ND_Lt:
     case ND_Le:
-    case ND_FuncCall:
     case ND_Num:
         node->ty = int_type();
         return;

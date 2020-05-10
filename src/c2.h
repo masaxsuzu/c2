@@ -146,15 +146,27 @@ Program *program();
 //
 // Type, e.g. int, pointer to int, pointer to pointer to int, ...
 //
-typedef enum {TY_Char,TY_Short, TY_Int, TY_Long, TY_Struct, TY_Ptr, TY_Array} TypeKind;
+typedef enum {
+    TY_Char,
+    TY_Short, 
+    TY_Int, 
+    TY_Long, 
+    TY_Struct,
+    TY_Func, 
+    TY_Ptr, 
+    TY_Array
+} TypeKind;
+
 struct Type {
     TypeKind kind;
     int align;
     Type *base;
     int array_size;
     Member *members;
+    Type *return_ty;
 };
 
+Type *func_type(Type *return_ty);
 Type *long_type();
 Type *int_type();
 Type *short_type();

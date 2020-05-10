@@ -266,6 +266,7 @@ int main() {
     assert(32, ({ int **x[4]; sizeof(x); }), "int **x[4]; sizeof(x); ");
     assert(8, ({ int *(*x)[4]; sizeof(x); }), "int *(*x)[4]; sizeof(x); ");
     assert(8, ({ int (**x)[4]; sizeof(x); }), "int (**x)[4]; sizeof(x); ");
+
     printf("OK\n");
     return 0;
 }

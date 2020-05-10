@@ -155,7 +155,7 @@ Node *new_add(Node *left, Node *right, Token *tok) {
         // reverse left and right.
         return new_binary(ND_Add_Ptr, right, left, tok);
     }
-    error_at(tok->str, "invalid operand");
+    error_at(tok->str, "invalid operand %ld ? %ld", left->ty->kind, right->ty->kind);
 }
 
 Node *new_sub(Node *left, Node *right, Token *tok) {
@@ -205,14 +205,16 @@ Variable *new_lvar(char *name, Type *ty, bool is_local) {
     return var;
 }
 
-Variable *new_gvar(char *name, Type *ty) {
+Variable *new_gvar(char *name, Type *ty, bool emit) {
     Variable *var = new_var(name, ty, false);
     push_var_scope(name)->var = var;
 
-    Parameters *params = calloc(1, sizeof(Parameters));
-    params->var = var;
-    params->next = globals;
-    globals = params;
+    if(emit){
+        Parameters *params = calloc(1, sizeof(Parameters));
+        params->var = var;
+        params->next = globals;
+        globals = params;
+    }
     return var;
 }
 
@@ -416,6 +418,8 @@ Function *function() {
     Type *ty = basetype();
     char *name = NULL;
     ty = declarator(ty, &name);
+    new_gvar(name, func_type(ty), false);
+
     Function *f = calloc(1, sizeof(Function));
     f->name = name;
 
@@ -452,7 +456,7 @@ void *global_variable() {
     ty = declarator(ty, &name);
     ty = read_type_suffix(ty);
     expect(";");
-    new_gvar(name, ty);
+    new_gvar(name, ty, true);
 }
 
 // declaration = basetype declarator type-suffix ("=" expr)? ";"
@@ -696,14 +700,25 @@ Node *primary() {
         return node;
     }
 
-    tok = consume_identifier();
-    if (tok) {
+    if (tok = consume_identifier()) {
         Token *t;
         // call function
         if (t = consume("(")) {
             Node *node = new_node(ND_FuncCall, t);
             node->funcName = strndup(tok->str, tok->len);
             node->funcArgs = funcArgs();
+            assign_type(node);
+            
+            VarScope *vs = find_var(tok);
+            if(!vs) {
+                // "implicit declaration of a function"
+                node->ty = int_type();
+                return node;
+            }
+            if(!vs->var || vs->var->ty->kind != TY_Func) {
+                error_at(tok->str, "not a function");
+            }
+            node->ty = vs->var->ty->return_ty;
             return node;
         }
         VarScope *vs = find_var(tok);
@@ -717,7 +732,7 @@ Node *primary() {
     if (tok->kind == TK_String) {
         token = token->next;
         Type *ty = array_of(char_type(), tok->cont_len);
-        Variable *var = new_gvar(new_label(), ty);
+        Variable *var = new_gvar(new_label(), ty, true);
         var->contents = tok->contents;
         var->cont_len = tok->cont_len;
         return new_var_node(var, tok);
