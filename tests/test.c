@@ -263,7 +263,9 @@ int main() {
     assert(4, ({ int x[3]; int (*y)[3]=x; y[0][0]=4; y[0][0]; }), "int x[3]; int (*y)[3]=x; y[0][0]=4; y[0][0];");
     assert(32, ({ int *x[4]; sizeof_nested_type1(x); }), "int *x[4]; sizeof_nested_type1(x);");
     assert(8, ({ int (*x)[4]; sizeof_nested_type2(x); }), "int (*x)[4]; sizeof_nested_type2(x);");
-    
+    assert(32, ({ int **x[4]; sizeof(x); }), "int **x[4]; sizeof(x); ");
+    assert(8, ({ int *(*x)[4]; sizeof(x); }), "int *(*x)[4]; sizeof(x); ");
+    assert(8, ({ int (**x)[4]; sizeof(x); }), "int (**x)[4]; sizeof(x); ");
     printf("OK\n");
     return 0;
 }

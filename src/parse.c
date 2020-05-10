@@ -321,6 +321,11 @@ Type *basetype() {
 }
 
 // declarator = "*"* ("(" declarator ")" | ident) type-suffix
+/*
+    **x      [1]
+    *(*x)    [2]
+    (**x)    [3]
+*/
 Type *declarator(Type *ty, char **name) {
     while (consume("*")) {
         ty = pointer_to(ty);
@@ -363,6 +368,11 @@ Program *program() {
 }
 
 // type-suffix = ("[" num "]" type-suffix)?
+/* 
+    ""
+    "[4]"
+    "[4][1]"
+*/
 Type *read_type_suffix(Type *base) {
     if (!consume("[")) {
         return base;
