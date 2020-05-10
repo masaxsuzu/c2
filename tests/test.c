@@ -54,6 +54,14 @@ int decl2(int x) {
     return 2*x;
 }
 
+int sizeof_nested_type1(int *x[4]) { 
+    return sizeof(x);
+}
+
+int sizeof_nested_type2(int (*x)[4]) { 
+    return sizeof(x);
+}
+
 int main() {
     assert(0, 0, "0");
     assert(42, 42, "42");
@@ -249,6 +257,13 @@ int main() {
     assert( 2147483649, ({ long x = 2147483647; long y = 2; x+y;}), "long x = 2147483647; long y = 2; x+y;");    
     assert( 1, ({ long x = -2147483649; long y = 2147483648; -x-y;}), "long x = 2147483649; long y = -2147483648; -x-y;");    
 
+    assert(24, ({ int *x[3]; sizeof(x); }), "int *x[3]; sizeof(x);");
+    assert(8, ({ int (*x)[3]; sizeof(x); }), "int (*x)[3]; sizeof(x);");
+    assert(3, ({ int *x[3]; int y; x[0]=&y; y=3; x[0][0]; }), "int *x[3]; int y; x[0]=&y; y=3; x[0][0];");
+    assert(4, ({ int x[3]; int (*y)[3]=x; y[0][0]=4; y[0][0]; }), "int x[3]; int (*y)[3]=x; y[0][0]=4; y[0][0];");
+    assert(32, ({ int *x[4]; sizeof_nested_type1(x); }), "int *x[4]; sizeof_nested_type1(x);");
+    assert(8, ({ int (*x)[4]; sizeof_nested_type2(x); }), "int (*x)[4]; sizeof_nested_type2(x);");
+    
     printf("OK\n");
     return 0;
 }
