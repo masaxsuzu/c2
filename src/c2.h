@@ -152,6 +152,7 @@ typedef enum {
     TY_Int, 
     TY_Long, 
     TY_Struct,
+    TY_Void,
     TY_Func, 
     TY_Ptr, 
     TY_Array
@@ -166,6 +167,7 @@ struct Type {
     Type *return_ty;
 };
 
+Type *void_type();
 Type *func_type(Type *return_ty);
 Type *long_type();
 Type *int_type();

@@ -284,7 +284,8 @@ Type *struct_decl() {
 }
 
 bool is_typename() {
-    return peek("long") || peek("int") || peek("short") || peek("char") || peek("struct") || find_typedef(token);
+    return peek("long") || peek("int") || peek("short") || peek("char") || peek("struct") || 
+    peek("void") || find_typedef(token);
 }
 
 bool is_func() {
@@ -298,12 +299,15 @@ bool is_func() {
 }
 
 // basetype = builtin-type | struct-decl | typedef-name
-// builtin-type   = "char" | "short" | "int" | "long"
+// builtin-type   = "char" | "short" | "int" | "long" | void
 Type *basetype() {
     if (!is_typename()) {
         error_at(token->str, "incorrect type");
     }
 
+    if (consume("void")) {
+        return void_type();
+    }
     if (consume("char")) {
         return char_type();
     } 
@@ -472,6 +476,9 @@ Node *declaration() {
     ty = read_type_suffix(ty);
     Variable *var = new_lvar(name, ty, true);
 
+    if(ty->kind == TY_Void) {
+        error_at(tok->str, "variable is declared as void");
+    }
     if (tok = consume(";")) {
         return new_node(ND_Null, tok);
     }

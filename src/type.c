@@ -34,6 +34,11 @@ Type *long_type() {
     return ty;
 }
 
+Type *void_type() {
+    Type *ty = new_type(TY_Void, 1);
+    return ty;
+}
+
 Type *func_type(Type *return_ty) {
     Type *ty = new_type(TY_Func, 1);
     ty->return_ty = return_ty;
@@ -54,6 +59,7 @@ Type *array_of(Type *base, int size) {
 
 int size_of(Type *ty) {
     switch (ty->kind) {
+    case TY_Void:
     case TY_Char:
         return 1;
     case TY_Short:

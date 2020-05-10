@@ -62,6 +62,9 @@ int sizeof_nested_type2(int (*x)[4]) {
     return sizeof(x);
 }
 
+void nop() {
+}
+
 int main() {
     assert(0, 0, "0");
     assert(42, 42, "42");
@@ -266,6 +269,10 @@ int main() {
     assert(32, ({ int **x[4]; sizeof(x); }), "int **x[4]; sizeof(x); ");
     assert(8, ({ int *(*x)[4]; sizeof(x); }), "int *(*x)[4]; sizeof(x); ");
     assert(8, ({ int (**x)[4]; sizeof(x); }), "int (**x)[4]; sizeof(x); ");
+
+    assert(1, ({ void *x; sizeof(*x);}), "void *x; sizeof(*x);");
+    assert(8, ({ void *x; sizeof(x);}), "void *x; sizeof(x);");
+    assert(123, ({ nop(); 123;}), "nop(); 123;");
 
     printf("OK\n");
     return 0;

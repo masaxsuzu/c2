@@ -140,7 +140,7 @@ bool at_eof() { return token->kind == TK_Eof; }
 char *starts_with_reserved(char *p) {
     // Keyword
     static char *kw[] = {"return", "if",  "else", "while",  "for",
-                         "struct", "char","short", "int", "long",
+                         "struct", "char","short", "int", "long", "void",
                          "sizeof", "typedef"};
 
     for (int i = 0; i < sizeof(kw) / sizeof(*kw); i++) {
