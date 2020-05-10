@@ -279,6 +279,16 @@ int main() {
     assert(1, ({ _Bool x=2; x; }), "_Bool x=2; x;");
     assert(1, ({ _Bool x; sizeof(x);}), "_Bool x; sizeof(x);");
 
+    assert(1, ({ sizeof(void); }), "sizeof(void);");
+    assert(1, ({ sizeof(_Bool); }), "sizeof(_Bool);");
+    assert(1, ({ sizeof(char); }), "sizeof(char);");
+    assert(2, ({ sizeof(short); }), "sizeof(short);");
+    assert(4, ({ sizeof(int); }), "sizeof(int);");
+    assert(8, ({ sizeof(long); }), "sizeof(long);");
+
+    assert(4, ({ sizeof(struct {int a;}); }), "sizeof(struct {int a;});");
+    assert(8, ({ sizeof(int (**)); }), "sizeof(sizeof(int (**));");
+
     printf("OK\n");
     return 0;
 }

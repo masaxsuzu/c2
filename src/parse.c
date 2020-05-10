@@ -353,6 +353,33 @@ Type *declarator(Type *ty, char **name) {
     return read_type_suffix(ty);
 }
 
+// declarator_wo_name = "*"* ("(" declarator_wo_name ")" | ident) type-suffix
+/*
+    **      [1]
+    *(*)    [2]
+    (**)    [3]
+*/
+Type *declarator_wo_name(Type *ty) {
+    while (consume("*")) {
+        ty = pointer_to(ty);
+    }
+
+    if(consume("(")) {
+        Type *t = calloc(1, sizeof(Type));
+        Type *new_ty = declarator_wo_name(t);
+        expect(")");
+        memcpy(t, read_type_suffix(ty), sizeof(Type));
+        return new_ty;
+    }
+    return read_type_suffix(ty);
+}
+
+Type *type_name() {
+    Type *ty = basetype();
+    ty = declarator_wo_name(ty);
+    return read_type_suffix(ty);
+}
+
 Program *program() {
 
     Function head = {};
@@ -767,6 +794,14 @@ Node *unary() {
         return new_unary(ND_Deref, unary(), tok);
     }
     if (tok = consume("sizeof")) {
+        if(consume("(")) {
+            if(is_typename()) {
+                Type *ty = type_name();
+                expect(")");
+                return new_number_node(size_of(ty), tok);
+            }
+            token = tok->next;
+        }
         Node *n = unary();
         assign_type(n);
         return new_number_node(size_of(n->ty), tok);
