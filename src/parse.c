@@ -353,20 +353,20 @@ Type *declarator(Type *ty, char **name) {
     return read_type_suffix(ty);
 }
 
-// declarator_wo_name = "*"* ("(" declarator_wo_name ")" | ident) type-suffix
+// declarator_wo_identifier = "*"* ("(" declarator_wo_identifier ")" | ident) type-suffix
 /*
     **      [1]
     *(*)    [2]
     (**)    [3]
 */
-Type *declarator_wo_name(Type *ty) {
+Type *declarator_wo_identifier(Type *ty) {
     while (consume("*")) {
         ty = pointer_to(ty);
     }
 
     if(consume("(")) {
         Type *t = calloc(1, sizeof(Type));
-        Type *new_ty = declarator_wo_name(t);
+        Type *new_ty = declarator_wo_identifier(t);
         expect(")");
         memcpy(t, read_type_suffix(ty), sizeof(Type));
         return new_ty;
@@ -376,7 +376,7 @@ Type *declarator_wo_name(Type *ty) {
 
 Type *type_name() {
     Type *ty = basetype();
-    ty = declarator_wo_name(ty);
+    ty = declarator_wo_identifier(ty);
     return read_type_suffix(ty);
 }
 

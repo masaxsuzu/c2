@@ -287,7 +287,8 @@ int main() {
     assert(8, ({ sizeof(long); }), "sizeof(long);");
 
     assert(4, ({ sizeof(struct {int a;}); }), "sizeof(struct {int a;});");
-    assert(8, ({ sizeof(int (**)); }), "sizeof(sizeof(int (**));");
+    assert(8, ({ sizeof(int (**)); }), "sizeof(int (**));");
+    assert(32, ({ sizeof(int **[4]); }), "sizeof(int **[4]);");
 
     printf("OK\n");
     return 0;
