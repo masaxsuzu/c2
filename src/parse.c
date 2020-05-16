@@ -991,6 +991,15 @@ Node *unary() {
         assign_type(n);
         return new_number_node(size_of(n->ty), tok);
     }
+
+    if (tok = consume("++")) {
+        return new_unary(ND_Pre_Inc, unary(), tok);
+    }
+
+    if (tok = consume("--")) {
+        return new_unary(ND_Pre_Dec, unary(), tok);
+    }
+
     return postfix();
 }
 
@@ -1018,6 +1027,17 @@ Node *postfix() {
             node->member_name = expect_identifier();
             continue;
         }
+
+        if (tok = consume("++")) {
+            node = new_unary(ND_Post_Inc, node, tok);
+            continue;
+        }
+
+        if (tok = consume("--")) {
+            node = new_unary(ND_Post_Dec, node, tok);
+            continue;
+        }
+
         return node;
     }
 }

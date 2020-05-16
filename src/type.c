@@ -143,6 +143,10 @@ void assign_type(Node *node) {
     case ND_Add_Ptr:
     case ND_Sub_Ptr:
     case ND_Assign:
+    case ND_Pre_Inc:
+    case ND_Pre_Dec:
+    case ND_Post_Inc:
+    case ND_Post_Dec:
         node->ty = node->left->ty;
         return;
     case ND_Member: {

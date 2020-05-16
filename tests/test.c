@@ -70,8 +70,8 @@ typedef int MyInt;
 static int static_fn() { return 3; }
 
 int print_board(int (*board)[10]) {
-  for (int i = 0; i < 10; i=i+1) {
-    for (int j = 0; j < 10; j=j+1)
+  for (int i = 0; i < 10; i++) {
+    for (int j = 0; j < 10; j++)
       if (board[i][j]) {
         printf("Q ");
       }
@@ -83,7 +83,7 @@ int print_board(int (*board)[10]) {
 }
 
 int conflict(int (*board)[10], int row, int col) {
-  for (int i = 0; i < row; i=i+1) {
+  for (int i = 0; i < row; i++) {
     if (board[i][col])
       return 1;
     int j = row - i;
@@ -102,7 +102,7 @@ int solve(int (*board)[10], int row) {
     print_board(board);
     return 0;
   }
-  for (int i = 0; i < 10; i=i+1) {
+  for (int i = 0; i < 10; i++) {
     if (conflict(board, row, i)) {
     } else {
       board[row][i] = 1;
@@ -390,6 +390,22 @@ int main() {
 
     assert(3, (1,2,3), "1,2,3");
 
+    assert(3, ({ int i=2; ++i; }), "int i=2; ++i;");
+    assert(1, ({ int i=2; --i; }), "int i=2; --i;");
+    assert(2, ({ int i=2; i++; }), "int i=2; i++;");
+    assert(2, ({ int i=2; i--; }), "int i=2; i--;");
+    assert(3, ({ int i=2; i++; i; }), "int i=2; i++; i;");
+    assert(1, ({ int i=2; i--; i; }), "int i=2; i--; i;");
+    assert(1, ({ int a[3]; a[0]=0; a[1]=1; a[2]=2; int *p=a+1; *p++; }), "int a[3]; a[0]=0; a[1]=1; a[2]=2; int *p=a+1; *p++;");
+    assert(2, ({ int a[3]; a[0]=0; a[1]=1; a[2]=2; int *p=a+1; ++*p; }), "int a[3]; a[0]=0; a[1]=1; a[2]=2; int *p=a+1; ++*p;");
+    assert(1, ({ int a[3]; a[0]=0; a[1]=1; a[2]=2; int *p=a+1; *p--; }), "int a[3]; a[0]=0; a[1]=1; a[2]=2; int *p=a+1; *p--;");
+    assert(0, ({ int a[3]; a[0]=0; a[1]=1; a[2]=2; int *p=a+1; --*p; }), "int a[3]; a[0]=0; a[1]=1; a[2]=2; int *p=a+1; --*p;");
+    assert(0, ({ int a[3]; a[0]=0; a[1]=1; a[2]=2; int *p=a+1; (*p++)--; a[0]; }), "int a[3]; a[0]=0; a[1]=1; a[2]=2; int *p=a+1; (*p++); a[0];");
+    assert(0, ({ int a[3]; a[0]=0; a[1]=1; a[2]=2; int *p=a+1; (*p++)--; a[1]; }), "int a[3]; a[0]=0; a[1]=1; a[2]=2; int *p=a+1; (*p++); a[0];");
+    assert(2, ({ int a[3]; a[0]=0; a[1]=1; a[2]=2; int *p=a+1; (*p++)--; a[2]; }), "int a[3]; a[0]=0; a[1]=1; a[2]=2; int *p=a+1; (*p++); a[0];");
+    assert(2, ({ int a[3]; a[0]=0; a[1]=1; a[2]=2; int *p=a+1; (*p++)--; *p; }), "int a[3]; a[0]=0; a[1]=1; a[2]=2; int *p=a+1; (*p++); a[0];");
+
     printf("OK\n");
     return 0;
 }
+
