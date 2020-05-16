@@ -50,11 +50,9 @@ void load(Type *ty) {
     printf("  pop rax\n");
     if (size_of(ty) == 1) {
         printf("  movsx rax, byte ptr [rax]\n");
-    }
-    else if (size_of(ty) == 2) {
+    } else if (size_of(ty) == 2) {
         printf("  movsx rax, word ptr [rax]\n");
-    } 
-    else if (size_of(ty) == 4) {
+    } else if (size_of(ty) == 4) {
         printf("  movsxd rax, dword ptr [rax]\n");
     } else {
         printf("  mov rax, [rax]\n");
@@ -76,8 +74,7 @@ void store(Type *ty) {
         printf("  mov [rax], dil\n");
     } else if (size_of(ty) == 2) {
         printf("  mov [rax], di\n");
-    }
-     else if (size_of(ty) == 4) {
+    } else if (size_of(ty) == 4) {
         printf("  mov [rax], edi\n");
     } else {
         printf("  mov [rax], rdi\n");
@@ -88,16 +85,16 @@ void store(Type *ty) {
 void truncate(Type *ty) {
     printf("  pop rax\n");
 
-    if(ty->kind == TY_Bool) {
+    if (ty->kind == TY_Bool) {
         printf("  cmp rax, 0\n");
         printf("  setne al\n");
     }
     int size = size_of(ty);
-    if(size == 1) {
+    if (size == 1) {
         printf("  movsx rax, al\n");
-    } else if(size == 2) {
+    } else if (size == 2) {
         printf("  movsx rax, ax\n");
-    } else if(size == 4) {
+    } else if (size == 4) {
         printf("  movsxd rax, eax\n");
     }
     printf("  push rax\n");
@@ -295,11 +292,9 @@ void gen(Node *node) {
 void load_arg(Variable *var, int index) {
     if (size_of(var->ty) == 1) {
         printf("  mov [rbp-%d], %s\n", var->offset, argreg1[index]);
-    }
-    else if (size_of(var->ty) == 2) {
+    } else if (size_of(var->ty) == 2) {
         printf("  mov [rbp-%d], %s\n", var->offset, argreg2[index]);
-    }
-    else if (size_of(var->ty) == 4) {
+    } else if (size_of(var->ty) == 4) {
         printf("  mov [rbp-%d], %s\n", var->offset, argreg4[index]);
     } else {
         printf("  mov [rbp-%d], %s\n", var->offset, argreg8[index]);

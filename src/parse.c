@@ -156,7 +156,8 @@ Node *new_add(Node *left, Node *right, Token *tok) {
         // reverse left and right.
         return new_binary(ND_Add_Ptr, right, left, tok);
     }
-    error_at(tok->str, "invalid operand %ld ? %ld", left->ty->kind, right->ty->kind);
+    error_at(tok->str, "invalid operand %ld ? %ld", left->ty->kind,
+             right->ty->kind);
 }
 
 Node *new_sub(Node *left, Node *right, Token *tok) {
@@ -210,7 +211,7 @@ Variable *new_gvar(char *name, Type *ty, bool emit) {
     Variable *var = new_var(name, ty, false);
     push_var_scope(name)->var = var;
 
-    if(emit){
+    if (emit) {
         Parameters *params = calloc(1, sizeof(Parameters));
         params->var = var;
         params->next = globals;
@@ -230,7 +231,7 @@ char *new_label() {
 Member *struct_member() {
     Type *ty = basetype(NULL);
     char *name = NULL;
-    ty = declarator(ty,&name);
+    ty = declarator(ty, &name);
     ty = read_type_suffix(ty);
 
     Member *mem = calloc(1, sizeof(Member));
@@ -285,11 +286,9 @@ Type *struct_decl() {
 }
 
 bool is_typename() {
-    return peek("long") || peek("int") || peek("short") || peek("char") || peek("struct") || 
-    peek("_Bool") ||
-    peek("void") || 
-    peek("typedef") ||
-    find_typedef(token);
+    return peek("long") || peek("int") || peek("short") || peek("char") ||
+           peek("struct") || peek("_Bool") || peek("void") || peek("typedef") ||
+           find_typedef(token);
 }
 
 bool is_func() {
@@ -311,41 +310,41 @@ Type *basetype(bool *is_typedef) {
     }
 
     enum {
-        VOID  = 1 << 0,
-        BOOL  = 1 << 2,
-        CHAR  = 1 << 4,
+        VOID = 1 << 0,
+        BOOL = 1 << 2,
+        CHAR = 1 << 4,
         SHORT = 1 << 6,
-        INT   = 1 << 8,
-        LONG  = 1 << 10,
+        INT = 1 << 8,
+        LONG = 1 << 10,
         OTHER = 1 << 12,
     };
 
     Type *ty = int_type();
     int counter = 0;
 
-    if(is_typedef){
+    if (is_typedef) {
         *is_typedef = false;
     }
 
-    while(is_typename()) {
+    while (is_typename()) {
         Token *tok = token;
 
-        if(consume("typedef")) {
-            if(!is_typedef) {
+        if (consume("typedef")) {
+            if (!is_typedef) {
                 error_at(tok->str, "invalid storage class specifier");
             }
             *is_typedef = true;
             continue;
         }
 
-        if(!peek("void") && !peek("_Bool") && !peek("char") &&
-           !peek("short") && !peek("int") && !peek("long")) {
+        if (!peek("void") && !peek("_Bool") && !peek("char") &&
+            !peek("short") && !peek("int") && !peek("long")) {
 
-            if(counter) {
+            if (counter) {
                 break;
             }
 
-            if(peek("struct")) {
+            if (peek("struct")) {
                 ty = struct_decl();
             } else {
                 ty = find_typedef(token);
@@ -409,7 +408,7 @@ Type *declarator(Type *ty, char **name) {
         ty = pointer_to(ty);
     }
 
-    if(consume("(")) {
+    if (consume("(")) {
         Type *t = calloc(1, sizeof(Type));
         Type *new_ty = declarator(t, name);
         expect(")");
@@ -421,7 +420,8 @@ Type *declarator(Type *ty, char **name) {
     return read_type_suffix(ty);
 }
 
-// declarator_wo_identifier = "*"* ("(" declarator_wo_identifier ")" | ident) type-suffix
+// declarator_wo_identifier = "*"* ("(" declarator_wo_identifier ")" | ident)
+// type-suffix
 /*
     **      [1]
     *(*)    [2]
@@ -432,7 +432,7 @@ Type *declarator_wo_identifier(Type *ty) {
         ty = pointer_to(ty);
     }
 
-    if(consume("(")) {
+    if (consume("(")) {
         Type *t = calloc(1, sizeof(Type));
         Type *new_ty = declarator_wo_identifier(t);
         expect(")");
@@ -473,7 +473,7 @@ Program *program() {
 }
 
 // type-suffix = ("[" num "]" type-suffix)?
-/* 
+/*
     ""
     "[4]"
     "[4][1]"
@@ -560,10 +560,9 @@ void *global_variable() {
     ty = declarator(ty, &name);
     ty = read_type_suffix(ty);
     expect(";");
-    if(is_typedef) {
+    if (is_typedef) {
         push_var_scope(name)->type_def = ty;
-    }
-    else {
+    } else {
         new_gvar(name, ty, true);
     }
 }
@@ -581,13 +580,13 @@ Node *declaration() {
     ty = declarator(ty, &name);
     ty = read_type_suffix(ty);
 
-    if(is_typedef) {
+    if (is_typedef) {
         expect(";");
         push_var_scope(name)->type_def = ty;
         return new_node(ND_Null, tok);
     }
 
-    if(ty->kind == TY_Void) {
+    if (ty->kind == TY_Void) {
         error_at(tok->str, "variable is declared as void");
     }
 
@@ -708,7 +707,7 @@ Node *stmt2() {
 
 Node *stmt_expr(Token *tok) {
     Scope *scope = enter_scope();
-    
+
     Node *node = new_node(ND_Stmt_Expr, tok);
     node->block = stmt();
     Node *cur = node->block;
@@ -818,14 +817,14 @@ Node *primary() {
             node->funcName = strndup(tok->str, tok->len);
             node->funcArgs = funcArgs();
             assign_type(node);
-            
+
             VarScope *vs = find_var(tok);
-            if(!vs) {
+            if (!vs) {
                 // "implicit declaration of a function"
                 node->ty = int_type();
                 return node;
             }
-            if(!vs->var || vs->var->ty->kind != TY_Func) {
+            if (!vs->var || vs->var->ty->kind != TY_Func) {
                 error_at(tok->str, "not a function");
             }
             node->ty = vs->var->ty->return_ty;
@@ -854,8 +853,8 @@ Node *primary() {
 Node *cast() {
     Token *tok = token;
 
-    if(consume("(")) {
-        if(is_typename()) {
+    if (consume("(")) {
+        if (is_typename()) {
             Type *ty = type_name();
             expect(")");
             Node *node = new_unary(ND_Cast, cast(), tok);
@@ -883,8 +882,8 @@ Node *unary() {
         return new_unary(ND_Deref, cast(), tok);
     }
     if (tok = consume("sizeof")) {
-        if(consume("(")) {
-            if(is_typename()) {
+        if (consume("(")) {
+            if (is_typename()) {
                 Type *ty = type_name();
                 expect(")");
                 return new_number_node(size_of(ty), tok);
