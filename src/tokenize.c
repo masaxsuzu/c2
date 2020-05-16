@@ -142,7 +142,8 @@ char *starts_with_reserved(char *p) {
     static char *kw[] = {"return", "if",     "else", "while", "for",  "struct",
                          "char",   "short",  "int",  "long",  "void",
                          "_Bool", // bool is just a macro.
-                         "sizeof", "typedef"};
+                         "sizeof", "typedef",
+                         "enum"};
 
     for (int i = 0; i < sizeof(kw) / sizeof(*kw); i++) {
         int len = strlen(kw[i]);

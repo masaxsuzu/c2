@@ -15,6 +15,8 @@ struct VarScope {
     char *name;
     Variable *var;
     Type *type_def;
+    Type *enum_ty;
+    int enum_val;
 };
 
 typedef struct Scope {
@@ -45,6 +47,7 @@ Node *postfix();
 Type *read_type_suffix(Type *ty);
 Type *basetype();
 Type *declarator(Type *ty, char **name);
+Type *enum_specifier();
 
 Scope *enter_scope() {
     Scope *sc = calloc(1, sizeof(Scope));
@@ -250,6 +253,9 @@ Type *struct_decl() {
         if (!vs) {
             error_at(tag->str, "unknown struct type");
         }
+        if(vs->ty->kind != TY_Struct) {
+            error_at(tag->str, "not a struct tag");
+        }
         return vs->ty;
     };
 
@@ -285,10 +291,66 @@ Type *struct_decl() {
     return ty;
 }
 
+bool consume_end_of_brace() {
+    Token *tok = token;
+    if(consume("}") || (consume(",") && consume("}"))) {
+        return true;
+    }
+
+    token = tok;
+    return false;
+}
+
+Type *enum_specifier() {
+    expect("enum");
+
+    Type *ty = enum_type();
+
+    Token *tag = consume_identifier();
+    if(tag && !peek("{")) {
+        TagScope *ts = find_tag(tag);
+        if(!ts) {
+            error_at(tag->str, "unknown enum type");
+        }
+        if(ts->ty->kind != TY_Enum) {
+            error_at(tag->str, "not an enum tag");
+        }
+        return ts->ty;
+    }
+
+    expect("{");
+
+    // read enum list { name1 , name2, name3 }
+    int count = 0;
+
+    for(;;) {
+        char *name = expect_identifier();
+        if(consume("=")) {
+            count = expect_number();
+        }
+
+        VarScope *vs = push_var_scope(name);
+
+        vs->enum_ty = ty;
+        vs->enum_val = count++;
+
+        if(consume_end_of_brace()) {
+            break;
+        }
+
+        expect(",");
+    }
+
+    if(tag) {
+        push_tag_scope(tag, ty);
+    }
+    return ty;
+}
+
 bool is_typename() {
     return peek("long") || peek("int") || peek("short") || peek("char") ||
-           peek("struct") || peek("_Bool") || peek("void") || peek("typedef") ||
-           find_typedef(token);
+           peek("struct") || peek("enum") || peek("_Bool") || peek("void") || 
+           peek("typedef") || find_typedef(token);
 }
 
 bool is_func() {
@@ -346,7 +408,11 @@ Type *basetype(bool *is_typedef) {
 
             if (peek("struct")) {
                 ty = struct_decl();
-            } else {
+            } 
+            else if(peek("enum")) {
+                ty = enum_specifier();
+            }
+            else {
                 ty = find_typedef(token);
                 token = token->next;
             }
@@ -831,8 +897,13 @@ Node *primary() {
             return node;
         }
         VarScope *vs = find_var(tok);
-        if (vs && vs->var) {
-            return new_var_node(vs->var, tok);
+        if (vs){
+            if(vs->var) {
+                return new_var_node(vs->var, tok);
+            }
+            if(vs->enum_ty) {
+                return new_number_node(vs->enum_val, tok);
+            }
         }
         error_at(tok->str, "undefined variable");
     }
