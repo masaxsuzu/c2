@@ -1,6 +1,6 @@
 #include "c2.h"
 
-int labelId = 0;
+int labelId = 1;
 char *functionName;
 // Copy args into the resiters.
 static char *argreg1[] = {"dil", "sil", "dl", "cl", "r8b", "r9b"};
@@ -101,34 +101,43 @@ void truncate(Type *ty) {
 }
 
 void gen(Node *node) {
-    int id = labelId++;
     switch (node->kind) {
-    case ND_If:
-        gen(node->cond);
-        printf("  pop rax\n");
-        printf("  cmp rax, 0\n");
-        printf("  je .L.end.else.%d\n", id);
-
-        gen(node->then);
-        printf("  je .L.end.%d\n", id);
-        printf(".L.end.else.%d:\n", id);
-
-        if (node->otherwise) {
+    case ND_If: {
+        int id = labelId++;
+        if(node->otherwise) {
+            gen(node->cond);
+            printf("  pop rax\n");
+            printf("  cmp rax, 0\n");
+            printf("  je  .L.else.%d\n", id);
+            gen(node->then);
+            printf("  jmp .L.end.%d\n", id);
+            printf(".L.else.%d:\n", id);
             gen(node->otherwise);
+            printf(".L.end.%d:\n", id);
+        } else {
+            gen(node->cond);
+            printf("  pop rax\n");
+            printf("  cmp rax, 0\n");
+            printf("  je  .L.end.%d\n", id);
+            gen(node->then);
+            printf(".L.end.%d:\n", id);
         }
-        printf(".L.end.%d:\n", id);
         return;
-    case ND_While:
+    }
+    case ND_While: {
+        int id = labelId++;
         printf(".L.begin.%d:\n", id);
         gen(node->cond);
         printf("  pop rax\n");
         printf("  cmp rax, 0\n");
-        printf("  je .L.end.%d\n", id);
+        printf("  je  .L.end.%d\n", id);
         gen(node->then);
         printf("  jmp .L.begin.%d\n", id);
         printf(".L.end.%d:\n", id);
         return;
-    case ND_For:
+    }
+    case ND_For: {
+        int id = labelId++;
         if (node->init) {
             gen(node->init);
         }
@@ -138,7 +147,7 @@ void gen(Node *node) {
         }
         printf("  pop rax\n");
         printf("  cmp rax, 0\n");
-        printf("  je .L.end.%d\n", id);
+        printf("  je  .L.end.%d\n", id);
         gen(node->then);
         if (node->inc) {
             gen(node->inc);
@@ -146,6 +155,7 @@ void gen(Node *node) {
         printf("  jmp .L.begin.%d\n", id);
         printf(".L.end.%d:\n", id);
         return;
+    }
     case ND_Block:
     case ND_Stmt_Expr:
         for (Node *n = node->block; n; n = n->next)
@@ -190,6 +200,7 @@ void gen(Node *node) {
         }
         return;
     case ND_FuncCall: {
+        int id = labelId++;
         int n = 0;
         for (Node *arg = node->funcArgs; arg; arg = arg->next) {
             gen(arg);
