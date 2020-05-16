@@ -84,6 +84,7 @@ typedef enum {
     ND_Diff_Ptr,
     ND_Mul,
     ND_Div,
+    ND_Cast,
     ND_Eq,      // ==
     ND_Ne,      // !=
     ND_Lt,      // <

@@ -85,6 +85,24 @@ void store(Type *ty) {
     printf("  push rdi\n");
 }
 
+void truncate(Type *ty) {
+    printf("  pop rax\n");
+
+    if(ty->kind == TY_Bool) {
+        printf("  cmp rax, 0\n");
+        printf("  setne al\n");
+    }
+    int size = size_of(ty);
+    if(size == 1) {
+        printf("  movsx rax, al\n");
+    } else if(size == 2) {
+        printf("  movsx rax, ax\n");
+    } else if(size == 4) {
+        printf("  movsxd rax, eax\n");
+    }
+    printf("  push rax\n");
+}
+
 void gen(Node *node) {
     int id = labelId++;
     switch (node->kind) {
@@ -206,6 +224,10 @@ void gen(Node *node) {
         gen_lVal(node->left);
         gen(node->right);
         store(node->ty);
+        return;
+    case ND_Cast:
+        gen(node->left);
+        truncate(node->ty);
         return;
     }
 

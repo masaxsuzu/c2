@@ -37,6 +37,7 @@ Node *equality();
 Node *relational();
 Node *add();
 Node *mul();
+Node *cast();
 Node *unary();
 Node *primary();
 Node *postfix();
@@ -785,13 +786,13 @@ Node *add() {
 }
 
 Node *mul() {
-    Node *node = unary();
+    Node *node = cast();
     Token *tok;
     for (;;) {
         if (tok = consume("*")) {
-            node = new_binary(ND_Mul, node, unary(), tok);
+            node = new_binary(ND_Mul, node, cast(), tok);
         } else if (tok = consume("/")) {
-            node = new_binary(ND_Div, node, unary(), tok);
+            node = new_binary(ND_Div, node, cast(), tok);
         } else {
             return node;
         }
@@ -850,19 +851,36 @@ Node *primary() {
     return new_number_node(expect_number(), tok);
 }
 
+Node *cast() {
+    Token *tok = token;
+
+    if(consume("(")) {
+        if(is_typename()) {
+            Type *ty = type_name();
+            expect(")");
+            Node *node = new_unary(ND_Cast, cast(), tok);
+            assign_type(node);
+            node->ty = ty;
+            return node;
+        }
+        token = tok;
+    }
+
+    return unary();
+}
 Node *unary() {
     Token *tok;
     if (tok = consume("+")) {
-        return unary();
+        return cast();
     }
     if (tok = consume("-")) {
-        return new_binary(ND_Sub, new_number_node(0, tok), unary(), tok);
+        return new_binary(ND_Sub, new_number_node(0, tok), cast(), tok);
     }
     if (tok = consume("&")) {
-        return new_unary(ND_Addr, unary(), tok);
+        return new_unary(ND_Addr, cast(), tok);
     }
     if (tok = consume("*")) {
-        return new_unary(ND_Deref, unary(), tok);
+        return new_unary(ND_Deref, cast(), tok);
     }
     if (tok = consume("sizeof")) {
         if(consume("(")) {
@@ -873,7 +891,7 @@ Node *unary() {
             }
             token = tok->next;
         }
-        Node *n = unary();
+        Node *n = cast();
         assign_type(n);
         return new_number_node(size_of(n->ty), tok);
     }
