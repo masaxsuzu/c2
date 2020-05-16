@@ -408,6 +408,15 @@ int main() {
     assert(0, !2, "!2");
     assert(1, !0, "!0");
 
+    assert(7, ({ int i=2; i+=5; i; }), "int i=2; i+=5; i;");
+    assert(7, ({ int i=2; i+=5; }), "int i=2; i+=5;");
+    assert(3, ({ int i=5; i-=2; i; }), "int i=5; i-=2; i;");
+    assert(3, ({ int i=5; i-=2; }), "int i=5; i-=2;");
+    assert(6, ({ int i=3; i*=2; i; }), "int i=3; i*=2; i;");
+    assert(6, ({ int i=3; i*=2; }), "int i=3; i*=2;");
+    assert(3, ({ int i=6; i/=2; i; }), "int i=6; i/=2; i;");
+    assert(3, ({ int i=6; i/=2; }), "int i=6; i/=2;");
+    
     printf("OK\n");
     return 0;
 }

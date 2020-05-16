@@ -78,12 +78,18 @@ typedef enum {
     ND_Return,
     ND_Block,
     ND_Add,
+    ND_Add_Eq, // +=
     ND_Add_Ptr,
+    ND_Add_Ptr_Eq, // +=
     ND_Sub,
+    ND_Sub_Eq, // -=
     ND_Sub_Ptr,
+    ND_Sub_Ptr_Eq, // -=
     ND_Diff_Ptr,
     ND_Mul,
+    ND_Mul_Eq, // *=
     ND_Div,
+    ND_Div_Eq, // /=
     ND_Cast,
     ND_Eq,      // ==
     ND_Ne,      // !=

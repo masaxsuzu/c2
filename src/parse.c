@@ -825,8 +825,35 @@ Node *assign() {
     Node *node = equality();
     Token *tok;
     if (tok = consume("=")) {
-        node = new_binary(ND_Assign, node, assign(), tok);
+        return new_binary(ND_Assign, node, assign(), tok);
     }
+
+    if (tok = consume("*=")) {
+        node = new_binary(ND_Mul_Eq, node, assign(), tok);
+    }
+
+    if (tok = consume("/=")) {
+        node = new_binary(ND_Div_Eq, node, assign(), tok);
+    }
+
+    if (tok = consume("+=")) {
+        assign_type(node);
+        if (node->ty->base) {
+            return new_binary(ND_Add_Ptr_Eq, node, assign(), tok);
+        } else {
+            return new_binary(ND_Add_Eq, node, assign(), tok);
+        }
+    }
+
+    if (tok = consume("-=")) {
+        assign_type(node);
+        if (node->ty->base) {
+            return new_binary(ND_Sub_Ptr_Eq, node, assign(), tok);
+        } else {
+            return new_binary(ND_Sub_Eq, node, assign(), tok);
+        }
+    }
+
     return node;
 }
 

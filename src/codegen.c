@@ -46,6 +46,70 @@ void gen_lVal(Node *node) {
     gen_addr(node);
 }
 
+void gen_binary(Node *node) {
+    printf("  pop rdi\n");
+    printf("  pop rax\n");
+    switch (node->kind) {
+    case ND_Add:
+    case ND_Add_Eq:
+        printf("  add rax, rdi\n");
+        break;
+    case ND_Add_Ptr:
+    case ND_Add_Ptr_Eq:
+        printf("  imul rdi, %d\n", size_of(node->ty->base));
+        printf("  add rax, rdi\n");
+        break;
+    case ND_Sub:
+    case ND_Sub_Eq:
+        printf("  sub rax, rdi\n");
+        break;
+    case ND_Sub_Ptr:
+    case ND_Sub_Ptr_Eq:
+        printf("  imul rdi, %d\n", size_of(node->ty->base));
+        printf("  sub rax, rdi\n");
+        break;
+    case ND_Diff_Ptr:
+        printf("  sub rax, rdi\n");
+        printf("  cqo\n");
+        printf("  mov rdi, %d\n", size_of(node->left->ty->base));
+        printf("  idiv rdi\n");
+        break;
+    case ND_Mul:
+    case ND_Mul_Eq:
+        printf("  imul rax, rdi\n");
+        break;
+    case ND_Div:
+    case ND_Div_Eq:
+        printf("  cqo\n");
+        printf("  idiv rdi\n");
+        break;
+    case ND_Eq:
+        printf("  cmp rax, rdi\n");
+        printf("  sete al\n");
+        printf("  movzb rax, al\n");
+        break;
+    case ND_Ne:
+        printf("  cmp rax, rdi\n");
+        printf("  setne al\n");
+        printf("  movzb rax, al\n");
+        break;
+    case ND_Lt:
+        printf("  cmp rax, rdi\n");
+        printf("  setl al\n");
+        printf("  movzb rax, al\n");
+        break;
+    case ND_Le:
+        printf("  cmp rax, rdi\n");
+        printf("  setle al\n");
+        printf("  movzb rax, al\n");
+        break;
+    default:
+        break;
+    }
+
+    printf("  push rax\n");
+}
+
 void load(Type *ty) {
     printf("  pop rax\n");
     if (size_of(ty) == 1) {
@@ -291,67 +355,25 @@ void gen(Node *node) {
         gen(node->left);
         truncate(node->ty);
         return;
+    case ND_Add_Eq:
+    case ND_Add_Ptr_Eq:
+    case ND_Sub_Eq:
+    case ND_Sub_Ptr_Eq:
+    case ND_Mul_Eq:
+    case ND_Div_Eq:
+        gen_lVal(node->left);
+        printf("  push [rsp]\n");
+        load(node->left->ty);
+        gen(node->right);
+        gen_binary(node);
+        store(node->ty);
+        return;
     }
 
     gen(node->left);
     gen(node->right);
 
-    printf("  pop rdi\n");
-    printf("  pop rax\n");
-
-    switch (node->kind) {
-    case ND_Add:
-        printf("  add rax, rdi\n");
-        break;
-    case ND_Add_Ptr:
-        printf("  imul rdi, %d\n", size_of(node->ty->base));
-        printf("  add rax, rdi\n");
-        break;
-    case ND_Sub:
-        printf("  sub rax, rdi\n");
-        break;
-    case ND_Sub_Ptr:
-        printf("  imul rdi, %d\n", size_of(node->ty->base));
-        printf("  sub rax, rdi\n");
-        break;
-    case ND_Diff_Ptr:
-        printf("  sub rax, rdi\n");
-        printf("  cqo\n");
-        printf("  mov rdi, %d\n", size_of(node->left->ty->base));
-        printf("  idiv rdi\n");
-        break;
-    case ND_Mul:
-        printf("  imul rax, rdi\n");
-        break;
-    case ND_Div:
-        printf("  cqo\n");
-        printf("  idiv rdi\n");
-        break;
-    case ND_Eq:
-        printf("  cmp rax, rdi\n");
-        printf("  sete al\n");
-        printf("  movzb rax, al\n");
-        break;
-    case ND_Ne:
-        printf("  cmp rax, rdi\n");
-        printf("  setne al\n");
-        printf("  movzb rax, al\n");
-        break;
-    case ND_Lt:
-        printf("  cmp rax, rdi\n");
-        printf("  setl al\n");
-        printf("  movzb rax, al\n");
-        break;
-    case ND_Le:
-        printf("  cmp rax, rdi\n");
-        printf("  setle al\n");
-        printf("  movzb rax, al\n");
-        break;
-    default:
-        break;
-    }
-
-    printf("  push rax\n");
+    gen_binary(node);
 }
 
 void load_arg(Variable *var, int index) {

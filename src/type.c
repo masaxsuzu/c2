@@ -129,10 +129,14 @@ void assign_type(Node *node) {
 
     switch (node->kind) {
     case ND_Add:
+    case ND_Add_Eq:
     case ND_Sub:
+    case ND_Sub_Eq:
     case ND_Diff_Ptr:
     case ND_Mul:
+    case ND_Mul_Eq:
     case ND_Div:
+    case ND_Div_Eq:
     case ND_Eq:
     case ND_Ne:
     case ND_Lt:
@@ -142,7 +146,9 @@ void assign_type(Node *node) {
         node->ty = int_type();
         return;
     case ND_Add_Ptr:
+    case ND_Add_Ptr_Eq:
     case ND_Sub_Ptr:
+    case ND_Sub_Ptr_Eq:
     case ND_Assign:
     case ND_Pre_Inc:
     case ND_Pre_Dec:
