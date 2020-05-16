@@ -103,6 +103,15 @@ void gen_binary(Node *node) {
         printf("  setle al\n");
         printf("  movzb rax, al\n");
         break;
+    case ND_BitAnd:
+        printf("  and rax, rdi\n");
+        break;
+    case ND_BitOr:
+        printf("  or rax, rdi\n");
+        break;
+    case ND_BitXor:
+        printf("  xor rax, rdi\n");
+        break;
     default:
         break;
     }

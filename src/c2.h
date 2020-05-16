@@ -107,6 +107,9 @@ typedef enum {
     ND_Or,     // ||
     ND_Not,     // !
     ND_BitNot,     // ~
+    ND_BitAnd, // &
+    ND_BitOr, // |
+    ND_BitXor, // ^
     ND_Var,
     ND_Expr_Stmt,
     ND_Stmt_Expr,   // ({int x = 1; x;} => 1)

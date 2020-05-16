@@ -145,6 +145,9 @@ void assign_type(Node *node) {
     case ND_Not:
     case ND_And:
     case ND_Or:
+    case ND_BitAnd:
+    case ND_BitOr:
+    case ND_BitXor:
         node->ty = int_type();
         return;
     case ND_Add_Ptr:

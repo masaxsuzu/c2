@@ -40,6 +40,9 @@ Node *stmt();
 Node *stmt2();
 Node *expr();
 Node *assign();
+Node *bitand();
+Node *bitor();
+Node *bitxor();
 Node *or();
 Node *and();
 Node *equality();
@@ -868,12 +871,38 @@ Node *or() {
 }
 
 Node *and() {
-    Node *node = equality();
+    Node *node = bitor();
     Token *tok;
     while (tok = consume("&&"))
-        node = new_binary(ND_And, node, equality(), tok);
+        node = new_binary(ND_And, node, bitor(), tok);
     return node;
 }
+Node *bitor() {
+    Node * node = bitxor();
+    Token *tok;
+    while (tok = consume("|")) {
+        node = new_binary(ND_BitOr, node, bitxor(), tok);
+    }
+    return node;
+}
+
+Node *bitxor() {
+    Node * node = bitand();
+    Token *tok;
+    while (tok = consume("^")) {
+        node = new_binary(ND_BitXor, node, bitand(), tok);
+    }
+    return node;
+}
+Node *bitand() {
+    Node * node = equality();
+    Token *tok;
+    while (tok = consume("&")) {
+        node = new_binary(ND_BitAnd, node, equality(), tok);
+    }
+    return node;
+}
+
 
 Node *equality() {
     Node *node = relational();
