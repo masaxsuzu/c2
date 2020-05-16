@@ -388,6 +388,8 @@ int main() {
       0;
     }), "nqueen");
 
+    assert(3, (1,2,3), "1,2,3");
+
     printf("OK\n");
     return 0;
 }

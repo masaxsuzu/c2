@@ -90,6 +90,7 @@ typedef enum {
     ND_Lt,      // <
     ND_Le,      // <=
     ND_Assign,  // =
+    ND_Comma,   // ,
     ND_Addr,    // *
     ND_Deref,   // &
     ND_Var,

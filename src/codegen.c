@@ -233,6 +233,10 @@ void gen(Node *node) {
         gen(node->right);
         store(node->ty);
         return;
+    case ND_Comma:
+        gen(node->left);
+        gen(node->right);
+        return;
     case ND_Cast:
         gen(node->left);
         truncate(node->ty);

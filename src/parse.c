@@ -815,7 +815,15 @@ Node *stmt_expr(Token *tok) {
     return node;
 }
 
-Node *expr() { return assign(); }
+Node *expr() { 
+    Node *node =  assign();
+    Token *tok;
+    while(tok = consume(",")) {
+        node = new_unary(ND_Expr_Stmt, node, node->token);
+        node = new_binary(ND_Comma, node, assign(), tok);
+    } 
+    return node;
+}
 
 Node *assign() {
     Node *node = equality();
