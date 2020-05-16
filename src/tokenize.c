@@ -214,6 +214,31 @@ Token *read_string_literal(Token *cur, char *start) {
     return tok;
 }
 
+Token *read_char_literal(Token *cur, char *start) {
+    char *p = start+1;
+    if(*p == '\0') {
+        error_at(start, "unclosed char literal");
+    }
+
+    char c;
+    if(*p == '\\') {
+        *p++;
+        c = get_escape_char(*p++);
+    } else {
+        c = *p++;
+    }
+
+    if (*p != '\'') {
+        error_at(start, "char literal must be one letter");
+    }
+
+    *p++;
+
+    Token *tok = new_token(TK_Number, cur, start, p - start);
+    tok->value = c;
+    return tok;
+}
+
 // Tokenize input 'p'.
 // Then return the token.
 Token *tokenize() {
@@ -248,6 +273,12 @@ Token *tokenize() {
 
         if (*p == '"') {
             cur = read_string_literal(cur, p);
+            p += cur->len;
+            continue;
+        }
+
+        if (*p == '\'') {
+            cur = read_char_literal(cur, p);
             p += cur->len;
             continue;
         }
