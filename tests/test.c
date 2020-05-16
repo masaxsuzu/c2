@@ -103,8 +103,7 @@ int solve(int (*board)[10], int row) {
     return 0;
   }
   for (int i = 0; i < 10; i++) {
-    if (conflict(board, row, i)) {
-    } else {
+    if (!conflict(board, row, i)) {
       board[row][i] = 1;
       solve(board, row + 1);
       board[row][i] = 0;
@@ -404,6 +403,10 @@ int main() {
     assert(0, ({ int a[3]; a[0]=0; a[1]=1; a[2]=2; int *p=a+1; (*p++)--; a[1]; }), "int a[3]; a[0]=0; a[1]=1; a[2]=2; int *p=a+1; (*p++); a[0];");
     assert(2, ({ int a[3]; a[0]=0; a[1]=1; a[2]=2; int *p=a+1; (*p++)--; a[2]; }), "int a[3]; a[0]=0; a[1]=1; a[2]=2; int *p=a+1; (*p++); a[0];");
     assert(2, ({ int a[3]; a[0]=0; a[1]=1; a[2]=2; int *p=a+1; (*p++)--; *p; }), "int a[3]; a[0]=0; a[1]=1; a[2]=2; int *p=a+1; (*p++); a[0];");
+
+    assert(0, !1, "!1");
+    assert(0, !2, "!2");
+    assert(1, !0, "!0");
 
     printf("OK\n");
     return 0;

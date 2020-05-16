@@ -978,6 +978,11 @@ Node *unary() {
     if (tok = consume("*")) {
         return new_unary(ND_Deref, cast(), tok);
     }
+
+    if (tok = consume("!")) {
+        return new_unary(ND_Not, cast(), tok);
+    }
+
     if (tok = consume("sizeof")) {
         if (consume("(")) {
             if (is_typename()) {

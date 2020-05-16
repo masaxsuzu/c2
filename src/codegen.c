@@ -275,7 +275,14 @@ void gen(Node *node) {
         store(node->ty);
         inc(node->ty);
         return;
-
+    case ND_Not:
+        gen(node->left);
+        printf("  pop rax\n");
+        printf("  cmp rax, 0\n");
+        printf("  sete al\n");
+        printf("  movzb rax, al\n");
+        printf("  push rax\n");
+        return;
     case ND_Comma:
         gen(node->left);
         gen(node->right);
