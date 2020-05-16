@@ -1009,6 +1009,10 @@ Node *unary() {
     if (tok = consume("!")) {
         return new_unary(ND_Not, cast(), tok);
     }
+    
+    if (tok = consume("~")) {
+        return new_unary(ND_BitNot, cast(), tok);
+    }
 
     if (tok = consume("sizeof")) {
         if (consume("(")) {

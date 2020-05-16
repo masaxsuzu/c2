@@ -347,6 +347,12 @@ void gen(Node *node) {
         printf("  movzb rax, al\n");
         printf("  push rax\n");
         return;
+    case ND_BitNot:
+        gen(node->left);
+        printf("  pop rax\n");
+        printf("  not rax\n");
+        printf("  push rax\n");
+        return;
     case ND_Comma:
         gen(node->left);
         gen(node->right);

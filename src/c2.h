@@ -104,6 +104,7 @@ typedef enum {
     ND_Addr,    // *
     ND_Deref,   // &
     ND_Not,     // !
+    ND_BitNot,     // ~
     ND_Var,
     ND_Expr_Stmt,
     ND_Stmt_Expr,   // ({int x = 1; x;} => 1)
