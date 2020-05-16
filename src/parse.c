@@ -734,9 +734,16 @@ Node *stmt2() {
 
         Node *node = new_node(ND_For, tok);
         expect("(");
+        Scope *sc = enter_scope();
+
         if (!consume(";")) {
-            node->init = read_expr_stmt();
-            expect(";");
+            if(is_typename()) {
+                node->init = declaration();
+            }
+            else {
+                node->init = read_expr_stmt();
+                expect(";");
+            }
         }
         if (!consume(";")) {
             node->cond = expr();
@@ -748,7 +755,7 @@ Node *stmt2() {
         }
 
         node->then = stmt();
-
+        exit_scope(sc);
         return node;
     }
 

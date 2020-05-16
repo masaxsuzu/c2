@@ -334,6 +334,9 @@ int main() {
     
     assert(3, ({ static_fn(); }), "static_fn();");
 
+    assert(4, ({ int i = 0; for(int j = 0; j < 5; j = j + 1) i = j; i; }), "int i = 0; for(int j = 0; j < 5; j = j + 1) i = j; i;");
+    assert(10, ({ int i = 10; for(int i = 0; i < 5; i = i + 1) i = 4; i; }), "int i = 10; for(int i = 0; i < 5; i = i + 1) i = 4; i;");
+
     printf("OK\n");
     return 0;
 }
