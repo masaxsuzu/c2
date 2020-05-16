@@ -257,7 +257,7 @@ Type *struct_decl() {
         if (!vs) {
             error_at(tag->str, "unknown struct type");
         }
-        if(vs->ty->kind != TY_Struct) {
+        if (vs->ty->kind != TY_Struct) {
             error_at(tag->str, "not a struct tag");
         }
         return vs->ty;
@@ -297,7 +297,7 @@ Type *struct_decl() {
 
 bool consume_end_of_brace() {
     Token *tok = token;
-    if(consume("}") || (consume(",") && consume("}"))) {
+    if (consume("}") || (consume(",") && consume("}"))) {
         return true;
     }
 
@@ -311,12 +311,12 @@ Type *enum_specifier() {
     Type *ty = enum_type();
 
     Token *tag = consume_identifier();
-    if(tag && !peek("{")) {
+    if (tag && !peek("{")) {
         TagScope *ts = find_tag(tag);
-        if(!ts) {
+        if (!ts) {
             error_at(tag->str, "unknown enum type");
         }
-        if(ts->ty->kind != TY_Enum) {
+        if (ts->ty->kind != TY_Enum) {
             error_at(tag->str, "not an enum tag");
         }
         return ts->ty;
@@ -327,9 +327,9 @@ Type *enum_specifier() {
     // read enum list { name1 , name2, name3 }
     int count = 0;
 
-    for(;;) {
+    for (;;) {
         char *name = expect_identifier();
-        if(consume("=")) {
+        if (consume("=")) {
             count = expect_number();
         }
 
@@ -338,14 +338,14 @@ Type *enum_specifier() {
         vs->enum_ty = ty;
         vs->enum_val = count++;
 
-        if(consume_end_of_brace()) {
+        if (consume_end_of_brace()) {
             break;
         }
 
         expect(",");
     }
 
-    if(tag) {
+    if (tag) {
         push_tag_scope(tag, ty);
     }
     return ty;
@@ -353,9 +353,8 @@ Type *enum_specifier() {
 
 bool is_typename() {
     return peek("long") || peek("int") || peek("short") || peek("char") ||
-           peek("struct") || peek("enum") || peek("_Bool") || peek("void") || 
-           peek("typedef") || peek("static") ||
-           find_typedef(token);
+           peek("struct") || peek("enum") || peek("_Bool") || peek("void") ||
+           peek("typedef") || peek("static") || find_typedef(token);
 }
 
 bool is_func() {
@@ -401,15 +400,15 @@ Type *basetype(StorageClass *sclass) {
                 error_at(tok->str, "invalid storage class specifier");
             }
 
-            if(consume("typedef")) {
+            if (consume("typedef")) {
                 *sclass |= TypeDef;
-            }
-            else if(consume("static")) {
+            } else if (consume("static")) {
                 *sclass |= Static;
             }
 
-            if(*sclass & (*sclass -1 )) {
-                error_at(tok->str, "typedef and static may not be used together");
+            if (*sclass & (*sclass - 1)) {
+                error_at(tok->str,
+                         "typedef and static may not be used together");
             }
             continue;
         }
@@ -423,11 +422,9 @@ Type *basetype(StorageClass *sclass) {
 
             if (peek("struct")) {
                 ty = struct_decl();
-            } 
-            else if(peek("enum")) {
+            } else if (peek("enum")) {
                 ty = enum_specifier();
-            }
-            else {
+            } else {
                 ty = find_typedef(token);
                 token = token->next;
             }
@@ -737,10 +734,9 @@ Node *stmt2() {
         Scope *sc = enter_scope();
 
         if (!consume(";")) {
-            if(is_typename()) {
+            if (is_typename()) {
                 node->init = declaration();
-            }
-            else {
+            } else {
                 node->init = read_expr_stmt();
                 expect(";");
             }
@@ -815,13 +811,13 @@ Node *stmt_expr(Token *tok) {
     return node;
 }
 
-Node *expr() { 
-    Node *node =  assign();
+Node *expr() {
+    Node *node = assign();
     Token *tok;
-    while(tok = consume(",")) {
+    while (tok = consume(",")) {
         node = new_unary(ND_Expr_Stmt, node, node->token);
         node = new_binary(ND_Comma, node, assign(), tok);
-    } 
+    }
     return node;
 }
 
@@ -927,11 +923,11 @@ Node *primary() {
             return node;
         }
         VarScope *vs = find_var(tok);
-        if (vs){
-            if(vs->var) {
+        if (vs) {
+            if (vs->var) {
                 return new_var_node(vs->var, tok);
             }
-            if(vs->enum_ty) {
+            if (vs->enum_ty) {
                 return new_number_node(vs->enum_val, tok);
             }
         }

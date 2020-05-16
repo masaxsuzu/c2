@@ -104,7 +104,7 @@ void gen(Node *node) {
     switch (node->kind) {
     case ND_If: {
         int id = labelId++;
-        if(node->otherwise) {
+        if (node->otherwise) {
             gen(node->cond);
             printf("  pop rax\n");
             printf("  cmp rax, 0\n");
@@ -318,7 +318,7 @@ void load_arg(Variable *var, int index) {
 void emit_text(Program *p) {
     printf(".text\n");
     for (Function *fn = p->next; fn; fn = fn->next) {
-        if(!fn->is_static) {
+        if (!fn->is_static) {
             printf(".global %s\n", fn->name);
         }
         printf("%s:\n", fn->name);

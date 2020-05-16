@@ -139,12 +139,11 @@ bool at_eof() { return token->kind == TK_Eof; }
 
 char *starts_with_reserved(char *p) {
     // Keyword
-    static char *kw[] = {"return", "if",     "else", "while", "for",  "struct",
-                         "char",   "short",  "int",  "long",  "void",
+    static char *kw[] = {"return", "if",      "else",   "while",
+                         "for",    "struct",  "char",   "short",
+                         "int",    "long",    "void",
                          "_Bool", // bool is just a macro.
-                         "sizeof", "typedef",
-                         "static",
-                         "enum"};
+                         "sizeof", "typedef", "static", "enum"};
 
     for (int i = 0; i < sizeof(kw) / sizeof(*kw); i++) {
         int len = strlen(kw[i]);
@@ -217,13 +216,13 @@ Token *read_string_literal(Token *cur, char *start) {
 }
 
 Token *read_char_literal(Token *cur, char *start) {
-    char *p = start+1;
-    if(*p == '\0') {
+    char *p = start + 1;
+    if (*p == '\0') {
         error_at(start, "unclosed char literal");
     }
 
     char c;
-    if(*p == '\\') {
+    if (*p == '\\') {
         *p++;
         c = get_escape_char(*p++);
     } else {
