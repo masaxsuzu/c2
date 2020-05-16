@@ -133,6 +133,7 @@ struct Function {
   Parameters *params;
   Parameters *locals;
   int stack_size;
+  bool is_static;
 };
 
 typedef struct Program Program;

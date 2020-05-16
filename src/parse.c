@@ -29,6 +29,11 @@ Parameters *globals;
 VarScope *varscope;
 TagScope *tagscope;
 
+typedef enum {
+    TypeDef = 1 << 0,
+    Static = 1 << 1,
+} StorageClass;
+
 Function *function();
 void *global_variable();
 Node *stmt();
@@ -45,7 +50,7 @@ Node *primary();
 Node *postfix();
 
 Type *read_type_suffix(Type *ty);
-Type *basetype();
+Type *basetype(StorageClass *sclass);
 Type *declarator(Type *ty, char **name);
 Type *enum_specifier();
 
@@ -106,7 +111,6 @@ Type *find_typedef(Token *tok) {
             return vs->type_def;
         }
     }
-
     return NULL;
 }
 
@@ -350,13 +354,14 @@ Type *enum_specifier() {
 bool is_typename() {
     return peek("long") || peek("int") || peek("short") || peek("char") ||
            peek("struct") || peek("enum") || peek("_Bool") || peek("void") || 
-           peek("typedef") || find_typedef(token);
+           peek("typedef") || peek("static") ||
+           find_typedef(token);
 }
 
 bool is_func() {
     Token *tok = token;
-    bool is_typedef;
-    Type *ty = basetype(&is_typedef);
+    StorageClass sclass;
+    Type *ty = basetype(&sclass);
     char *name = NULL;
     declarator(ty, &name);
     bool isfunc = name && consume("(");
@@ -366,7 +371,7 @@ bool is_func() {
 
 // basetype = builtin-type | struct-decl | typedef-name
 // builtin-type   = "char" | "short" | "int" | "long" | void
-Type *basetype(bool *is_typedef) {
+Type *basetype(StorageClass *sclass) {
     if (!is_typename()) {
         error_at(token->str, "incorrect type");
     }
@@ -384,18 +389,28 @@ Type *basetype(bool *is_typedef) {
     Type *ty = int_type();
     int counter = 0;
 
-    if (is_typedef) {
-        *is_typedef = false;
+    if (sclass) {
+        *sclass = 0;
     }
 
     while (is_typename()) {
         Token *tok = token;
 
-        if (consume("typedef")) {
-            if (!is_typedef) {
+        if (peek("typedef") || peek("static")) {
+            if (!sclass) {
                 error_at(tok->str, "invalid storage class specifier");
             }
-            *is_typedef = true;
+
+            if(consume("typedef")) {
+                *sclass |= TypeDef;
+            }
+            else if(consume("static")) {
+                *sclass |= Static;
+            }
+
+            if(*sclass & (*sclass -1 )) {
+                error_at(tok->str, "typedef and static may not be used together");
+            }
             continue;
         }
 
@@ -584,14 +599,15 @@ Parameters *read_func_parameters() {
 // function = basetype declarator "(" params? ")" "{" stmt* "}"
 Function *function() {
     locals = NULL;
-    Type *ty = basetype(NULL);
+    StorageClass sclass;
+    Type *ty = basetype(&sclass);
     char *name = NULL;
     ty = declarator(ty, &name);
     new_gvar(name, func_type(ty), false);
 
     Function *f = calloc(1, sizeof(Function));
     f->name = name;
-
+    f->is_static = (sclass == Static);
     expect("(");
 
     Scope *scope = enter_scope();
@@ -620,13 +636,13 @@ Function *function() {
 
 // global-var = basetype declarator type-suffix ";"
 void *global_variable() {
-    bool is_typedef;
-    Type *ty = basetype(&is_typedef);
+    StorageClass sclass;
+    Type *ty = basetype(&sclass);
     char *name = NULL;
     ty = declarator(ty, &name);
     ty = read_type_suffix(ty);
     expect(";");
-    if (is_typedef) {
+    if (sclass == TypeDef) {
         push_var_scope(name)->type_def = ty;
     } else {
         new_gvar(name, ty, true);
@@ -636,8 +652,8 @@ void *global_variable() {
 // declaration = basetype declarator type-suffix ("=" expr)? ";"
 Node *declaration() {
     Token *tok = token;
-    bool is_typedef;
-    Type *ty = basetype(&is_typedef);
+    StorageClass sclass;
+    Type *ty = basetype(&sclass);
     if (consume(";")) {
         return new_node(ND_Null, tok);
     }
@@ -646,12 +662,11 @@ Node *declaration() {
     ty = declarator(ty, &name);
     ty = read_type_suffix(ty);
 
-    if (is_typedef) {
+    if (sclass == TypeDef) {
         expect(";");
         push_var_scope(name)->type_def = ty;
         return new_node(ND_Null, tok);
     }
-
     if (ty->kind == TY_Void) {
         error_at(tok->str, "variable is declared as void");
     }

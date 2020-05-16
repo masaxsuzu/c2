@@ -303,7 +303,9 @@ void load_arg(Variable *var, int index) {
 void emit_text(Program *p) {
     printf(".text\n");
     for (Function *fn = p->next; fn; fn = fn->next) {
-        printf(".global %s\n", fn->name);
+        if(!fn->is_static) {
+            printf(".global %s\n", fn->name);
+        }
         printf("%s:\n", fn->name);
 
         functionName = fn->name;
