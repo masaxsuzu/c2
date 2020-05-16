@@ -65,6 +65,8 @@ int sizeof_nested_type2(int (*x)[4]) {
 void nop() {
 }
 
+typedef int MyInt;
+
 int main() {
     assert(0, 0, "0");
     assert(42, 42, "42");
@@ -289,6 +291,19 @@ int main() {
     assert(4, ({ sizeof(struct {int a;}); }), "sizeof(struct {int a;});");
     assert(8, ({ sizeof(int (**)); }), "sizeof(int (**));");
     assert(32, ({ sizeof(int **[4]); }), "sizeof(int **[4]);");
+
+    assert(1, ({ char x; sizeof(x); }), "char x; sizeof(x);");
+    assert(2, ({ short int x; sizeof(x); }), "short int x; sizeof(x);");
+    assert(2, ({ int short x; sizeof(x); }), "int short x; sizeof(x);");
+    assert(4, ({ int x; sizeof(x); }), "int x; sizeof(x);");
+    assert(4, ({ typedef t; t x; sizeof(x); }), "typedef t; t x; sizeof(x);");
+    assert(4, ({ typedef typedef t; t x; sizeof(x); }), "typedef typedef t; t x; sizeof(x);");
+    assert(8, ({ long int x; sizeof(x); }), "long int x; sizeof(x);");
+    assert(8, ({ int long x; sizeof(x); }), "int long x; sizeof(x);");
+    assert(8, ({ long long x; sizeof(x); }), "long long x; sizeof(x);");
+    assert(8, ({ long int long x; sizeof(x); }), "long int long x; sizeof(x);");
+
+    assert(3, ({ MyInt x=3; x; }), "MyInt x=3; x;");
 
     printf("OK\n");
     return 0;
