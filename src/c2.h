@@ -103,6 +103,8 @@ typedef enum {
     ND_Comma,   // ,
     ND_Addr,    // *
     ND_Deref,   // &
+    ND_And,     // &&
+    ND_Or,     // ||
     ND_Not,     // !
     ND_BitNot,     // ~
     ND_Var,

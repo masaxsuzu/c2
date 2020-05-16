@@ -40,6 +40,8 @@ Node *stmt();
 Node *stmt2();
 Node *expr();
 Node *assign();
+Node *or();
+Node *and();
 Node *equality();
 Node *relational();
 Node *add();
@@ -822,7 +824,7 @@ Node *expr() {
 }
 
 Node *assign() {
-    Node *node = equality();
+    Node *node = or();
     Token *tok;
     if (tok = consume("=")) {
         return new_binary(ND_Assign, node, assign(), tok);
@@ -854,6 +856,22 @@ Node *assign() {
         }
     }
 
+    return node;
+}
+
+Node *or() {
+    Node *node = and();
+    Token *tok;
+    while (tok = consume("||"))
+        node = new_binary(ND_Or, node, and(), tok);
+    return node;
+}
+
+Node *and() {
+    Node *node = equality();
+    Token *tok;
+    while (tok = consume("&&"))
+        node = new_binary(ND_And, node, equality(), tok);
     return node;
 }
 

@@ -87,11 +87,9 @@ int conflict(int (*board)[10], int row, int col) {
     if (board[i][col])
       return 1;
     int j = row - i;
-    if (0 < col - j + 1)
-      if (board[i][col - j])
+    if (0 < col - j + 1 && (board[i][col - j]))
         return 1;
-    if (col + j < 10)
-      if (board[i][col + j])
+    if (col + j < 10 && (board[i][col + j]))
         return 1;
   }
   return 0;
@@ -419,6 +417,14 @@ int main() {
 
     assert(-1, ~0, "~0");
     assert(0, ~-1, "~-1");
+
+    assert(0, 0&&1, "0&&1");
+    assert(0, (2-2)&&5, "(2-2)&&5");
+    assert(1, 1&&5, "1&&5");
+
+    assert(1, 0||1, "0||1");
+    assert(1, (2-2)||5, "(2-2)||5");
+    assert(0, 1||5, "1||5");
 
     printf("OK\n");
     return 0;
