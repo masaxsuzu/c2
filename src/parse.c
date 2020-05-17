@@ -320,6 +320,19 @@ bool consume_end_of_brace() {
     return false;
 }
 
+bool peek_end_of_brace() {
+    Token *tok = token;
+    int ret = consume("}") || ((consume(",") && consume("}")));
+    token = tok;
+    return ret;
+}
+
+void expect_end_of_brace() {
+    if (!consume_end_of_brace()) {
+        expect("}");
+    }
+}
+
 Type *enum_specifier() {
     expect("enum");
 
@@ -693,6 +706,38 @@ void *global_variable() {
     }
 }
 
+typedef struct Designator Designator;
+struct Designator {
+  Designator *next;
+  int idx;
+};
+
+Node *new_desg_node2(Variable *var, Designator *desg, Token *tok) {
+    if(!desg) {
+        return new_var_node(var, tok);
+    }
+    return NULL;
+}
+
+Node *new_desg_node(Variable *var, Designator *desg, Node *right) {
+    Node *left = new_desg_node2(var, desg, right->token);
+    Node *node = new_binary(ND_Assign, left, right, right->token);
+    return new_unary(ND_Expr_Stmt, node, right->token);
+}
+
+Node *init_lvar2(Node *cur, Variable *var, Type *ty, Designator *desg) {
+    cur->next = new_desg_node(var, desg, assign());
+    return cur;
+}
+
+Node *init_lvar(Variable *var, Token *tok) {
+    Node head = {};
+    init_lvar2(&head, var, var->ty, NULL);
+    Node *node = new_node(ND_Block, tok);
+    node->block = head.next;
+    return node;
+}
+
 // declaration = basetype declarator type-suffix ("=" expr)? ";"
 Node *declaration() {
     Token *tok = token;
@@ -726,11 +771,9 @@ Node *declaration() {
     }
 
     expect("=");
-    Node *left = new_var_node(var, tok);
-    Node *right = expr();
+    Node *node = init_lvar(var, tok);
     expect(";");
-    Node *node = new_binary(ND_Assign, left, right, tok);
-    return new_unary(ND_Expr_Stmt, node, tok);
+    return node;
 }
 
 Node *read_expr_stmt(void) {
