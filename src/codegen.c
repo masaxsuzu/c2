@@ -2,6 +2,7 @@
 
 int labelId = 1;
 int breakId;
+int continueId;
 char *functionName;
 // Copy args into the resiters.
 static char *argreg1[] = {"dil", "sil", "dl", "cl", "r8b", "r9b"};
@@ -213,24 +214,29 @@ void gen(Node *node) {
     case ND_While: {
         int id = labelId++;
         int brk = breakId;
+        int cout = continueId;
         breakId = id;
+        continueId = id;
 
-        printf(".L.begin.%d:\n", id);
+        printf(".L.continue.%d:\n", id);
         gen(node->cond);
         printf("  pop rax\n");
         printf("  cmp rax, 0\n");
         printf("  je  .L.break.%d\n", id);
         gen(node->then);
-        printf("  jmp .L.begin.%d\n", id);
+        printf("  jmp .L.continue.%d\n", id);
         printf(".L.break.%d:\n", id);
 
         breakId = brk;
+        continueId = cout;
         return;
     }
     case ND_For: {
         int id = labelId++;
         int brk = breakId;
+        int cout = continueId;
         breakId = id;
+        continueId = id;
 
         if (node->init) {
             gen(node->init);
@@ -243,6 +249,7 @@ void gen(Node *node) {
             printf("  je  .L.break.%d\n", id);
         }
         gen(node->then);
+        printf(".L.continue.%d:\n", id);
         if (node->inc) {
             gen(node->inc);
         }
@@ -250,6 +257,7 @@ void gen(Node *node) {
         printf(".L.break.%d:\n", id);
 
         breakId = brk;
+        continueId = cout;
         return;
     }
     case ND_Break:
@@ -257,6 +265,12 @@ void gen(Node *node) {
             error_at(node->token->str, "stray break");
         }
         printf("  jmp .L.break.%d\n", breakId);
+        return;
+    case ND_Continue:
+        if(continueId == 0) {
+            error_at(node->token->str, "stray continue");
+        }
+        printf("  jmp .L.continue.%d\n", continueId);
         return;
     case ND_Block:
     case ND_Stmt_Expr:

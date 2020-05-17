@@ -76,6 +76,7 @@ typedef enum {
     ND_While,
     ND_For,
     ND_Break,
+    ND_Continue,
     ND_Return,
     ND_Block,
     ND_Add,
