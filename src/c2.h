@@ -66,6 +66,7 @@ struct Parameters {
 typedef struct Member Member;
 struct Member {
     Type *ty;
+    Token *tok; // for error message
     char *name;
     Member *next;
     int offset;

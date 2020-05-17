@@ -242,12 +242,14 @@ char *new_label() {
 // struct-member = basetype declarator type-suffix ";"
 Member *struct_member() {
     Type *ty = basetype(NULL);
+    Token *tok = token;
     char *name = NULL;
     ty = declarator(ty, &name);
     ty = read_type_suffix(ty);
 
     Member *mem = calloc(1, sizeof(Member));
     mem->ty = ty;
+    mem->tok = tok;
     mem->name = name;
     expect(";");
     return mem;
