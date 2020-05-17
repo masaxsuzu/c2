@@ -785,6 +785,11 @@ Node *stmt2() {
         return node;
     }
 
+    if(tok = consume("break")) {
+        expect(";");
+        return new_node(ND_Break, tok);
+    }
+
     if (is_typename()) {
         return declaration();
     }
