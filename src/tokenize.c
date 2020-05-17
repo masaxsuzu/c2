@@ -154,7 +154,7 @@ char *starts_with_reserved(char *p) {
 
     static char *ops[] = {
         "==", "!=", "<=", ">=", "->", "++", "--",
-        "+=", "-=", "*=", "/=", "&&", "||",
+        "+=", "-=", "*=", "/=", "&&", "||", ">>", "<<",
     };
 
     for (int i = 0; i < sizeof(ops) / sizeof(*ops); i++)

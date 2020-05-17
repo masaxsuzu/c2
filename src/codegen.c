@@ -114,6 +114,14 @@ void gen_binary(Node *node) {
     case ND_BitXor:
         printf("  xor rax, rdi\n");
         break;
+    case ND_LShift:
+        printf("  mov cl, dil\n");
+        printf("  shl rax, cl\n");
+        break;
+    case ND_RShift:
+        printf("  mov cl, dil\n");
+        printf("  sar rax, cl\n");
+        break;
     default:
         break;
     }

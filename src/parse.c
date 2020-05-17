@@ -49,6 +49,7 @@ Node * or ();
 Node * and ();
 Node *equality();
 Node *relational();
+Node *shift();
 Node *add();
 Node *mul();
 Node *cast();
@@ -1018,21 +1019,36 @@ Node *equality() {
 }
 
 Node *relational() {
-    Node *node = add();
+    Node *node = shift();
     Token *tok;
     for (;;) {
         if (tok = consume("<")) {
-            node = new_binary(ND_Lt, node, add(), tok);
+            node = new_binary(ND_Lt, node, shift(), tok);
         } else if (tok = consume("<=")) {
-            node = new_binary(ND_Le, node, add(), tok);
+            node = new_binary(ND_Le, node, shift(), tok);
         } else if (tok = consume(">")) {
-            node = new_binary(ND_Lt, add(), node, tok);
+            node = new_binary(ND_Lt, shift(), node, tok);
         } else if (tok = consume(">=")) {
-            node = new_binary(ND_Le, add(), node, tok);
+            node = new_binary(ND_Le, shift(), node, tok);
         } else {
             return node;
         }
     }
+}
+
+Node *shift() {
+    Node *node = add();
+    Token *tok;
+    for (;;) {
+        if (tok = consume("<<")) {
+            node = new_binary(ND_LShift, node, add(), tok);
+        } else if (tok = consume(">>")) {
+            node = new_binary(ND_RShift, node, add(), tok);
+        } else {
+            return node;
+        }
+    }
+    return node;
 }
 
 Node *add() {

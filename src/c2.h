@@ -112,6 +112,8 @@ typedef enum {
     ND_Deref,   // &
     ND_And,     // &&
     ND_Or,     // ||
+    ND_LShift,
+    ND_RShift,
     ND_Not,     // !
     ND_BitNot,     // ~
     ND_BitAnd, // &
