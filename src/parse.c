@@ -29,6 +29,8 @@ Parameters *globals;
 VarScope *varscope;
 TagScope *tagscope;
 
+Node *current_switch;
+
 typedef enum {
     TypeDef = 1 << 0,
     Static = 1 << 1,
@@ -842,6 +844,45 @@ Node *stmt2() {
             return node;
         }
         token = tok;
+    }
+
+    if (tok = consume("switch")) {
+        Node *node = new_node(ND_Switch, tok);
+        expect("(");
+        node->cond = expr();
+        expect(")");
+
+        Node *sw = current_switch;
+        current_switch = node;
+        node->then = stmt();
+        current_switch = sw;
+        return node;
+    }
+
+    if (tok = consume("case")) {
+        if (!current_switch) {
+            error_at(tok->str, "stray case");
+        }
+
+        long val = expect_number();
+        expect(":");
+
+        Node *node = new_unary(ND_Case, stmt(), tok);
+        node->value = val;
+        node->case_next = current_switch->case_next;
+        current_switch->case_next = node;
+        return node;
+    }
+
+    if (tok = consume("default")) {
+        if (!current_switch) {
+            error_at(tok->str, "stray case");
+        }
+        expect(":");
+
+        Node *node = new_unary(ND_Case, stmt(), tok);
+        current_switch->default_case = node;
+        return node;
     }
 
     if (is_typename()) {

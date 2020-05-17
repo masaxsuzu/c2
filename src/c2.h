@@ -79,6 +79,8 @@ typedef enum {
     ND_Break,
     ND_Continue,
     ND_Goto,
+    ND_Switch,
+    ND_Case,
     ND_Label,
     ND_Return,
     ND_Block,
@@ -133,6 +135,13 @@ struct Node {
     Type *ty;
     Node *left;
     Node *right;
+    
+    // Switch-cases
+    Node *case_next;
+    Node *default_case;
+    int case_label;
+    int case_end_label;
+    
     long value;          // only for number
     Variable *var;
     Node *cond;         // if

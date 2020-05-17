@@ -144,7 +144,7 @@ char *starts_with_reserved(char *p) {
         "char",   "short",   "int",    "long",  "void",
         "_Bool", // bool is just a macro.
         "sizeof", "typedef", "static", "enum",  
-        "break", "continue", "goto" };
+        "break", "continue", "goto","switch", "case", "default" };
 
     for (int i = 0; i < sizeof(kw) / sizeof(*kw); i++) {
         int len = strlen(kw[i]);

@@ -279,6 +279,40 @@ void gen(Node *node) {
         printf(".L.label.%s.%s:\n", functionName, node->label_name);
         gen(node->left);
         return;
+    case ND_Switch: {
+        int id = labelId++;
+        int brk = breakId;
+        breakId = id;
+        node->case_label = id;
+
+        gen(node->cond);
+        printf("  pop rax\n");
+
+        for(Node *n = node->case_next; n; n=n->case_next) {
+            n->case_label = labelId++;
+            n->case_end_label = id;
+            printf("  cmp rax, %ld\n", n->value);
+            printf("  je .L.case.%d\n", n->case_label);
+        }
+
+        if(node->default_case) {
+            int i = labelId++;
+            node->default_case->case_end_label = id;
+            node->default_case->case_label = i;
+            printf("  jmp .L.case.%d\n", i);
+        }
+
+        printf("  jmp .L.break.%d\n", id);
+        gen(node->then);
+        printf(".L.break.%d:\n", id);
+
+        breakId = brk;
+        return;
+    }
+    case ND_Case:
+        printf(".L.case.%d:\n", node->case_label);
+        gen(node->left);
+        return;
     case ND_Block:
     case ND_Stmt_Expr:
         for (Node *n = node->block; n; n = n->next)
