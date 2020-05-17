@@ -596,6 +596,13 @@ Parameters *read_func_parameter() {
     char *name = NULL;
     ty = declarator(ty, &name);
     ty = read_type_suffix(ty);
+    
+    // convert `array of T` into `pointer to T` only in the parameter.
+    // int func(int[] x) { return x[0]; } is ok.
+    if(ty->kind == TY_Array) {
+        ty = pointer_to(ty->base);
+    }
+
     p->var = new_lvar(name, ty, true);
     return p;
 }

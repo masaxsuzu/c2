@@ -55,6 +55,9 @@ int decl2(int x) {
 }
 
 int sizeof_nested_type1(int *x[4]) { 
+    // warning: 
+    // sizeof on array function parameter will return size of 
+    // 'int **' instead of 'int *[4]'
     return sizeof(x);
 }
 
@@ -108,6 +111,8 @@ int solve(int (*board)[10], int row) {
     }
   }
 }
+
+int param_decay(int x[]) { return x[0]; }
 
 int main() {
     assert(0, 0, "0");
@@ -308,7 +313,7 @@ int main() {
     assert(8, ({ int (*x)[3]; sizeof(x); }), "int (*x)[3]; sizeof(x);");
     assert(3, ({ int *x[3]; int y; x[0]=&y; y=3; x[0][0]; }), "int *x[3]; int y; x[0]=&y; y=3; x[0][0];");
     assert(4, ({ int x[3]; int (*y)[3]=x; y[0][0]=4; y[0][0]; }), "int x[3]; int (*y)[3]=x; y[0][0]=4; y[0][0];");
-    assert(32, ({ int *x[4]; sizeof_nested_type1(x); }), "int *x[4]; sizeof_nested_type1(x);");
+    assert(8, ({ int *x[4]; sizeof_nested_type1(x); }), "int *x[4]; sizeof_nested_type1(x);");
     assert(8, ({ int (*x)[4]; sizeof_nested_type2(x); }), "int (*x)[4]; sizeof_nested_type2(x);");
     assert(32, ({ int **x[4]; sizeof(x); }), "int **x[4]; sizeof(x); ");
     assert(8, ({ int *(*x)[4]; sizeof(x); }), "int *(*x)[4]; sizeof(x); ");
@@ -460,6 +465,8 @@ int main() {
     assert(11, ({ int i=0; int j=0; while (i++<10) { if (i>5) continue; j++; } i; }), "int i=0; int j=0; while (i++<10) { if (i>5) continue; j++; } i;");
     assert(5, ({ int i=0; int j=0; while (i++<10) { if (i>5) continue; j++; } j; }), "int i=0; int j=0; while (i++<10) { if (i>5) continue; j++; } j;");
     assert(11, ({ int i=0; int j=0; while(!i) { while (j++!=10) continue; break; } j; }), "int i=0; int j=0; while(!i) { while (j++!=10) continue; break; } j;");
+
+    assert(3, ({ int x[2]; x[0]=3; param_decay(x); }), "int x[2]; x[0]=3; param_decay(x);");
 
     printf("OK\n");
     return 0;
