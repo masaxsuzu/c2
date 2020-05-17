@@ -139,12 +139,11 @@ bool at_eof() { return token->kind == TK_Eof; }
 
 char *starts_with_reserved(char *p) {
     // Keyword
-    static char *kw[] = {"return", "if",      "else",   "while",
-                         "for",    "struct",  "char",   "short",
-                         "int",    "long",    "void",
-                         "_Bool", // bool is just a macro.
-                         "sizeof", "typedef", "static", "enum", 
-                         "break", "continue"};
+    static char *kw[] = {
+        "return", "if",      "else",   "while", "for",   "struct",
+        "char",   "short",   "int",    "long",  "void",
+        "_Bool", // bool is just a macro.
+        "sizeof", "typedef", "static", "enum",  "break", "continue"};
 
     for (int i = 0; i < sizeof(kw) / sizeof(*kw); i++) {
         int len = strlen(kw[i]);
@@ -153,7 +152,8 @@ char *starts_with_reserved(char *p) {
     }
 
     static char *ops[] = {
-        "==", "!=", "<=", ">=", "->", "++", "--", "+=", "-=", "*=", "/=", "&&", "||",
+        "==", "!=", "<=", ">=", "->", "++", "--",
+        "+=", "-=", "*=", "/=", "&&", "||",
     };
 
     for (int i = 0; i < sizeof(ops) / sizeof(*ops); i++)

@@ -261,13 +261,13 @@ void gen(Node *node) {
         return;
     }
     case ND_Break:
-        if(breakId == 0) {
+        if (breakId == 0) {
             error_at(node->token->str, "stray break");
         }
         printf("  jmp .L.break.%d\n", breakId);
         return;
     case ND_Continue:
-        if(continueId == 0) {
+        if (continueId == 0) {
             error_at(node->token->str, "stray continue");
         }
         printf("  jmp .L.continue.%d\n", continueId);

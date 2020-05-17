@@ -41,10 +41,10 @@ Node *stmt2();
 Node *expr();
 Node *assign();
 Node *bitand();
-Node *bitor();
+Node * bitor ();
 Node *bitxor();
-Node *or();
-Node *and();
+Node * or ();
+Node * and ();
 Node *equality();
 Node *relational();
 Node *add();
@@ -785,12 +785,12 @@ Node *stmt2() {
         return node;
     }
 
-    if(tok = consume("break")) {
+    if (tok = consume("break")) {
         expect(";");
         return new_node(ND_Break, tok);
     }
 
-    if(tok = consume("continue")) {
+    if (tok = consume("continue")) {
         expect(";");
         return new_node(ND_Continue, tok);
     }
@@ -837,7 +837,7 @@ Node *expr() {
 }
 
 Node *assign() {
-    Node *node = or();
+    Node *node = or ();
     Token *tok;
     if (tok = consume("=")) {
         return new_binary(ND_Assign, node, assign(), tok);
@@ -872,7 +872,7 @@ Node *assign() {
     return node;
 }
 
-Node *or() {
+Node * or () {
     Node *node = and();
     Token *tok;
     while (tok = consume("||"))
@@ -880,15 +880,15 @@ Node *or() {
     return node;
 }
 
-Node *and() {
-    Node *node = bitor();
+Node * and () {
+    Node *node = bitor ();
     Token *tok;
     while (tok = consume("&&"))
-        node = new_binary(ND_And, node, bitor(), tok);
+        node = new_binary(ND_And, node, bitor (), tok);
     return node;
 }
-Node *bitor() {
-    Node * node = bitxor();
+Node * bitor () {
+    Node *node = bitxor();
     Token *tok;
     while (tok = consume("|")) {
         node = new_binary(ND_BitOr, node, bitxor(), tok);
@@ -897,7 +897,7 @@ Node *bitor() {
 }
 
 Node *bitxor() {
-    Node * node = bitand();
+    Node *node = bitand();
     Token *tok;
     while (tok = consume("^")) {
         node = new_binary(ND_BitXor, node, bitand(), tok);
@@ -905,14 +905,13 @@ Node *bitxor() {
     return node;
 }
 Node *bitand() {
-    Node * node = equality();
+    Node *node = equality();
     Token *tok;
     while (tok = consume("&")) {
         node = new_binary(ND_BitAnd, node, equality(), tok);
     }
     return node;
 }
-
 
 Node *equality() {
     Node *node = relational();
@@ -1066,7 +1065,7 @@ Node *unary() {
     if (tok = consume("!")) {
         return new_unary(ND_Not, cast(), tok);
     }
-    
+
     if (tok = consume("~")) {
         return new_unary(ND_BitNot, cast(), tok);
     }
