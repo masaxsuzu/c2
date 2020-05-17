@@ -106,12 +106,15 @@ void gen_binary(Node *node) {
         printf("  movzb rax, al\n");
         break;
     case ND_BitAnd:
+    case ND_BitAnd_Eq:
         printf("  and rax, rdi\n");
         break;
     case ND_BitOr:
+    case ND_BitOr_Eq:
         printf("  or rax, rdi\n");
         break;
     case ND_BitXor:
+    case ND_BitXor_Eq:
         printf("  xor rax, rdi\n");
         break;
     case ND_LShift:
@@ -527,6 +530,9 @@ void gen(Node *node) {
     case ND_Div_Eq:
     case ND_LShift_Eq:
     case ND_RShift_Eq:
+    case ND_BitAnd_Eq:
+    case ND_BitOr_Eq:
+    case ND_BitXor_Eq:
         gen_lVal(node->left);
         printf("  push [rsp]\n");
         load(node->left->ty);

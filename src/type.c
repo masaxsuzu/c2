@@ -164,6 +164,9 @@ void assign_type(Node *node) {
     case ND_LShift_Eq:
     case ND_RShift:
     case ND_RShift_Eq:
+    case ND_BitAnd_Eq:
+    case ND_BitOr_Eq:
+    case ND_BitXor_Eq:
         node->ty = node->left->ty;
         return;
     case ND_Member: {

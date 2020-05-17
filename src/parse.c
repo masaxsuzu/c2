@@ -1099,6 +1099,18 @@ Node *assign() {
         return new_binary(ND_RShift_Eq, node, assign(), tok);
     }
 
+    if (tok = consume("&=")) {
+        return new_binary(ND_BitAnd_Eq, node, assign(), tok);
+    }
+
+    if (tok = consume("|=")) {
+        return new_binary(ND_BitOr_Eq, node, assign(), tok);
+    }
+
+    if (tok = consume("^=")) {
+        return new_binary(ND_BitXor_Eq, node, assign(), tok);
+    }
+
     if (tok = consume("+=")) {
         assign_type(node);
         if (node->ty->base) {

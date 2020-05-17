@@ -120,8 +120,11 @@ typedef enum {
     ND_Not,     // !
     ND_BitNot,     // ~
     ND_BitAnd, // &
+    ND_BitAnd_Eq, // &=
     ND_BitOr, // |
+    ND_BitOr_Eq, // |=
     ND_BitXor, // ^
+    ND_BitXor_Eq, // ^=
     ND_Ternary, //x?y:z
     ND_Var,
     ND_Expr_Stmt,
