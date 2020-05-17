@@ -942,6 +942,14 @@ Node *assign() {
         node = new_binary(ND_Div_Eq, node, assign(), tok);
     }
 
+    if (tok = consume("<<=")) {
+        return new_binary(ND_LShift_Eq, node, assign(), tok);
+    }
+
+    if (tok = consume(">>=")) {
+        return new_binary(ND_RShift_Eq, node, assign(), tok);
+    }
+
     if (tok = consume("+=")) {
         assign_type(node);
         if (node->ty->base) {
@@ -1048,7 +1056,6 @@ Node *shift() {
             return node;
         }
     }
-    return node;
 }
 
 Node *add() {

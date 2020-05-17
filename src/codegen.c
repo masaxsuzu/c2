@@ -115,10 +115,12 @@ void gen_binary(Node *node) {
         printf("  xor rax, rdi\n");
         break;
     case ND_LShift:
+    case ND_LShift_Eq:
         printf("  mov cl, dil\n");
         printf("  shl rax, cl\n");
         break;
     case ND_RShift:
+    case ND_RShift_Eq:
         printf("  mov cl, dil\n");
         printf("  sar rax, cl\n");
         break;
@@ -490,6 +492,8 @@ void gen(Node *node) {
     case ND_Sub_Ptr_Eq:
     case ND_Mul_Eq:
     case ND_Div_Eq:
+    case ND_LShift_Eq:
+    case ND_RShift_Eq:
         gen_lVal(node->left);
         printf("  push [rsp]\n");
         load(node->left->ty);

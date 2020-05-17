@@ -148,8 +148,6 @@ void assign_type(Node *node) {
     case ND_BitAnd:
     case ND_BitOr:
     case ND_BitXor:
-    case ND_LShift:
-    case ND_RShift:
         node->ty = int_type();
         return;
     case ND_Add_Ptr:
@@ -162,6 +160,10 @@ void assign_type(Node *node) {
     case ND_Post_Inc:
     case ND_Post_Dec:
     case ND_BitNot:
+    case ND_LShift:
+    case ND_LShift_Eq:
+    case ND_RShift:
+    case ND_RShift_Eq:
         node->ty = node->left->ty;
         return;
     case ND_Member: {
