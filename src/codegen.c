@@ -221,6 +221,26 @@ void gen(Node *node) {
         }
         return;
     }
+    case ND_Do: {
+        int id = labelId++;
+        int brk = breakId;
+        int cout = continueId;
+        breakId = id;
+        continueId = id;
+
+        printf(".L.begin.%d:\n", id);
+        gen(node->then);
+        printf(".L.continue.%d:\n", id);
+        gen(node->cond);
+        printf("  pop rax\n");
+        printf("  cmp rax, 0\n");
+        printf("  jne  .L.begin.%d\n", id);
+        printf(".L.break.%d:\n", id);
+
+        breakId = brk;
+        continueId = cout;
+        return; 
+    }
     case ND_While: {
         int id = labelId++;
         int brk = breakId;

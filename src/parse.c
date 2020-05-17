@@ -839,6 +839,17 @@ Node *stmt2() {
         return node;
     }
 
+    if (tok = consume("do")) {
+        Node *node = new_node(ND_Do, tok);
+        node->then = stmt();
+        expect("while");
+        expect("(");
+        node->cond = expr();
+        expect(")");
+        expect(";");
+        return node;
+    }
+
     if (consume("while")) {
         expect("(");
         Node *cond = expr();

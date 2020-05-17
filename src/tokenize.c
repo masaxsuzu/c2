@@ -140,8 +140,8 @@ bool at_eof() { return token->kind == TK_Eof; }
 char *starts_with_reserved(char *p) {
     // Keyword
     static char *kw[] = {
-        "return", "if",      "else",   "while", "for",   "struct",
-        "char",   "short",   "int",    "long",  "void",
+        "return", "if",      "else",   "while", "for", "do",
+        "struct", "char",   "short",   "int",    "long",  "void",
         "_Bool", // bool is just a macro.
         "sizeof", "typedef", "static", "enum",  
         "break", "continue", "goto","switch", "case", "default" };

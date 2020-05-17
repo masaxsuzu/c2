@@ -74,6 +74,7 @@ struct Member {
 
 typedef enum {
     ND_If,
+    ND_Do,
     ND_While,
     ND_For,
     ND_Break,
