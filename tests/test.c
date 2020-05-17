@@ -115,8 +115,13 @@ int solve(int (*board)[10], int row) {
 int param_decay(int x[]) { return x[0]; }
 
 int global_voidfn;
-void void_dec_global_val() {
+
+void void_dec_global_val_2(void) {
   global_voidfn -= 1;  
+}
+
+void void_dec_global_val() {
+  void_dec_global_val_2();
 }
 
 int main() {

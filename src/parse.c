@@ -615,6 +615,14 @@ Parameters *read_func_parameters() {
     if (consume(")")) {
         return NULL;
     }
+    
+    Token *tok = token;
+
+    if (consume("void") && consume(")")) {
+        return NULL;
+    }
+
+    token = tok;
 
     Parameters *head = read_func_parameter();
     Parameters *cur = head;
