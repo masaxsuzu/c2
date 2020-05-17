@@ -716,7 +716,10 @@ Node *new_desg_node2(Variable *var, Designator *desg, Token *tok) {
     if(!desg) {
         return new_var_node(var, tok);
     }
-    return NULL;
+
+    Node *node = new_desg_node2(var, desg->next, tok);
+    node = new_add(node, new_number_node(desg->idx, tok), tok);
+    return new_unary(ND_Deref, node, tok);
 }
 
 Node *new_desg_node(Variable *var, Designator *desg, Node *right) {
@@ -725,9 +728,37 @@ Node *new_desg_node(Variable *var, Designator *desg, Node *right) {
     return new_unary(ND_Expr_Stmt, node, right->token);
 }
 
+/*
+  int x[2][3]={{1,2,3},{4,5,6}};
+
+  is equivalent to 
+
+  int x[2][3];
+
+  x[0][0]=1;
+  x[0][1]=2;
+  x[0][2]=3;
+
+  x[1][0]=4;
+  x[1][1]=5;
+  x[1][2]=6;
+
+*/
 Node *init_lvar2(Node *cur, Variable *var, Type *ty, Designator *desg) {
+    if (ty->kind == TY_Array) {
+        expect("{");
+        int i = 0;
+
+        do {
+            Designator desg2 = {desg, i++};
+            cur = init_lvar2(cur, var, ty->base, &desg2);
+        } while (!peek_end_of_brace() && consume(","));
+
+        expect_end_of_brace();
+        return cur;
+    }
     cur->next = new_desg_node(var, desg, assign());
-    return cur;
+    return cur->next;
 }
 
 Node *init_lvar(Variable *var, Token *tok) {
