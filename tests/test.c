@@ -114,6 +114,11 @@ int solve(int (*board)[10], int row) {
 
 int param_decay(int x[]) { return x[0]; }
 
+int global_voidfn;
+void voidfn() {
+  global_voidfn -= 1;  
+}
+
 int main() {
     assert(0, 0, "0");
     assert(42, 42, "42");
@@ -480,6 +485,8 @@ int main() {
     assert(7, ({ int i=0; switch(1) { case 0:i=5;break; default:i=7; } i; }), "int i=0; switch(1) { case 0:i=5;break; default:i=7; } i;");
     assert(2, ({ int i=0; switch(1) { case 0: 0; case 1: 0; case 2: 0; i=2; } i; }), "int i=0; switch(1) { case 0: 0; case 1: 0; case 2: 0; i=2; } i;");
     assert(0, ({ int i=0; switch(3) { case 0: 0; case 1: 0; case 2: 0; i=2; } i; }), "int i=0; switch(3) { case 0: 0; case 1: 0; case 2: 0; i=2; } i;");
+
+    assert(99, ({ global_voidfn = 100; voidfn(); global_voidfn; }), "global_voidfn = 100; voidfn(); global_voidfn;");
 
     printf("OK\n");
     return 0;
