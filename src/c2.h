@@ -189,6 +189,7 @@ struct Type {
     Type *base;
     int array_size;
     Member *members;
+    bool is_incomplete;
     Type *return_ty;
 };
 

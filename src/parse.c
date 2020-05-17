@@ -286,6 +286,9 @@ Type *struct_decl() {
 
     int offset = 0;
     for (Member *mem = ty->members; mem; mem = mem->next) {
+        if (mem->ty->is_incomplete) {
+          error_at(mem->tok->str, "incomplete struct member");
+        }
         offset = align_to(offset, mem->ty->align);
         mem->offset = offset;
         offset += size_of(mem->ty);
@@ -557,20 +560,33 @@ Program *program() {
     return p;
 }
 
-// type-suffix = ("[" num "]" type-suffix)?
+// type-suffix = ("[" num? "]" type-suffix)?
 /*
     ""
     "[4]"
     "[4][1]"
+    "[]"
 */
 Type *read_type_suffix(Type *base) {
     if (!consume("[")) {
         return base;
     }
-    int size = expect_number();
-    expect("]");
+    int size = 0;
+    bool is_incomplete = true;
+    if(!consume("]")) {
+        size = expect_number();
+        is_incomplete = false;
+        expect("]");
+    }
+
+    Token *tok = token;
     base = read_type_suffix(base);
-    return array_of(base, size);
+    if(base->is_incomplete) {
+        error_at(tok->str, "incomplete element type");
+    }
+    base = array_of(base, size);
+    base->is_incomplete = is_incomplete;
+    return base;
 }
 
 // param = basetype declarator type-suffix
@@ -643,12 +659,16 @@ void *global_variable() {
     StorageClass sclass;
     Type *ty = basetype(&sclass);
     char *name = NULL;
+    Token *tok = token;
     ty = declarator(ty, &name);
     ty = read_type_suffix(ty);
     expect(";");
     if (sclass == TypeDef) {
         push_var_scope(name)->type_def = ty;
     } else {
+        if(ty->is_incomplete) {
+          error_at(tok->str, "incomplete struct member");
+        }
         new_gvar(name, ty, true);
     }
 }
@@ -658,10 +678,11 @@ Node *declaration() {
     Token *tok = token;
     StorageClass sclass;
     Type *ty = basetype(&sclass);
-    if (consume(";")) {
+    if (tok = consume(";")) {
         return new_node(ND_Null, tok);
     }
 
+    tok = token;
     char *name = NULL;
     ty = declarator(ty, &name);
     ty = read_type_suffix(ty);
@@ -676,6 +697,9 @@ Node *declaration() {
     }
 
     Variable *var = new_lvar(name, ty, true);
+    if(ty->is_incomplete) {
+        error_at(tok->str, "incomplete type");
+    }
 
     if (tok = consume(";")) {
         return new_node(ND_Null, tok);
@@ -1076,6 +1100,9 @@ Node *unary() {
         if (consume("(")) {
             if (is_typename()) {
                 Type *ty = type_name();
+                if(ty->is_incomplete) {
+                    error_at(tok->str, "incomplete type");
+                }
                 expect(")");
                 return new_number_node(size_of(ty), tok);
             }
@@ -1083,6 +1110,9 @@ Node *unary() {
         }
         Node *n = cast();
         assign_type(n);
+        if(n->ty->is_incomplete) {
+            error_at(n->token->str, "incomplete type");
+        }
         return new_number_node(size_of(n->ty), tok);
     }
 
