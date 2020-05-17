@@ -502,6 +502,9 @@ int main() {
     assert(-1, ({ int i=-1; i; }), "int i=-1; i;");
     assert(-1, ({ int i=-1; i>>=1; i; }), "int i=1; i>>1;");
 
+    assert(100, ({ 1?100:200; }), "1?100:200;");
+    assert(200, ({ 0?100:200; }), "0?100:200;");
+
     printf("OK\n");
     return 0;
 }

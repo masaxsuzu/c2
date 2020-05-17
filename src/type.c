@@ -177,6 +177,9 @@ void assign_type(Node *node) {
         node->ty = node->member->ty;
         return;
     }
+    case ND_Ternary:
+        node->ty = node->then->ty;
+        return;
     case ND_Var:
         node->ty = node->var->ty;
         return;

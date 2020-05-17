@@ -42,6 +42,7 @@ Node *stmt();
 Node *stmt2();
 Node *expr();
 Node *assign();
+Node *conditional();
 Node *bitand();
 Node * bitor ();
 Node *bitxor();
@@ -928,7 +929,7 @@ Node *expr() {
 }
 
 Node *assign() {
-    Node *node = or ();
+    Node *node = conditional ();
     Token *tok;
     if (tok = consume("=")) {
         return new_binary(ND_Assign, node, assign(), tok);
@@ -969,6 +970,20 @@ Node *assign() {
     }
 
     return node;
+}
+
+Node *conditional() {
+    Node *node = or();
+    Token *tok = consume("?");
+    if(!tok) {
+        return node;
+    }
+    Node *ternary = new_node(ND_Ternary, tok);
+    ternary->cond = node;
+    ternary->then = expr();
+    expect(":");
+    ternary->otherwise = expr();
+    return ternary;
 }
 
 Node * or () {

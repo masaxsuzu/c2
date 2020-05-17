@@ -359,6 +359,19 @@ void gen(Node *node) {
             load(node->ty);
         }
         return;
+    case ND_Ternary: {
+        int id = labelId++;
+        gen(node->cond);
+        printf("  pop rax\n");
+        printf("  cmp rax, 0\n");
+        printf("  je  .L.else.%d\n", id);
+        gen(node->then);
+        printf("  jmp .L.end.%d\n", id);
+        printf(".L.else.%d:\n", id);
+        gen(node->otherwise);
+        printf(".L.end.%d:\n", id);
+        return;
+    }
     case ND_Var:
     case ND_Member:
         gen_addr(node);

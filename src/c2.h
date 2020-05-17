@@ -121,6 +121,7 @@ typedef enum {
     ND_BitAnd, // &
     ND_BitOr, // |
     ND_BitXor, // ^
+    ND_Ternary, //x?y:z
     ND_Var,
     ND_Expr_Stmt,
     ND_Stmt_Expr,   // ({int x = 1; x;} => 1)
