@@ -828,6 +828,22 @@ Node *stmt2() {
         return new_node(ND_Continue, tok);
     }
 
+    if (tok = consume("goto")) {
+        Node *node = new_node(ND_Goto, tok);
+        node->label_name = expect_identifier();
+        expect(";");
+        return node;
+    }
+
+    if (tok = consume_identifier()) {
+        if(consume(":")) {
+            Node *node = new_unary(ND_Label, stmt(), tok);
+            node->label_name = strndup(tok->str, tok->len);
+            return node;
+        }
+        token = tok;
+    }
+
     if (is_typename()) {
         return declaration();
     }

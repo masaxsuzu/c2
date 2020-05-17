@@ -78,6 +78,8 @@ typedef enum {
     ND_For,
     ND_Break,
     ND_Continue,
+    ND_Goto,
+    ND_Label,
     ND_Return,
     ND_Block,
     ND_Add,
@@ -141,6 +143,7 @@ struct Node {
     Node *block;
     char *funcName;
     Node *funcArgs;
+    char *label_name;
     // Struct member access
     char *member_name;
     Member *member;

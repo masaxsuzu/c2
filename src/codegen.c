@@ -272,6 +272,13 @@ void gen(Node *node) {
         }
         printf("  jmp .L.continue.%d\n", continueId);
         return;
+    case ND_Goto:
+        printf("  jmp .L.label.%s.%s\n", functionName, node->label_name);
+        return;
+    case ND_Label:
+        printf(".L.label.%s.%s:\n", functionName, node->label_name);
+        gen(node->left);
+        return;
     case ND_Block:
     case ND_Stmt_Expr:
         for (Node *n = node->block; n; n = n->next)
