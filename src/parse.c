@@ -41,6 +41,7 @@ void *global_variable();
 Node *stmt();
 Node *stmt2();
 Node *expr();
+long constexpr();
 Node *assign();
 Node *conditional();
 Node *bitand();
@@ -344,7 +345,7 @@ Type *enum_specifier() {
     for (;;) {
         char *name = expect_identifier();
         if (consume("=")) {
-            count = expect_number();
+            count = constexpr();
         }
 
         VarScope *vs = push_var_scope(name);
@@ -578,7 +579,7 @@ Type *read_type_suffix(Type *base) {
     int size = 0;
     bool is_incomplete = true;
     if(!consume("]")) {
-        size = expect_number();
+        size = constexpr();
         is_incomplete = false;
         expect("]");
     }
@@ -866,7 +867,7 @@ Node *stmt2() {
             error_at(tok->str, "stray case");
         }
 
-        long val = expect_number();
+        long val = constexpr();
         expect(":");
 
         Node *node = new_unary(ND_Case, stmt(), tok);
@@ -926,6 +927,60 @@ Node *expr() {
         node = new_binary(ND_Comma, node, assign(), tok);
     }
     return node;
+}
+
+long eval(Node *node) {
+
+    switch (node->kind)
+    {
+    case ND_Num:
+        return node->value;
+    case ND_Not:
+        return !eval(node->left);
+    case ND_BitNot:
+        return ~eval(node->left);
+    case ND_Add:
+        return eval(node->left) + eval(node->right);
+    case ND_Sub:
+        return eval(node->left) - eval(node->right);
+    case ND_Mul:
+        return eval(node->left) * eval(node->right);
+    case ND_Div:
+        return eval(node->left) / eval(node->right);
+    case ND_BitAnd:
+        return eval(node->left) & eval(node->right);
+    case ND_BitOr:
+        return eval(node->left) | eval(node->right);
+    case ND_BitXor:
+        return eval(node->left) ^ eval(node->right);
+    case ND_And:
+        return eval(node->left) && eval(node->right);
+    case ND_Or:
+        return eval(node->left) || eval(node->right);
+    case ND_LShift:
+        return eval(node->left) << eval(node->right);
+    case ND_RShift:
+        return eval(node->left) >> eval(node->right);
+    case ND_Eq:
+        return eval(node->left) == eval(node->right);
+    case ND_Ne:
+        return eval(node->left) != eval(node->right);
+    case ND_Le:
+        return eval(node->left) <= eval(node->right);
+    case ND_Lt:
+        return eval(node->left) < eval(node->right);
+    case ND_Ternary:
+        return eval(node->cond) ? eval(node->then) : eval(node->otherwise);
+    case ND_Comma:
+        return eval(node->right);
+    default:
+        error_at(node->token->str, "not a constant expression");
+        break;
+    }
+}
+
+long constexpr () {
+    return eval(conditional());
 }
 
 Node *assign() {

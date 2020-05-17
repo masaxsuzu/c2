@@ -505,6 +505,44 @@ int main() {
     assert(100, ({ 1?100:200; }), "1?100:200;");
     assert(200, ({ 0?100:200; }), "0?100:200;");
 
+    assert(0, ({ char x[!1]; sizeof(x); }), "char x[!1]; sizeof(x);");
+    assert(1, ({ char x[!(10-10)]; sizeof(x); }), "char x[!(10-10)]; sizeof(x);");
+    assert(0, ({ int x[~-1]; sizeof(x); }), "int x[~-1]; sizeof(x);");
+
+    assert(8, ({ int x[1+1]; sizeof(x); }), "int x[1+1] sizeof(x);");
+    assert(10, ({ enum { ten=1+2+3+4, }; ten; }), "enum { ten=1+2+3+4, }; ten;");
+    assert(1, ({ int i=0; switch(3) { case 5-2+0*3: i++; } i; }), "int i=0; switch(3) { case 5-2+0*3: i++; ); i;");
+
+    assert(12, ({ char x[3<<(6/3)]; sizeof(x); }), "char x[3<<(6/3)]; sizeof(x);");
+    assert(1, ({ char x[4>>(1+1)]; sizeof(x); }), "char x[4>>(1+1)]; sizeof(x);");
+
+    assert(1, ({ char x[(1+1)==(1*2)]; sizeof(x); }), "char x[(1+1)==(1*2)]; sizeof(x);");
+    assert(0, ({ char x[(1+1)!=(1*2)]; sizeof(x); }), "char x[(1+1)!=(1*2)]; sizeof(x);");
+
+    assert(0, ({ char x[(1-1)>=(1*2)]; sizeof(x); }), "char x[(1-1)>=(1*2)]; sizeof(x);");
+    assert(1, ({ char x[(1+1)<=(1*2)]; sizeof(x); }), "char x[(1+1)<=(1*2)]; sizeof(x);");
+
+    assert(0, ({ char x[(1+1)<(1*2)]; sizeof(x); }), "char x[(1+1)<(1*2)]; sizeof(x);");
+    assert(1, ({ char x[(1+2)>(1*2)]; sizeof(x); }), "char x[(1+2)>(1*2)]; sizeof(x);");
+
+    assert(8, ({ char x[11&56]; sizeof(x); }), "char x[11&56]; sizeof(x);");
+    assert(59, ({ char x[11|56]; sizeof(x); }), "char x[11|56]; sizeof(x);");
+    assert(51, ({ char x[11^56]; sizeof(x); }), "char x[11^56]; sizeof(x);");
+
+    assert(1, ({ char x[1&&1]; sizeof(x); }), "char x[1&&1]; sizeof(x);");
+    assert(0, ({ char x[1&&0]; sizeof(x); }), "char x[1&&0]; sizeof(x);");
+    assert(1, ({ char x[0||1]; sizeof(x); }), "char x[0||1]; sizeof(x);");
+    assert(0, ({ char x[0||0]; sizeof(x); }), "char x[0||0]; sizeof(x);");
+
+    assert(0, ({ char x[!1]; sizeof(x); }), "char x[!1]; sizeof(x);");
+    assert(1, ({ char x[!(10-10)]; sizeof(x); }), "char x[!(10-10)]; sizeof(x);");
+    assert(0, ({ int x[~-1]; sizeof(x); }), "int x[~-1]; sizeof(x);");
+
+    assert(1, ({ char x[1?1:2]; sizeof(x); }), "char x[1?1:2]; sizeof(x);");
+    assert(2, ({ char x[0?1:2]; sizeof(x); }), "char x[0?1:2]; sizeof(x);");
+
+    assert(3, ({ char x[(1,2,3)]; sizeof(x); }), "char x[(1,2,3)]; sizeof(x);");
+
     printf("OK\n");
     return 0;
 }
