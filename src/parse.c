@@ -116,7 +116,6 @@ VarScope *find_var(Token *tok) {
 
 Member *find_member(Type *ty, char *name) {
     for (Member *mem = ty->members; mem; mem = mem->next) {
-        debug_token("x", mem->tok);
         if (!strcmp(mem->name, name)) {
             return mem;
         }
