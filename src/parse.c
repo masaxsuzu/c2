@@ -114,6 +114,16 @@ VarScope *find_var(Token *tok) {
     return NULL;
 }
 
+Member *find_member(Type *ty, char *name) {
+    for (Member *mem = ty->members; mem; mem = mem->next) {
+        debug_token("x", mem->tok);
+        if (!strcmp(mem->name, name)) {
+            return mem;
+        }
+    }
+    return NULL;
+}
+
 Type *find_typedef(Token *tok) {
     if (tok->kind == TK_Identifier) {
         VarScope *vs = find_var(tok);
@@ -714,7 +724,8 @@ void *global_variable() {
 typedef struct Designator Designator;
 struct Designator {
   Designator *next;
-  int idx;
+  int idx;     // array
+  Member *mem; // member
 };
 
 Node *new_desg_node2(Variable *var, Designator *desg, Token *tok) {
@@ -723,6 +734,13 @@ Node *new_desg_node2(Variable *var, Designator *desg, Token *tok) {
     }
 
     Node *node = new_desg_node2(var, desg->next, tok);
+
+    if (desg->mem) {
+        node = new_unary(ND_Member, node, desg->mem->tok);
+        node->member = desg->mem;
+        return node;
+    }
+
     node = new_add(node, new_number_node(desg->idx, tok), tok);
     return new_unary(ND_Deref, node, tok);
 }
@@ -770,6 +788,13 @@ Node *init_lvar_with_zero(Node *cur, Variable *var, Type *ty, Designator *desg) 
   x[1]='b';
   x[2]='c';
   x[3]='d';
+
+  struct { int a; int b; } x = {1, 2}; 
+  
+  is equivalent to 
+  
+  x.a = 1;
+  x.b = 2; 
 
 */
 Node *init_lvar2(Node *cur, Variable *var, Type *ty, Designator *desg) {
@@ -824,6 +849,27 @@ Node *init_lvar2(Node *cur, Variable *var, Type *ty, Designator *desg) {
 
         return cur;
     }
+    
+    if (ty->kind == TY_Struct) {
+        expect("{");
+        Member *mem = ty->members;
+        if (!peek("}")) {
+            do {
+                Designator desg2 = {desg, 0, mem};
+                cur = init_lvar2(cur, var, mem->ty, &desg2);
+                mem = mem->next;
+            } while (!peek_end_of_brace() && consume(","));
+        }
+
+        expect_end_of_brace();
+
+        for(; mem; mem = mem->next) {
+            Designator desg2 = {desg, 0, mem};
+            cur = init_lvar_with_zero(cur, var, mem->ty, &desg2);
+        }
+        return cur;
+    }
+
     cur->next = new_desg_node(var, desg, assign());
     return cur->next;
 }
@@ -1456,6 +1502,23 @@ Node *unary() {
     return postfix();
 }
 
+Node *struct_ref(Node *left) {
+  assign_type(left);
+  if (left->ty->kind != TY_Struct) {
+    error_at(left->token->str, "not a struct");
+  }
+
+  Token *tok = token;
+  Member *mem = find_member(left->ty, expect_identifier());
+  if (!mem) {
+    error_at(tok->str, "no such member");
+  }
+
+  Node *node = new_unary(ND_Member, left, tok);
+  node->member = mem;
+  return node;
+}
+
 Node *postfix() {
     Node *node = primary();
     Token *tok;
@@ -1469,15 +1532,13 @@ Node *postfix() {
         }
         // struct's member
         if (tok = consume(".")) {
-            node = new_unary(ND_Member, node, tok);
-            node->member_name = expect_identifier();
+            node = struct_ref(node);
             continue;
         }
         // x->y is (*x).y
         if (tok = consume("->")) {
             node = new_unary(ND_Deref, node, tok);
-            node = new_unary(ND_Member, node, tok);
-            node->member_name = expect_identifier();
+            node = struct_ref(node);
             continue;
         }
 

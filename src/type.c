@@ -96,15 +96,6 @@ int size_of(Type *ty) {
     }
 }
 
-Member *find_member(Type *ty, char *name) {
-    for (Member *mem = ty->members; mem; mem = mem->next) {
-        if (!strcmp(mem->name, name)) {
-            return mem;
-        }
-    }
-    return NULL;
-}
-
 // Assign type to the give node recursively.
 void assign_type(Node *node) {
     if (!node || node->ty) {
@@ -170,13 +161,6 @@ void assign_type(Node *node) {
         node->ty = node->left->ty;
         return;
     case ND_Member: {
-        if (node->left->ty->kind != TY_Struct) {
-            error_at(node->token->str, "not a stuct");
-        }
-        node->member = find_member(node->left->ty, node->member_name);
-        if (!node->member) {
-            error_at(node->token->str, "%s: not a member", node->member_name);
-        }
         node->ty = node->member->ty;
         return;
     }
