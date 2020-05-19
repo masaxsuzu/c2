@@ -603,6 +603,7 @@ Type *read_type_suffix(Type *base) {
         error_at(tok->str, "incomplete element type");
     }
     base = array_of(base, size);
+    printf("# %d\n",base->array_size);
     base->is_incomplete = is_incomplete;
     return base;
 }
@@ -728,6 +729,18 @@ Node *new_desg_node(Variable *var, Designator *desg, Node *right) {
     return new_unary(ND_Expr_Stmt, node, right->token);
 }
 
+Node *init_lvar_with_zero(Node *cur, Variable *var, Type *ty, Designator *desg) {
+    if (ty->kind == TY_Array) {
+        for(int i = 0; i < ty->array_size;i++) {
+            Designator desg2 = {desg, i++};
+            cur = init_lvar_with_zero(cur, var, ty->base, &desg2);
+        }
+        return cur;
+    }
+    cur->next = new_desg_node(var, desg, new_number_node(0, token));
+    return cur->next;
+}
+
 /*
   int x[2][3]={{1,2,3},{4,5,6}};
 
@@ -749,12 +762,17 @@ Node *init_lvar2(Node *cur, Variable *var, Type *ty, Designator *desg) {
         expect("{");
         int i = 0;
 
-        do {
-            Designator desg2 = {desg, i++};
-            cur = init_lvar2(cur, var, ty->base, &desg2);
-        } while (!peek_end_of_brace() && consume(","));
-
+        if (!peek("}")) {
+            do {
+                Designator desg2 = {desg, i++};
+                cur = init_lvar2(cur, var, ty->base, &desg2);
+            } while (!peek_end_of_brace() && consume(","));
+        }
         expect_end_of_brace();
+        while (i < ty->array_size) {
+            Designator desg2 = {desg, i++};
+            cur = init_lvar_with_zero(cur, var, ty->base, &desg2);
+        }
         return cur;
     }
     cur->next = new_desg_node(var, desg, assign());

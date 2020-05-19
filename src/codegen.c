@@ -43,6 +43,9 @@ void gen_addr(Node *node) {
 
 void gen_lVal(Node *node) {
     if (node->ty->kind == TY_Array) {
+        printf("# node->ty->array_size = %d\n", node->ty->array_size);
+        printf("# node->ty->->base->array_size = %d\n", node->ty->base->array_size);
+        printf("# node->ty->->base->kind = %d\n", node->ty->base->kind);
         error_at(node->token->str, "Array is not a lvalue");
     }
     gen_addr(node);
