@@ -124,6 +124,13 @@ void void_dec_global_val() {
   void_dec_global_val_2();
 }
 
+char g3 = 3;
+short g4 = 4;
+int g5 = 5;
+long g6 = 6;
+int *g7 = &g5;
+char *g8 = "abc";
+
 int main() {
     assert(0, 0, "0");
     assert(42, 42, "42");
@@ -602,6 +609,13 @@ int main() {
     assert(7, ({ int i=6; i|=3; i; }), "int i=6; i|=3; i;");
     assert(10, ({ int i=15; i^=5; i; }), "int 15; i^=5; i;");
     
+    assert(3, g3, "g3");
+    assert(4, g4, "g4");
+    assert(5, g5, "g5");
+    assert(6, g6, "g6");
+    assert(5, *g7, "*g7");
+    assert(0, strcmp(g8, "abc"), "strcmp(g8, \"abc\")");
+
     printf("OK\n");
     return 0;
 }

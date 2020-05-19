@@ -598,12 +598,21 @@ void emit_data(Program *p) {
     printf(".data\n");
     for (Parameters *global = p->globals; global; global = global->next) {
         printf("%s:\n", global->var->name);
-        if (!global->var->contents) {
+        if (!global->var->initializer) {
             printf("  .zero %d\n", size_of(global->var->ty));
             continue;
         }
-        for (int i = 0; i < global->var->cont_len; i++) {
-            printf("  .byte %d\n", global->var->contents[i]);
+
+        for(Initializer *init = global->var->initializer; init; init = init->next){
+            if(init->label) {
+                printf("  .quad %s\n", init->label);
+            }
+            else if (init->size == 1) {
+                printf("  .byte %d\n", init->value);
+            }
+            else {
+                printf("  .%dbyte %ld\n", init->size, init->value);
+            }
         }
     }
 }

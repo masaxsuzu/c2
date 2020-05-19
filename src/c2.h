@@ -44,7 +44,7 @@ Token *tokenize(void);
 // 
 // Parser
 //
-
+typedef struct Initializer Initializer;
 typedef struct Variable Variable;
 
 struct Variable {
@@ -53,8 +53,7 @@ struct Variable {
     Type *ty;
     int offset;
     bool is_local;
-    char *contents;
-    char cont_len;
+    Initializer *initializer;
 };
 
 typedef struct Parameters Parameters;
@@ -70,6 +69,14 @@ struct Member {
     char *name;
     Member *next;
     int offset;
+};
+
+struct Initializer
+{
+    Initializer *next;
+    int size;
+    long value;
+    char *label;
 };
 
 typedef enum {
