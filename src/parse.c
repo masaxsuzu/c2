@@ -696,6 +696,11 @@ void *global_variable() {
     ty = declarator(ty, &name);
     ty = read_type_suffix(ty);
     expect(";");
+
+    if (ty->is_incomplete) {
+        error_at(tok->str, "incomplete type");
+    }
+
     if (sclass == TypeDef) {
         push_var_scope(name)->type_def = ty;
     } else {
@@ -773,6 +778,10 @@ Node *init_lvar2(Node *cur, Variable *var, Type *ty, Designator *desg) {
         Token *tok = token;
         token = token->next;
 
+        if (ty->is_incomplete) {
+            ty->array_size = tok->cont_len;
+            ty->is_incomplete = false;
+        }
 
         int len = (ty->array_size < tok->cont_len)
             ? ty->array_size
@@ -807,6 +816,12 @@ Node *init_lvar2(Node *cur, Variable *var, Type *ty, Designator *desg) {
             Designator desg2 = {desg, i++};
             cur = init_lvar_with_zero(cur, var, ty->base, &desg2);
         }
+
+        if (ty->is_incomplete) {
+            ty->array_size = i;
+            ty->is_incomplete = false;
+        }
+
         return cur;
     }
     cur->next = new_desg_node(var, desg, assign());
@@ -845,11 +860,11 @@ Node *declaration() {
     }
 
     Variable *var = new_lvar(name, ty, true);
-    if(ty->is_incomplete) {
-        error_at(tok->str, "incomplete type");
-    }
 
     if (tok = consume(";")) {
+        if(ty->is_incomplete) {
+            error_at(tok->str, "incomplete type");
+        }
         return new_node(ND_Null, tok);
     }
 

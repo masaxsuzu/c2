@@ -571,6 +571,13 @@ int main() {
     assert(0, ({ char x[2][3] = {"c2", "v0" }; x[1][2]; }), "char x[2][3] = {{\"c2\", \"v0\"}; x[0][2]}; ");
     assert(0, ({ char x[2][3] = {"c2", "v0" }; x[1][2]; }), "char x[2][3] = {{\"c2\", \"v0\"}; x[1][2]}; ");
 
+    assert(4, ({ int x[]={1,2,3,4}; x[3]; }), "int x[]={1,2,3,4}; x[3];");
+    assert(16, ({ int x[]={1,2,3,4}; sizeof(x); }), "int x[]={1,2,3,4}; sizeof(x);");
+    assert(4, ({ char x[]="foo"; sizeof(x); }), "char x[]=\"foo\"; sizeof(x); }");
+    assert('f', ({ char *x="fox"; x[0]; }), "char *x=\"fox\"; x[0]; }");
+    assert('o', ({ char *x="fox"; x[1]; }), "char *x=\"fox\"; x[1]; }");
+    assert('x', ({ char *x="fox"; x[2]; }), "char *x=\"fox\"; x[2]; }");
+
     assert(7, ({ int i=0; int j=0; do { j++; } while (i++ < 6); j; }), "int i=0; int j=0; do { j++; } while (i++ < 6); j;");
     assert(4, ({ int i=0; int j=0; int k=0; do { if (++j > 3) break; continue; k++; } while (1); j; }), "int i=0; int j=0; int k=0; do { if (j++ > 3) break; continue; k++; } while (1); j;");
 
