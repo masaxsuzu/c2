@@ -563,6 +563,14 @@ int main() {
     assert(0, ({ int x[2][3]={{1,2}}; x[1][0]; }), "int x[2][3]={{1,2}}; x[1][0];");
     assert(0, ({ int x[2][3]={{1,2}}; x[1][2]; }), "int x[2][3]={{1,2}}; x[1][2];");
 
+    assert('c', ({ char x[3] = "c2"; x[0]; }), "char x[3] = \"c2\"; x[0];");
+    assert('2', ({ char x[3] = "c2"; x[1]; }), "char x[3] = \"c2\"; x[1];");
+    assert(0,   ({ char x[3] = "c2"; x[2]; }), "char x[3] = \"c2\"; x[2];");
+
+    assert('c', ({ char x[2][3] = {"c2", "v0" }; x[0][0]; }), "char x[2][3] = {{\"c2\", \"v0\"}; x[0][0]}; ");
+    assert(0, ({ char x[2][3] = {"c2", "v0" }; x[1][2]; }), "char x[2][3] = {{\"c2\", \"v0\"}; x[0][2]}; ");
+    assert(0, ({ char x[2][3] = {"c2", "v0" }; x[1][2]; }), "char x[2][3] = {{\"c2\", \"v0\"}; x[1][2]}; ");
+
     assert(7, ({ int i=0; int j=0; do { j++; } while (i++ < 6); j; }), "int i=0; int j=0; do { j++; } while (i++ < 6); j;");
     assert(4, ({ int i=0; int j=0; int k=0; do { if (++j > 3) break; continue; k++; } while (1); j; }), "int i=0; int j=0; int k=0; do { if (j++ > 3) break; continue; k++; } while (1); j;");
 

@@ -603,7 +603,6 @@ Type *read_type_suffix(Type *base) {
         error_at(tok->str, "incomplete element type");
     }
     base = array_of(base, size);
-    printf("# %d\n",base->array_size);
     base->is_incomplete = is_incomplete;
     return base;
 }
@@ -756,8 +755,43 @@ Node *init_lvar_with_zero(Node *cur, Variable *var, Type *ty, Designator *desg) 
   x[1][1]=5;
   x[1][2]=6;
 
+  char x[4] = "abcd";
+
+  is equivalent to 
+
+  char x[4];
+
+  x[0]='a';
+  x[1]='b';
+  x[2]='c';
+  x[3]='d';
+
 */
 Node *init_lvar2(Node *cur, Variable *var, Type *ty, Designator *desg) {
+    if (ty->kind == TY_Array && ty->base->kind == TY_Char &&
+        token->kind == TK_String) {
+        Token *tok = token;
+        token = token->next;
+
+
+        int len = (ty->array_size < tok->cont_len)
+            ? ty->array_size
+            : tok->cont_len;
+        
+        for (int i = 0; i < len; i++)
+        {
+            Designator desg2 = {desg, i};
+            Node *right = new_number_node(tok->contents[i], tok);
+            cur->next = new_desg_node(var, &desg2, right);
+            cur = cur->next;
+        }
+        for (int i = len; i < ty->array_size; i++) {
+            Designator desg2 = {desg, i};
+            cur = init_lvar_with_zero(cur, var, ty->base, &desg2);
+        }
+        return cur;
+    }
+
     if (ty->kind == TY_Array) {
         expect("{");
         int i = 0;
