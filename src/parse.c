@@ -737,22 +737,24 @@ Initializer *emit_struct_padding(Initializer *cur, Type *parent, Member *mem) {
 
 Initializer *init_global_variable2(Initializer *cur, Type *ty) {
     Token *tok = token;
-
     if (ty->kind == TY_Array) {
-        expect("{");
+        Token *open = consume("{");
         int i = 0;
-        while(!peek("}")) {
+        int limit = ty->is_incomplete ? 2147483647 : ty->array_size;
+
+
+        if(!peek("}")) {
             do {
                 cur = init_global_variable2(cur, ty->base);
                 i++;
-            } while(!peek_end_of_brace() && consume(","));
+            } while(i < limit && !peek_end_of_brace() && consume(","));
         }
 
-        expect_end_of_brace();
-
-        if(i < ty->array_size) {
-            cur = new_init_zero(cur, size_of(ty->base) * (ty->array_size - i));
+        if (open) {
+            expect_end_of_brace();
         }
+
+        cur = new_init_zero(cur, size_of(ty->base) * (ty->array_size - i));
 
         if(ty->is_incomplete) {
             ty->array_size = i;
@@ -762,7 +764,7 @@ Initializer *init_global_variable2(Initializer *cur, Type *ty) {
     }
 
     if (ty->kind == TY_Struct) {
-        expect("{");
+        Token *open = consume("{");
         Member *mem = ty->members;
 
         if (!peek("}")) {
@@ -770,20 +772,25 @@ Initializer *init_global_variable2(Initializer *cur, Type *ty) {
                 cur = init_global_variable2(cur, mem->ty);
                 cur = emit_struct_padding(cur, ty, mem);
                 mem = mem->next;
-            } while (!peek_end_of_brace() && consume(","));
+            } while (mem && !peek_end_of_brace() && consume(","));
         }
 
-        expect_end_of_brace();
-        
+        if(open) {
+            expect_end_of_brace();
+        }
+
         if (mem) {
             cur = new_init_zero(cur, size_of(ty) - mem->offset);
         }
-
         return cur;
     }
 
+    Token *open = consume("{");
     Node *expr = conditional();
-    
+    if(open) {
+        expect_end_of_brace();
+    }
+
     if (expr->kind == ND_Addr) {
         if (expr->left->kind != ND_Var) {
             error_at(tok->str, "invalid initialier");
@@ -938,16 +945,21 @@ Node *init_lvar2(Node *cur, Variable *var, Type *ty, Designator *desg) {
     }
 
     if (ty->kind == TY_Array) {
-        expect("{");
+        Token *open = consume("{");
         int i = 0;
+        int limit = ty->is_incomplete ? 2147483647 : ty->array_size;
 
         if (!peek("}")) {
             do {
                 Designator desg2 = {desg, i++};
                 cur = init_lvar2(cur, var, ty->base, &desg2);
-            } while (!peek_end_of_brace() && consume(","));
+            } while (i < limit && !peek_end_of_brace() && consume(","));
         }
-        expect_end_of_brace();
+
+        if (open) {
+            expect_end_of_brace();
+        }
+
         while (i < ty->array_size) {
             Designator desg2 = {desg, i++};
             cur = init_lvar_with_zero(cur, var, ty->base, &desg2);
@@ -962,17 +974,19 @@ Node *init_lvar2(Node *cur, Variable *var, Type *ty, Designator *desg) {
     }
     
     if (ty->kind == TY_Struct) {
-        expect("{");
+        Token *open = consume("{");
         Member *mem = ty->members;
         if (!peek("}")) {
             do {
                 Designator desg2 = {desg, 0, mem};
                 cur = init_lvar2(cur, var, mem->ty, &desg2);
                 mem = mem->next;
-            } while (!peek_end_of_brace() && consume(","));
+            } while (mem && !peek_end_of_brace() && consume(","));
         }
 
-        expect_end_of_brace();
+        if (open) {
+            expect_end_of_brace();
+        }
 
         for(; mem; mem = mem->next) {
             Designator desg2 = {desg, 0, mem};
@@ -981,7 +995,12 @@ Node *init_lvar2(Node *cur, Variable *var, Type *ty, Designator *desg) {
         return cur;
     }
 
+    Token *open = consume("{");
     cur->next = new_desg_node(var, desg, assign());
+    
+    if(open) {
+        expect_end_of_brace();
+    }
     return cur->next;
 }
 
