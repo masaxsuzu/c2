@@ -713,6 +713,13 @@ Initializer *new_init_label(Initializer *cur, char *label) {
     return init;
 }
 
+Initializer *new_init_zero(Initializer *cur, int nbytes) {
+    for (int i = 0; i < nbytes; i++) {
+        cur = new_init_value(cur, 1, 0);
+    }
+    return cur;
+}
+
 Initializer *gvar_init_string(char *p, int len) {
     Initializer head = {};
     Initializer *cur = &head;
@@ -722,11 +729,10 @@ Initializer *gvar_init_string(char *p, int len) {
     return head.next;
 }
 
-Initializer *new_init_zero(Initializer *cur, int nbytes) {
-    for (int i = 0; i < nbytes; i++) {
-        cur = new_init_value(cur, 1, 0);
-    }
-    return cur;
+Initializer *emit_struct_padding(Initializer *cur, Type *parent, Member *mem) {
+    int start = mem->offset + size_of(mem->ty);
+    int end = mem->next ? mem->next->offset : size_of(parent);
+    return new_init_zero(cur, end - start);
 }
 
 Initializer *init_global_variable2(Initializer *cur, Type *ty) {
@@ -752,6 +758,27 @@ Initializer *init_global_variable2(Initializer *cur, Type *ty) {
             ty->array_size = i;
             ty->is_incomplete = false;
         }
+        return cur;
+    }
+
+    if (ty->kind == TY_Struct) {
+        expect("{");
+        Member *mem = ty->members;
+
+        if (!peek("}")) {
+            do {
+                cur = init_global_variable2(cur, mem->ty);
+                cur = emit_struct_padding(cur, ty, mem);
+                mem = mem->next;
+            } while (!peek_end_of_brace() && consume(","));
+        }
+
+        expect_end_of_brace();
+        
+        if (mem) {
+            cur = new_init_zero(cur, size_of(ty) - mem->offset);
+        }
+
         return cur;
     }
 

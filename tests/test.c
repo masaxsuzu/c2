@@ -133,6 +133,9 @@ char *g8 = "abc";
 int g9[3] = {0, 1 };
 char *g10[] = {"foo", "bar"};
 
+struct {char a; int b;} g11[2] = {{1, 2}, {3, 4}};
+struct {int a[2];} g12[2] = {{{1, 2}}};
+
 int main() {
     assert(0, 0, "0");
     assert(42, 42, "42");
@@ -627,6 +630,15 @@ int main() {
     assert(0, g10[1][3], "g10[1][3]");
     assert(2, sizeof(g10) / sizeof(*g10), "sizeof(g10) / sizeof(*g10)");
 
+    assert(1, g11[0].a, "g11[0].a");
+    assert(2, g11[0].b, "g11[0].b");
+    assert(3, g11[1].a, "g11[1].a");
+    assert(4, g11[1].b, "g11[1].b");
+
+    assert(1, g12[0].a[0], "g12[0].a[0]");
+    assert(2, g12[0].a[1], "g12[0].a[1]");
+    assert(0, g12[1].a[0], "g12[1].a[0]");
+    assert(0, g12[1].a[1], "g12[1].a[1]");
     printf("OK\n");
     return 0;
 }
