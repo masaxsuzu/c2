@@ -737,6 +737,28 @@ Initializer *emit_struct_padding(Initializer *cur, Type *parent, Member *mem) {
 
 Initializer *init_global_variable2(Initializer *cur, Type *ty) {
     Token *tok = token;
+
+    if (ty->kind == TY_Array && ty->base->kind == TY_Char &&
+        token->kind == TK_String) {
+        token = token->next;
+
+        if (ty->is_incomplete) {
+            ty->array_size = tok->cont_len;
+            ty->is_incomplete = false;
+        }
+
+        int len = (ty->array_size < tok->cont_len)
+            ? ty->array_size
+            : tok->cont_len;
+        
+        for (int i = 0; i < len; i++)
+        {
+            cur = new_init_value(cur, 1, tok->contents[i]);
+        }
+
+        return new_init_zero(cur, ty->array_size - len);
+    }
+
     if (ty->kind == TY_Array) {
         Token *open = consume("{");
         int i = 0;
