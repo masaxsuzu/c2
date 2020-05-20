@@ -130,6 +130,8 @@ int g5 = 5;
 long g6 = 6;
 int *g7 = &g5;
 char *g8 = "abc";
+int g9[3] = {0, 1 };
+char *g10[] = {"foo", "bar"};
 
 int main() {
     assert(0, 0, "0");
@@ -615,6 +617,15 @@ int main() {
     assert(6, g6, "g6");
     assert(5, *g7, "*g7");
     assert(0, strcmp(g8, "abc"), "strcmp(g8, \"abc\")");
+
+    assert(0, g9[0], "g9[0]");
+    assert(1, g9[1], "g9[1]");
+    assert(0, g9[2], "g9[2]");
+
+    assert(0, strcmp(g10[0], "foo"), "strcmp(g10[0], \"foo\")");
+    assert(0, strcmp(g10[1], "bar"), "strcmp(g10[1], \"bar\")");
+    assert(0, g10[1][3], "g10[1][3]");
+    assert(2, sizeof(g10) / sizeof(*g10), "sizeof(g10) / sizeof(*g10)");
 
     printf("OK\n");
     return 0;

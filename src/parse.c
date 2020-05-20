@@ -722,8 +722,39 @@ Initializer *gvar_init_string(char *p, int len) {
     return head.next;
 }
 
+Initializer *new_init_zero(Initializer *cur, int nbytes) {
+    for (int i = 0; i < nbytes; i++) {
+        cur = new_init_value(cur, 1, 0);
+    }
+    return cur;
+}
+
 Initializer *init_global_variable2(Initializer *cur, Type *ty) {
     Token *tok = token;
+
+    if (ty->kind == TY_Array) {
+        expect("{");
+        int i = 0;
+        while(!peek("}")) {
+            do {
+                cur = init_global_variable2(cur, ty->base);
+                i++;
+            } while(!peek_end_of_brace() && consume(","));
+        }
+
+        expect_end_of_brace();
+
+        if(i < ty->array_size) {
+            cur = new_init_zero(cur, size_of(ty->base) * (ty->array_size - i));
+        }
+
+        if(ty->is_incomplete) {
+            ty->array_size = i;
+            ty->is_incomplete = false;
+        }
+        return cur;
+    }
+
     Node *expr = conditional();
     
     if (expr->kind == ND_Addr) {
