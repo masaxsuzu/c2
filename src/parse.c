@@ -1214,6 +1214,10 @@ Node *stmt2() {
         return node;
     }
 
+    if (tok = consume(";")) {
+        return new_node(ND_Null, tok);
+    }
+
     if (tok = consume_identifier()) {
         if(consume(":")) {
             Node *node = new_unary(ND_Label, stmt(), tok);
