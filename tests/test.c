@@ -372,8 +372,6 @@ int main() {
     assert(8, ({ int *(*x)[4]; sizeof(x); }), "int *(*x)[4]; sizeof(x); ");
     assert(8, ({ int (**x)[4]; sizeof(x); }), "int (**x)[4]; sizeof(x); ");
 
-    assert(1, ({ void *x; sizeof(*x);}), "void *x; sizeof(*x);");
-    assert(8, ({ void *x; sizeof(x);}), "void *x; sizeof(x);");
     assert(123, ({ nop(); 123;}), "nop(); 123;");
 
     assert(0, ({ _Bool x=0; x; }), "_Bool x=0; x;");
@@ -727,6 +725,10 @@ int main() {
     assert(2, counter(), "counter()");
     assert(4, counter(), "counter()");
     assert(6, counter(), "counter()");
+
+    assert(8, ({ struct *foo; sizeof(foo); }), "struct *foo; sizeof(foo);");
+    assert(4, ({ struct T *foo; struct T {int x;}; sizeof(struct T); }), "struct T *foo; struct T {int x;}; sizeof(struct T);");
+    assert(1, ({ struct T { struct T *next; int x; } a; struct T b; b.x=1; a.next=&b; a.next->x; }), "struct T { struct T *next; int x; } a; struct T b; b.x=1; a.next=&b; a.next->x;");
 
     printf("OK\n");
     return 0;

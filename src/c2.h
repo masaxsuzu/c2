@@ -230,6 +230,7 @@ Type *long_type();
 Type *int_type();
 Type *short_type();
 Type *char_type();
+Type *struct_type();
 bool is_integer(Type *ty);
 int size_of(Type *ty);
 int align_to(int n, int align);

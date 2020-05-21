@@ -96,6 +96,12 @@ int size_of(Type *ty) {
     }
 }
 
+Type *struct_type() {
+    Type *ty = new_type(TY_Struct, 0);
+    ty->is_incomplete = true;
+    return ty;
+}
+
 // Assign type to the give node recursively.
 void assign_type(Node *node) {
     if (!node || node->ty) {
@@ -177,13 +183,20 @@ void assign_type(Node *node) {
             node->ty = pointer_to(node->left->ty);
         }
         return;
-    case ND_Deref:
-        if (node->left->ty->base) {
-            node->ty = node->left->ty->base;
-        } else {
+    case ND_Deref: {
+        if (!node->left->ty->base) {
             error_at(node->token->str, "invalid pointer deference");
         }
+        Type *ty = node->left->ty->base;
+        if(ty->kind == TY_Void) {
+            error_at(node->token->str, "dereferencing a void pointer");
+        }
+        if(ty->kind == TY_Struct && ty->is_incomplete) {
+            error_at(node->token->str, "incomplete struct type");
+        }
+        node->ty = ty;
         return;
+    }
     case ND_Stmt_Expr: {
         Node *last = node->block;
         while (last->next) {

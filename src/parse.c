@@ -5,6 +5,7 @@ typedef struct TagScope TagScope;
 struct TagScope {
     TagScope *next;
     char *name;
+    int depth;
     Type *ty;
 };
 
@@ -13,6 +14,7 @@ typedef struct VarScope VarScope;
 struct VarScope {
     VarScope *next;
     char *name;
+    int depth;
     Variable *var;
     Type *type_def;
     Type *enum_ty;
@@ -28,6 +30,7 @@ Parameters *locals;
 Parameters *globals;
 VarScope *varscope;
 TagScope *tagscope;
+static int scope_depth;
 
 Node *current_switch;
 
@@ -71,12 +74,14 @@ Scope *enter_scope() {
     Scope *sc = calloc(1, sizeof(Scope));
     sc->varscope = varscope;
     sc->tagscope = tagscope;
+    scope_depth++;
     return sc;
 }
 
 void exit_scope(Scope *scope) {
     varscope = scope->varscope;
     tagscope = scope->tagscope;
+    scope_depth--;
 }
 
 TagScope *push_tag_scope(Token *tok, Type *ty) {
@@ -84,6 +89,7 @@ TagScope *push_tag_scope(Token *tok, Type *ty) {
     ts->next = tagscope;
     ts->ty = ty;
     ts->name = strndup(tok->str, tok->len);
+    ts->depth = scope_depth;
     tagscope = ts;
     return ts;
 }
@@ -92,6 +98,7 @@ VarScope *push_var_scope(char *name) {
     VarScope *vs = calloc(1, sizeof(VarScope));
     vs->next = varscope;
     vs->name = name;
+    vs->depth = scope_depth;
     varscope = vs;
     return vs;
 }
@@ -274,20 +281,45 @@ Member *struct_member() {
 // struct-decl = "struct" "{" struct-member "}"
 Type *struct_decl() {
     expect("struct");
+
     // Read tag name
     Token *tag = consume_identifier();
     if (tag && !peek("{")) {
         TagScope *vs = find_tag(tag);
         if (!vs) {
-            error_at(tag->str, "unknown struct type");
+            Type *ty = struct_type();
+            push_tag_scope(tag, ty);
+            return ty;
         }
+
         if (vs->ty->kind != TY_Struct) {
             error_at(tag->str, "not a struct tag");
         }
         return vs->ty;
     };
 
-    expect("{");
+    if (!consume("{")) {
+        return struct_type();
+    }
+
+    Type *ty;
+    TagScope *ts = NULL;
+    if(tag) {
+        ts = find_tag(tag);
+    }
+
+    if (ts && ts->depth == scope_depth) {
+        if (ts->ty->kind != TY_Struct) {
+            error_at(tag->str, "not a struct tag");
+        }
+        ty = ts->ty;
+    }
+    else {
+        ty = struct_type();
+        if(tag) {
+            push_tag_scope(tag, ty);
+        }
+    }
 
     Member head;
     head.next = NULL;
@@ -297,8 +329,6 @@ Type *struct_decl() {
         cur->next = struct_member();
         cur = cur->next;
     }
-    Type *ty = calloc(1, sizeof(Type));
-    ty->kind = TY_Struct;
     ty->members = head.next;
 
     int offset = 0;
@@ -315,10 +345,7 @@ Type *struct_decl() {
         }
     }
 
-    if (tag) {
-        push_tag_scope(tag, ty);
-    }
-
+    ty->is_incomplete = false;
     return ty;
 }
 
