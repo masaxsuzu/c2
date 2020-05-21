@@ -2,7 +2,7 @@ CFLAGS=-std=c11 -g -static -fno-common
 SRCS=$(wildcard ./src/*.c)
 OBJS=$(SRCS:.c=.o)
 
-test-gen2: test c2-gen2 extern.o
+test-gen2: clean test c2-gen2 extern.o
 	./c2-gen2 ./tests/test.c > tmp.s
 	gcc -static -o ./tmp ./tmp.s extern.o
 	./tmp
@@ -34,4 +34,9 @@ debug: c2
 	gcc -static -o ./tmp ./tmp.s
 	./tmp
 
-.PHONY: test fmt clean debug
+diff:
+	./c2 ${f} > 1.s
+	./c2-gen2 ${f} > 2.s
+	diff 1.s 2.s
+
+.PHONY: test fmt clean debug diff
