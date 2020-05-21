@@ -399,12 +399,16 @@ bool is_typename() {
 }
 
 bool is_func() {
+    bool isfunc = false;
     Token *tok = token;
     StorageClass sclass;
     Type *ty = basetype(&sclass);
-    char *name = NULL;
-    declarator(ty, &name);
-    bool isfunc = name && consume("(");
+
+    if (!consume(";")) {
+        char *name = NULL;
+        declarator(ty, &name);
+        isfunc = name && consume("(");
+    }
     token = tok;
     return isfunc;
 }
@@ -840,6 +844,9 @@ Initializer *init_global_variable(Type *ty) {
 void *global_variable() {
     StorageClass sclass;
     Type *ty = basetype(&sclass);
+    if (consume(";")) {
+        return NULL;
+    }
     char *name = NULL;
     Token *tok = token;
     ty = declarator(ty, &name);

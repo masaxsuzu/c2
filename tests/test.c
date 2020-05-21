@@ -157,6 +157,10 @@ int *g27 = g26 + 1;
 extern int ext1;
 extern int *ext2;
 
+int;
+struct {char a; int b;};
+typedef struct {char a; int b;} Ty1;
+
 int main() {
     assert(0, 0, "0");
     assert(42, 42, "42");
