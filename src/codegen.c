@@ -595,14 +595,21 @@ void emit_text(Program *p) {
 }
 
 void emit_data(Program *p) {
-    printf(".data\n");
+    printf(".bss\n");
     for (Parameters *global = p->globals; global; global = global->next) {
-        printf("%s:\n", global->var->name);
-        if (!global->var->initializer) {
-            printf("  .zero %d\n", size_of(global->var->ty));
+        if (global->var->initializer) {
             continue;
         }
-
+        printf("%s:\n", global->var->name);
+        printf("  .zero %d\n", size_of(global->var->ty));
+    }
+    
+    printf(".data\n");
+    for (Parameters *global = p->globals; global; global = global->next) {
+        if (!global->var->initializer){
+            continue;
+        }
+        printf("%s:\n", global->var->name);
         for(Initializer *init = global->var->initializer; init; init = init->next){
             if(init->label) {
                 printf("  .quad %s%+ld\n", init->label, init->addend);
