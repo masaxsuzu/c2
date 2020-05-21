@@ -34,6 +34,7 @@ Node *current_switch;
 typedef enum {
     TypeDef = 1 << 0,
     Static = 1 << 1,
+    Extern  = 1 << 2,
 } StorageClass;
 
 Function *function();
@@ -393,7 +394,8 @@ Type *enum_specifier() {
 bool is_typename() {
     return peek("long") || peek("int") || peek("short") || peek("char") ||
            peek("struct") || peek("enum") || peek("_Bool") || peek("void") ||
-           peek("typedef") || peek("static") || find_typedef(token);
+           peek("typedef") || peek("static") || peek("extern") ||
+           find_typedef(token);
 }
 
 bool is_func() {
@@ -434,7 +436,7 @@ Type *basetype(StorageClass *sclass) {
     while (is_typename()) {
         Token *tok = token;
 
-        if (peek("typedef") || peek("static")) {
+        if (peek("typedef") || peek("static") || peek("extern")) {
             if (!sclass) {
                 error_at(tok->str, "invalid storage class specifier");
             }
@@ -443,11 +445,13 @@ Type *basetype(StorageClass *sclass) {
                 *sclass |= TypeDef;
             } else if (consume("static")) {
                 *sclass |= Static;
+            } else if (consume("extern")) {
+                *sclass |= Extern;
             }
 
             if (*sclass & (*sclass - 1)) {
                 error_at(tok->str,
-                         "typedef and static may not be used together");
+                         "typedef, static and extern may not be used together");
             }
             continue;
         }
@@ -847,16 +851,22 @@ void *global_variable() {
         return NULL;
     } 
 
-    Variable *var = new_gvar(name, ty, true);
+    Variable *var = new_gvar(name, ty, sclass != Extern);
 
-    if (!consume("=")) {
-        if(ty->is_incomplete) {
-          error_at(tok->str, "incomplete struct member");
-        }
+    if (sclass == Extern) {
         expect(";");
         return NULL;
     }
-    var->initializer = init_global_variable(ty);
+
+    if (consume("=")) {
+        var->initializer = init_global_variable(ty);
+        expect(";");
+        return NULL;
+    }
+
+    if (ty->is_incomplete) {
+        error_at(tok->str, "incomplete type");
+    }
     expect(";");
 }
 

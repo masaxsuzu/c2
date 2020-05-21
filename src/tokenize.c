@@ -143,7 +143,7 @@ char *starts_with_reserved(char *p) {
         "return", "if",      "else",   "while", "for", "do",
         "struct", "char",   "short",   "int",    "long",  "void",
         "_Bool", // bool is just a macro.
-        "sizeof", "typedef", "static", "enum",  
+        "sizeof", "typedef", "static", "extern" , "enum",  
         "break", "continue", "goto","switch", "case", "default" };
 
     for (int i = 0; i < sizeof(kw) / sizeof(*kw); i++) {
