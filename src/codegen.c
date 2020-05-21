@@ -600,15 +600,18 @@ void emit_data(Program *p) {
         if (global->var->initializer) {
             continue;
         }
+        printf(".align %d\n", global->var->ty->align);
         printf("%s:\n", global->var->name);
         printf("  .zero %d\n", size_of(global->var->ty));
     }
-    
+
     printf(".data\n");
     for (Parameters *global = p->globals; global; global = global->next) {
         if (!global->var->initializer){
             continue;
         }
+
+        printf(".align %d\n", global->var->ty->align);
         printf("%s:\n", global->var->name);
         for(Initializer *init = global->var->initializer; init; init = init->next){
             if(init->label) {
