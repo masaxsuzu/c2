@@ -64,6 +64,7 @@ Node *cast();
 Node *unary();
 Node *primary();
 Node *postfix();
+Node *compound_literal();
 
 Type *read_type_suffix(Type *ty);
 Type *basetype(StorageClass *sclass);
@@ -1668,10 +1669,12 @@ Node *cast() {
         if (is_typename()) {
             Type *ty = type_name();
             expect(")");
-            Node *node = new_unary(ND_Cast, cast(), tok);
-            assign_type(node);
-            node->ty = ty;
-            return node;
+            if(!consume("{")) {
+                Node *node = new_unary(ND_Cast, cast(), tok);
+                assign_type(node);
+                node->ty = ty;
+                return node;
+            }
         }
         token = tok;
     }
@@ -1757,8 +1760,15 @@ Node *struct_ref(Node *left) {
 }
 
 Node *postfix() {
-    Node *node = primary();
+    Node *node = compound_literal();
     Token *tok;
+
+    if (node) {
+        return node;
+    }
+
+    node = primary();
+
     for (;;) {
         // x[y] is *(x+y)
         if (tok = consume("[")) {
@@ -1791,4 +1801,30 @@ Node *postfix() {
 
         return node;
     }
+}
+
+Node *compound_literal() {
+    Token *tok = token;
+    if(!consume("(") || !is_typename()) {
+        token = tok;
+        return NULL;
+    }
+    Type *ty = type_name();
+    expect(")");
+
+    if (!peek("{")) {
+        token = tok;
+        return NULL;
+    }
+
+    if (scope_depth == 0) {
+        Variable *var = new_gvar(new_label(), ty, true);
+        var->initializer = init_global_variable(ty);
+        return new_var_node(var, tok);
+    }
+
+    Variable *var = new_lvar(new_label(), ty, true);
+    Node *node = new_var_node(var, tok);
+    node->init = init_lvar(var, tok);
+    return node;
 }

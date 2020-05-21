@@ -15,6 +15,9 @@ void gen(Node *node);
 void gen_addr(Node *node) {
 
     if (node->kind == ND_Var) {
+        if(node->init) {
+            gen(node->init);
+        }
         if (node->var->is_local) {
             printf("  lea rax, [rbp-%d]\n", node->var->offset);
             printf("  push rax\n");
@@ -396,6 +399,14 @@ void gen(Node *node) {
         return;
     }
     case ND_Var:
+        if(node->init) {
+            gen(node->init);
+        }
+        gen_addr(node);
+        if (node->ty->kind != TY_Array) {
+            load(node->ty);
+        }
+        return;
     case ND_Member:
         gen_addr(node);
         if (node->ty->kind != TY_Array) {

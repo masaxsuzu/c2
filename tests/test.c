@@ -167,6 +167,22 @@ int counter() {
     return i++ + j++;
 }
 
+typedef struct Tree {
+  int val;
+  struct Tree *lhs;
+  struct Tree *rhs;
+} Tree;
+
+Tree *tree = &(Tree){
+  1,
+  &(Tree){
+    2,
+    &(Tree){ 3, 0, 0 },
+    &(Tree){ 4, 0, 0 },
+  },
+  0,
+};
+
 int main() {
     assert(0, 0, "0");
     assert(42, 42, "42");
@@ -730,6 +746,16 @@ int main() {
     assert(4, ({ struct T *foo; struct T {int x;}; sizeof(struct T); }), "struct T *foo; struct T {int x;}; sizeof(struct T);");
     assert(1, ({ struct T { struct T *next; int x; } a; struct T b; b.x=1; a.next=&b; a.next->x; }), "struct T { struct T *next; int x; } a; struct T b; b.x=1; a.next=&b; a.next->x;");
 
+    assert(1, (int){1}, "(int){1}");
+    assert(2, ((int[]){0,1,2})[2], "(int[]){0,1,2}[2]");
+    assert('a', ((struct {char a; int b;}){'a', 3}).a, "((struct {char a; int b;}){'a', 3}).a");
+    assert(3, ({ int x=3; (int){x}; }), "int x=3; (int){x};");
+
+    assert(1, tree->val, "tree->val");
+    assert(2, tree->lhs->val, "tree->lhs->val");
+    assert(3, tree->lhs->lhs->val, "tree->lhs->lhs->val");
+    assert(4, tree->lhs->rhs->val, "tree->lhs->rhs->val");
+    
     printf("OK\n");
     return 0;
 }
