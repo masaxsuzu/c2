@@ -161,6 +161,12 @@ int;
 struct {char a; int b;};
 typedef struct {char a; int b;} Ty1;
 
+int counter() {
+    static int i;
+    static int j = 1+1;
+    return i++ + j++;
+}
+
 int main() {
     assert(0, 0, "0");
     assert(42, 42, "42");
@@ -717,6 +723,10 @@ int main() {
     assert(4, _Alignof(int[3]), "_Alignof(int[3])");
     assert(1, _Alignof(struct {char a; char b;}[2]), "_Alignof(struct {char a; char b;}[2])");
     assert(8, _Alignof(struct {char a; long b;}[2]), "_Alignof(struct {char a; long b;}[2])");
+
+    assert(2, counter(), "counter()");
+    assert(4, counter(), "counter()");
+    assert(6, counter(), "counter()");
 
     printf("OK\n");
     return 0;

@@ -1072,6 +1072,19 @@ Node *declaration() {
     if (ty->kind == TY_Void) {
         error_at(tok->str, "variable is declared as void");
     }
+    if (sclass == Static) {
+        Variable *var = new_gvar(new_label(), ty, true);
+        push_var_scope(name)->var = var;
+
+        if (consume("=")) {
+            var->initializer = init_global_variable(ty);
+        }
+        else if (ty->is_incomplete) {
+            error_at(tok->str, "incomplete type");
+        }
+        consume(";");
+        return new_node(ND_Null, tok);
+    }
 
     Variable *var = new_lvar(name, ty, true);
 
@@ -1358,6 +1371,9 @@ long eval2(Node *node, Variable **var) {
     case ND_Comma:
         return eval(node->right);
     case ND_Addr:
+        if (!var || *var || node->left->kind != ND_Var || node->left->var->is_local) {
+            error_at(node->token->str, "invalid initializer");
+        }
         *var = node->left->var;
         return 0;
     case ND_Var:
