@@ -1677,6 +1677,13 @@ Node *unary() {
         }
         return new_number_node(size_of(n->ty), tok);
     }
+    
+    if (tok = consume("_Alignof")) {
+        expect("(");
+        Type *ty = type_name();
+        expect(")");
+        return new_number_node(ty->align, tok);
+    }
 
     if (tok = consume("++")) {
         return new_unary(ND_Pre_Inc, unary(), tok);
