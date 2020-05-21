@@ -147,6 +147,7 @@ char g19[3] = "foobar";
 
 char *g20 = g17+0;
 char *g21 = g17+3;
+char *g22 = &g17-3;
 
 char *g23[] = {g17+0, g17+3, g17-3};
 int g24=3;
@@ -709,8 +710,8 @@ int main() {
     assert(0, memcmp(g19, "foo", 3), "memcmp(g19, \"foo\", 3)");
 
     assert(0, strcmp(g20, "foobar"), "strcmp(g20, \"foobar\")");
-    //assert(0, strcmp(g21, "bar"), "strcmp(g21, \"bar\")");
-    //assert(0, strcmp(g22+3, "foobar"), "strcmp(g22+3, \"foobar\")");
+    assert(0, strcmp(g21, "bar"), "strcmp(g21, \"bar\")");
+    assert(0, strcmp(g22+3, "foobar"), "strcmp(g22+3, \"foobar\")");
 
     assert(0, strcmp(g23[0], "foobar"), "strcmp(g23[0], \"foobar\")");
     assert(0, strcmp(g23[1], "bar"), "strcmp(g23[1], \"bar\")");
@@ -755,7 +756,7 @@ int main() {
     assert(2, tree->lhs->val, "tree->lhs->val");
     assert(3, tree->lhs->lhs->val, "tree->lhs->lhs->val");
     assert(4, tree->lhs->rhs->val, "tree->lhs->rhs->val");
-    
+
     printf("OK\n");
     return 0;
 }
