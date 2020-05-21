@@ -2,11 +2,21 @@ CFLAGS=-std=c11 -g -static -fno-common
 SRCS=$(wildcard ./src/*.c)
 OBJS=$(SRCS:.c=.o)
 
-test: c2
-	./c2 ./tests/test.c > ./tmp.s
-	echo 'int ext1; int *ext2; int only_decl(int x) { return x; } int static_fn() { return 5; }' | gcc -o tmp2.o -xc -c -
-	gcc -static -o ./tmp ./tmp.s ./tmp2.o
+test-gen2: test c2-gen2 extern.o
+	./c2-gen2 ./tests/test.c > tmp.s
+	gcc -static -o ./tmp ./tmp.s extern.o
 	./tmp
+
+test: c2 extern.o
+	./c2 ./tests/test.c > ./tmp.s
+	gcc -static -o ./tmp ./tmp.s extern.o
+	./tmp
+
+c2-gen2: c2 $(SRCS) src/c2.h
+	./selh.sh
+
+extern.o: tests/extern.c
+	gcc -xc -c -o extern.o tests/extern.c
 
 c2: $(OBJS)
 	$(CC) -o c2 $(OBJS) $(LDFLAGS)
@@ -14,7 +24,7 @@ c2: $(OBJS)
 $(OBJS): ./src/c2.h
 
 clean:
-	rm -f c2 ./src/*.o *~ tmp*
+	rm -rf c2 c2-gen* *.o ./src/*.o *~ tmp*
 
 fmt:
 	clang-format src/*.c -i
