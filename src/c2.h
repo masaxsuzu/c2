@@ -77,6 +77,7 @@ struct Initializer
     int size;
     long value;
     char *label;
+    long addend;
 };
 
 typedef enum {

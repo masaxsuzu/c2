@@ -42,6 +42,7 @@ Node *stmt();
 Node *stmt2();
 Node *expr();
 long eval(Node *node);
+long eval2(Node *node, Variable **var);
 long constexpr();
 Node *assign();
 Node *conditional();
@@ -706,9 +707,10 @@ Initializer *new_init_value(Initializer *cur, int size, int value) {
     return init;
 }
 
-Initializer *new_init_label(Initializer *cur, char *label) {
+Initializer *new_init_label(Initializer *cur, char *label, long addend) {
     Initializer *init = calloc(1, sizeof(Initializer));
     init->label = label;
+    init->addend = addend;
     cur->next = init;
     return init;
 }
@@ -813,18 +815,15 @@ Initializer *init_global_variable2(Initializer *cur, Type *ty) {
         expect_end_of_brace();
     }
 
-    if (expr->kind == ND_Addr) {
-        if (expr->left->kind != ND_Var) {
-            error_at(tok->str, "invalid initialier");
-        }
-        return new_init_label(cur, expr->left->var->name);
+    Variable *var = NULL;
+    long addend = eval2(expr, &var);
+    if (var) {
+        int scale = (var->ty->kind == TY_Array)
+         ? size_of(var->ty->base) : size_of(var->ty);
+         return new_init_label(cur, var->name, addend * scale);
     }
-
-    if (expr->kind == ND_Var && expr->var->ty->kind == TY_Array) {
-        return new_init_label(cur, expr->var->name);
-    }
-
-    return new_init_value(cur, size_of(ty), eval(expr));
+    
+    return new_init_value(cur, size_of(ty), addend);
 }
 
 Initializer *init_global_variable(Type *ty) {
@@ -1287,7 +1286,7 @@ Node *expr() {
     return node;
 }
 
-long eval(Node *node) {
+long eval2(Node *node, Variable **var) {
 
     switch (node->kind)
     {
@@ -1299,8 +1298,14 @@ long eval(Node *node) {
         return ~eval(node->left);
     case ND_Add:
         return eval(node->left) + eval(node->right);
+    case ND_Add_Ptr:
+        return eval2(node->left, var) + eval(node->right);
     case ND_Sub:
         return eval(node->left) - eval(node->right);
+    case ND_Sub_Ptr:
+        return eval2(node->left, var) - eval(node->right);
+    case ND_Diff_Ptr:
+        return eval2(node->left, var) - eval2(node->right, var);
     case ND_Mul:
         return eval(node->left) * eval(node->right);
     case ND_Div:
@@ -1331,10 +1336,20 @@ long eval(Node *node) {
         return eval(node->cond) ? eval(node->then) : eval(node->otherwise);
     case ND_Comma:
         return eval(node->right);
+    case ND_Addr:
+        *var = node->left->var;
+        return 0;
+    case ND_Var:
+        *var = node->var;
+        return 0;
     default:
         error_at(node->token->str, "not a constant expression");
         break;
     }
+}
+
+long eval(Node *node) {
+    return eval2(node, NULL);
 }
 
 long constexpr () {
