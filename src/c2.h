@@ -53,6 +53,7 @@ struct Variable {
     Type *ty;
     int offset;
     bool is_local;
+    bool is_static;
     Initializer *initializer;
 };
 

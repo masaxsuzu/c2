@@ -606,6 +606,11 @@ void emit_text(Program *p) {
 }
 
 void emit_data(Program *p) {
+    for (Parameters *global = p->globals; global; global = global->next) {
+        if(global->var->is_static) {
+            printf(".global %s\n", global->var->name);
+        }
+    }
     printf(".bss\n");
     for (Parameters *global = p->globals; global; global = global->next) {
         if (global->var->initializer) {

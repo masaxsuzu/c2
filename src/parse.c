@@ -244,8 +244,9 @@ Variable *new_lvar(char *name, Type *ty, bool is_local) {
     return var;
 }
 
-Variable *new_gvar(char *name, Type *ty, bool emit) {
+Variable *new_gvar(char *name, Type *ty,bool is_static, bool emit) {
     Variable *var = new_var(name, ty, false);
+    var->is_static = is_static;
     push_var_scope(name)->var = var;
 
     if (emit) {
@@ -703,7 +704,7 @@ Function *function() {
     Type *ty = basetype(&sclass);
     char *name = NULL;
     ty = declarator(ty, &name);
-    new_gvar(name, func_type(ty), false);
+    new_gvar(name, func_type(ty),false, false);
 
     Function *f = calloc(1, sizeof(Function));
     f->name = name;
@@ -886,7 +887,7 @@ void *global_variable() {
         return NULL;
     } 
 
-    Variable *var = new_gvar(name, ty, sclass != Extern);
+    Variable *var = new_gvar(name, ty, sclass == Static, sclass != Extern);
 
     if (sclass == Extern) {
         expect(";");
@@ -1101,7 +1102,7 @@ Node *declaration() {
         error_at(tok->str, "variable is declared as void");
     }
     if (sclass == Static) {
-        Variable *var = new_gvar(new_label(), ty, true);
+        Variable *var = new_gvar(new_label(), ty,true, true);
         push_var_scope(name)->var = var;
 
         if (consume("=")) {
@@ -1654,7 +1655,7 @@ Node *primary() {
     if (tok->kind == TK_String) {
         token = token->next;
         Type *ty = array_of(char_type(), tok->cont_len);
-        Variable *var = new_gvar(new_label(), ty, true);
+        Variable *var = new_gvar(new_label(), ty, true, true);
         var->initializer = gvar_init_string(tok->contents, tok->cont_len);
         return new_var_node(var, tok);
     }
@@ -1818,7 +1819,7 @@ Node *compound_literal() {
     }
 
     if (scope_depth == 0) {
-        Variable *var = new_gvar(new_label(), ty, true);
+        Variable *var = new_gvar(new_label(), ty,true, true);
         var->initializer = init_global_variable(ty);
         return new_var_node(var, tok);
     }
