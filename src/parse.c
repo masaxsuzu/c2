@@ -1234,6 +1234,9 @@ Node *stmt2() {
     }
 
     if (tok = consume("return")) {
+        if (tok = consume(";")) {
+            return new_node(ND_Null, tok);
+        }
         node = new_unary(ND_Return, expr(), tok);
         expect(";");
         return node;

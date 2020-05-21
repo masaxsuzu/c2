@@ -68,6 +68,10 @@ int sizeof_nested_type2(int (*x)[4]) {
 void nop() {
 }
 
+void nop2() {
+  return;
+}
+
 typedef int MyInt;
 
 static int static_fn() { return 3; }
@@ -391,6 +395,7 @@ int main() {
     assert(8, ({ int (**x)[4]; sizeof(x); }), "int (**x)[4]; sizeof(x); ");
 
     assert(123, ({ nop(); 123;}), "nop(); 123;");
+    assert(255, ({ nop2(); 255;}), "nop(); 255;");
 
     assert(0, ({ _Bool x=0; x; }), "_Bool x=0; x;");
     assert(1, ({ _Bool x=1; x; }), "_Bool x=1; x;");

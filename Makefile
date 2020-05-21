@@ -13,7 +13,7 @@ test: c2 extern.o
 	./tmp
 
 c2-gen2: c2 $(SRCS) src/c2.h
-	./selh.sh
+	bash self.sh
 
 extern.o: tests/extern.c
 	gcc -xc -c -o extern.o tests/extern.c
