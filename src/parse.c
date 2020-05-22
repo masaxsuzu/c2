@@ -729,7 +729,7 @@ Function *function() {
         cur = cur->next;
     }
     exit_scope(scope);
-
+    
     f->node = head.next;
     f->locals = locals;
     return f;
@@ -1145,6 +1145,15 @@ Node *stmt2() {
     Node *node;
     Token *tok;
 
+    if (tok = consume("return")) {
+        if(consume(";")) {
+            return new_node(ND_Return, tok);
+        }
+        Node *node =new_unary(ND_Return, expr(), tok);
+        expect(";");
+        return node;
+    }
+
     if (consume("if")) {
         expect("(");
         Node *cond = expr();
@@ -1234,7 +1243,7 @@ Node *stmt2() {
     }
 
     if (tok = consume("return")) {
-        if (tok = consume(";")) {
+        if (consume(";")) {
             return new_node(ND_Null, tok);
         }
         node = new_unary(ND_Return, expr(), tok);

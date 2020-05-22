@@ -36,7 +36,7 @@ debug: c2
 
 diff:
 	./c2 ${f} > 1.s
-	./c2-gen2 ${f} > 2.s
+	${xcc} ${f} > 2.s
 	diff 1.s 2.s
 
 .PHONY: test fmt clean debug diff

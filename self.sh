@@ -39,7 +39,7 @@ for i in $TMP/*.c; do
 done
 
 expand main.c
-#expand type.c
+expand type.c
 #expand codegen.c  
 #expand parse.c  
 #expand tokenize.c 

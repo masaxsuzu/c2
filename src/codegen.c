@@ -355,8 +355,10 @@ void gen(Node *node) {
             gen(n);
         return;
     case ND_Return:
-        gen(node->left);
-        printf("  pop rax\n");
+        if(node->left) {
+            gen(node->left);
+            printf("  pop rax\n");
+        }
         printf("  jmp .L.return.%s\n", functionName);
         return;
     case ND_Null:
@@ -513,11 +515,11 @@ void gen(Node *node) {
         gen(node->left);
         printf("  pop rax\n");
         printf("  cmp rax, 0\n");
-        printf("  je  .L.true.%d\n", id);
+        printf("  jne .L.true.%d\n", id);
         gen(node->right);
         printf("  pop rax\n");
         printf("  cmp rax, 0\n");
-        printf("  je  .L.true.%d\n", id);
+        printf("  jne .L.true.%d\n", id);
         printf("  push 0\n");
         printf("  jmp .L.end.%d\n", id);
         printf(".L.true.%d:\n", id);
@@ -607,7 +609,7 @@ void emit_text(Program *p) {
 
 void emit_data(Program *p) {
     for (Parameters *global = p->globals; global; global = global->next) {
-        if(global->var->is_static) {
+        if(!global->var->is_static) {
             printf(".global %s\n", global->var->name);
         }
     }
