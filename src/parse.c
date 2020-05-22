@@ -675,29 +675,34 @@ Parameters *read_func_parameter() {
     p->var = new_lvar(name, ty, true);
     return p;
 }
-Parameters *read_func_parameters() {
+
+void read_func_parameters(Function *fn) {
     if (consume(")")) {
-        return NULL;
+        return;
     }
     
     Token *tok = token;
 
     if (consume("void") && consume(")")) {
-        return NULL;
+        return;
     }
 
     token = tok;
 
-    Parameters *head = read_func_parameter();
-    Parameters *cur = head;
+    fn->params = read_func_parameter();
+    Parameters *cur = fn->params;
 
     while (!consume(")")) {
         expect(",");
+        if(tok = consume("...")) {
+            expect(")");
+            return;
+        }
         cur->next = read_func_parameter();
         cur = cur->next;
     }
 
-    return head;
+    return;
 }
 
 // function = basetype declarator "(" params? ")" "{" stmt* "}"
@@ -715,7 +720,7 @@ Function *function() {
     expect("(");
 
     Scope *scope = enter_scope();
-    f->params = read_func_parameters();
+    read_func_parameters(f);
 
     if (consume(";")) {
         exit_scope(scope);
