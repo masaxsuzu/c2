@@ -188,10 +188,10 @@ void assign_type(Node *node) {
             error_at(node->token->str, "invalid pointer deference");
         }
         Type *ty = node->left->ty->base;
-        if(ty->kind == TY_Void) {
+        if (ty->kind == TY_Void) {
             error_at(node->token->str, "dereferencing a void pointer");
         }
-        if(ty->kind == TY_Struct && ty->is_incomplete) {
+        if (ty->kind == TY_Struct && ty->is_incomplete) {
             error_at(node->token->str, "incomplete struct type");
         }
         node->ty = ty;

@@ -32,7 +32,8 @@ char *read_file(char *path) {
 
 // // Show current node as json format.
 // void debug_node(char *label, Node *node) {
-//     fprintf(stderr, "{ \"label\": %s, \"kind\": %d, \"value\": %ld }\n", label,
+//     fprintf(stderr, "{ \"label\": %s, \"kind\": %d, \"value\": %ld }\n",
+//     label,
 //             node->kind, node->value);
 // }
 

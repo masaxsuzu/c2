@@ -37,7 +37,7 @@ Node *current_switch;
 typedef enum {
     TypeDef = 1 << 0,
     Static = 1 << 1,
-    Extern  = 1 << 2,
+    Extern = 1 << 2,
 } StorageClass;
 
 Function *function();
@@ -53,8 +53,8 @@ Node *conditional();
 Node *bitand();
 Node * bitor ();
 Node *bitxor();
-Node * logor ();
-Node * logand ();
+Node *logor();
+Node *logand();
 Node *equality();
 Node *relational();
 Node *shift();
@@ -245,7 +245,7 @@ Variable *new_lvar(char *name, Type *ty, bool is_local) {
     return var;
 }
 
-Variable *new_gvar(char *name, Type *ty,bool is_static, bool emit) {
+Variable *new_gvar(char *name, Type *ty, bool is_static, bool emit) {
     Variable *var = new_var(name, ty, false);
     var->is_static = is_static;
     push_var_scope(name)->var = var;
@@ -307,7 +307,7 @@ Type *struct_decl() {
 
     Type *ty;
     TagScope *ts = NULL;
-    if(tag) {
+    if (tag) {
         ts = find_tag(tag);
     }
 
@@ -316,10 +316,9 @@ Type *struct_decl() {
             error_at(tag->str, "not a struct tag");
         }
         ty = ts->ty;
-    }
-    else {
+    } else {
         ty = struct_type();
-        if(tag) {
+        if (tag) {
             push_tag_scope(tag, ty);
         }
     }
@@ -337,7 +336,7 @@ Type *struct_decl() {
     int offset = 0;
     for (Member *mem = ty->members; mem; mem = mem->next) {
         if (mem->ty->is_incomplete) {
-          error_at(mem->tok->str, "incomplete struct member");
+            error_at(mem->tok->str, "incomplete struct member");
         }
         offset = align_to(offset, mem->ty->align);
         mem->offset = offset;
@@ -486,7 +485,8 @@ Type *basetype(StorageClass *sclass) {
             // TODO: compile *sclass - 1 by gen1+ compiler
             // if (*sclass & (*sclass - 1)) {
             //     error_at(tok->str,
-            //              "typedef, static and extern may not be used together");
+            //              "typedef, static and extern may not be used
+            //              together");
             // }
 
             continue;
@@ -642,7 +642,7 @@ Type *read_type_suffix(Type *base) {
     }
     int size = 0;
     bool is_incomplete = true;
-    if(!consume("]")) {
+    if (!consume("]")) {
         size = constexpr();
         is_incomplete = false;
         expect("]");
@@ -650,7 +650,7 @@ Type *read_type_suffix(Type *base) {
 
     Token *tok = token;
     base = read_type_suffix(base);
-    if(base->is_incomplete) {
+    if (base->is_incomplete) {
         error_at(tok->str, "incomplete element type");
     }
     base = array_of(base, size);
@@ -665,10 +665,10 @@ Parameters *read_func_parameter() {
     char *name = NULL;
     ty = declarator(ty, &name);
     ty = read_type_suffix(ty);
-    
+
     // convert `array of T` into `pointer to T` only in the parameter.
     // int func(int[] x) { return x[0]; } is ok.
-    if(ty->kind == TY_Array) {
+    if (ty->kind == TY_Array) {
         ty = pointer_to(ty->base);
     }
 
@@ -680,7 +680,7 @@ void read_func_parameters(Function *fn) {
     if (consume(")")) {
         return;
     }
-    
+
     Token *tok = token;
 
     if (consume("void") && consume(")")) {
@@ -694,7 +694,7 @@ void read_func_parameters(Function *fn) {
 
     while (!consume(")")) {
         expect(",");
-        if(tok = consume("...")) {
+        if (tok = consume("...")) {
             fn->has_varargs = true;
             expect(")");
             return;
@@ -713,7 +713,7 @@ Function *function() {
     Type *ty = basetype(&sclass);
     char *name = NULL;
     ty = declarator(ty, &name);
-    new_gvar(name, func_type(ty),false, false);
+    new_gvar(name, func_type(ty), false, false);
 
     Function *f = calloc(1, sizeof(Function));
     f->name = name;
@@ -738,12 +738,11 @@ Function *function() {
         cur = cur->next;
     }
     exit_scope(scope);
-    
+
     f->node = head.next;
     f->locals = locals;
     return f;
 }
-
 
 Initializer *new_init_value(Initializer *cur, int size, int value) {
     Initializer *init = calloc(1, sizeof(Initializer));
@@ -795,12 +794,10 @@ Initializer *init_global_variable2(Initializer *cur, Type *ty) {
             ty->is_incomplete = false;
         }
 
-        int len = (ty->array_size < tok->cont_len)
-            ? ty->array_size
-            : tok->cont_len;
-        
-        for (int i = 0; i < len; i++)
-        {
+        int len =
+            (ty->array_size < tok->cont_len) ? ty->array_size : tok->cont_len;
+
+        for (int i = 0; i < len; i++) {
             cur = new_init_value(cur, 1, tok->contents[i]);
         }
 
@@ -812,12 +809,11 @@ Initializer *init_global_variable2(Initializer *cur, Type *ty) {
         int i = 0;
         int limit = ty->is_incomplete ? 2147483647 : ty->array_size;
 
-
-        if(!peek("}")) {
+        if (!peek("}")) {
             do {
                 cur = init_global_variable2(cur, ty->base);
                 i++;
-            } while(i < limit && !peek_end_of_brace() && consume(","));
+            } while (i < limit && !peek_end_of_brace() && consume(","));
         }
 
         if (open) {
@@ -826,7 +822,7 @@ Initializer *init_global_variable2(Initializer *cur, Type *ty) {
 
         cur = new_init_zero(cur, size_of(ty->base) * (ty->array_size - i));
 
-        if(ty->is_incomplete) {
+        if (ty->is_incomplete) {
             ty->array_size = i;
             ty->is_incomplete = false;
         }
@@ -845,7 +841,7 @@ Initializer *init_global_variable2(Initializer *cur, Type *ty) {
             } while (mem && !peek_end_of_brace() && consume(","));
         }
 
-        if(open) {
+        if (open) {
             expect_end_of_brace();
         }
 
@@ -857,18 +853,18 @@ Initializer *init_global_variable2(Initializer *cur, Type *ty) {
 
     Token *open = consume("{");
     Node *expr = conditional();
-    if(open) {
+    if (open) {
         expect_end_of_brace();
     }
 
     Variable *var = NULL;
     long addend = eval2(expr, &var);
     if (var) {
-        int scale = (var->ty->kind == TY_Array)
-         ? size_of(var->ty->base) : size_of(var->ty);
-         return new_init_label(cur, var->name, addend * scale);
+        int scale = (var->ty->kind == TY_Array) ? size_of(var->ty->base)
+                                                : size_of(var->ty);
+        return new_init_label(cur, var->name, addend * scale);
     }
-    
+
     return new_init_value(cur, size_of(ty), addend);
 }
 
@@ -894,7 +890,7 @@ void *global_variable() {
         expect(";");
         push_var_scope(name)->type_def = ty;
         return NULL;
-    } 
+    }
 
     Variable *var = new_gvar(name, ty, sclass == Static, sclass != Extern);
 
@@ -917,13 +913,13 @@ void *global_variable() {
 
 typedef struct Designator Designator;
 struct Designator {
-  Designator *next;
-  int idx;     // array
-  Member *mem; // member
+    Designator *next;
+    int idx;     // array
+    Member *mem; // member
 };
 
 Node *new_desg_node2(Variable *var, Designator *desg, Token *tok) {
-    if(!desg) {
+    if (!desg) {
         return new_var_node(var, tok);
     }
 
@@ -945,9 +941,10 @@ Node *new_desg_node(Variable *var, Designator *desg, Node *right) {
     return new_unary(ND_Expr_Stmt, node, right->token);
 }
 
-Node *init_lvar_with_zero(Node *cur, Variable *var, Type *ty, Designator *desg) {
+Node *init_lvar_with_zero(Node *cur, Variable *var, Type *ty,
+                          Designator *desg) {
     if (ty->kind == TY_Array) {
-        for(int i = 0; i < ty->array_size;i++) {
+        for (int i = 0; i < ty->array_size; i++) {
             Designator desg2 = {desg, i++};
             cur = init_lvar_with_zero(cur, var, ty->base, &desg2);
         }
@@ -960,7 +957,7 @@ Node *init_lvar_with_zero(Node *cur, Variable *var, Type *ty, Designator *desg) 
 /*
   int x[2][3]={{1,2,3},{4,5,6}};
 
-  is equivalent to 
+  is equivalent to
 
   int x[2][3];
 
@@ -974,7 +971,7 @@ Node *init_lvar_with_zero(Node *cur, Variable *var, Type *ty, Designator *desg) 
 
   char x[4] = "abcd";
 
-  is equivalent to 
+  is equivalent to
 
   char x[4];
 
@@ -983,12 +980,12 @@ Node *init_lvar_with_zero(Node *cur, Variable *var, Type *ty, Designator *desg) 
   x[2]='c';
   x[3]='d';
 
-  struct { int a; int b; } x = {1, 2}; 
-  
-  is equivalent to 
-  
+  struct { int a; int b; } x = {1, 2};
+
+  is equivalent to
+
   x.a = 1;
-  x.b = 2; 
+  x.b = 2;
 
 */
 Node *init_lvar2(Node *cur, Variable *var, Type *ty, Designator *desg) {
@@ -1002,12 +999,10 @@ Node *init_lvar2(Node *cur, Variable *var, Type *ty, Designator *desg) {
             ty->is_incomplete = false;
         }
 
-        int len = (ty->array_size < tok->cont_len)
-            ? ty->array_size
-            : tok->cont_len;
-        
-        for (int i = 0; i < len; i++)
-        {
+        int len =
+            (ty->array_size < tok->cont_len) ? ty->array_size : tok->cont_len;
+
+        for (int i = 0; i < len; i++) {
             Designator desg2 = {desg, i};
             Node *right = new_number_node(tok->contents[i], tok);
             cur->next = new_desg_node(var, &desg2, right);
@@ -1048,7 +1043,7 @@ Node *init_lvar2(Node *cur, Variable *var, Type *ty, Designator *desg) {
 
         return cur;
     }
-    
+
     if (ty->kind == TY_Struct) {
         Token *open = consume("{");
         Member *mem = ty->members;
@@ -1064,7 +1059,7 @@ Node *init_lvar2(Node *cur, Variable *var, Type *ty, Designator *desg) {
             expect_end_of_brace();
         }
 
-        for(; mem; mem = mem->next) {
+        for (; mem; mem = mem->next) {
             Designator desg2 = {desg, 0, mem};
             cur = init_lvar_with_zero(cur, var, mem->ty, &desg2);
         }
@@ -1073,8 +1068,8 @@ Node *init_lvar2(Node *cur, Variable *var, Type *ty, Designator *desg) {
 
     Token *open = consume("{");
     cur->next = new_desg_node(var, desg, assign());
-    
-    if(open) {
+
+    if (open) {
         expect_end_of_brace();
     }
     return cur->next;
@@ -1111,13 +1106,12 @@ Node *declaration() {
         error_at(tok->str, "variable is declared as void");
     }
     if (sclass == Static) {
-        Variable *var = new_gvar(new_label(), ty,true, true);
+        Variable *var = new_gvar(new_label(), ty, true, true);
         push_var_scope(name)->var = var;
 
         if (consume("=")) {
             var->initializer = init_global_variable(ty);
-        }
-        else if (ty->is_incomplete) {
+        } else if (ty->is_incomplete) {
             error_at(tok->str, "incomplete type");
         }
         consume(";");
@@ -1127,7 +1121,7 @@ Node *declaration() {
     Variable *var = new_lvar(name, ty, true);
 
     if (tok = consume(";")) {
-        if(ty->is_incomplete) {
+        if (ty->is_incomplete) {
             error_at(tok->str, "incomplete type");
         }
         return new_node(ND_Null, tok);
@@ -1155,10 +1149,10 @@ Node *stmt2() {
     Token *tok;
 
     if (tok = consume("return")) {
-        if(consume(";")) {
+        if (consume(";")) {
             return new_node(ND_Return, tok);
         }
-        Node *node =new_unary(ND_Return, expr(), tok);
+        Node *node = new_unary(ND_Return, expr(), tok);
         expect(";");
         return node;
     }
@@ -1282,7 +1276,7 @@ Node *stmt2() {
     }
 
     if (tok = consume_identifier()) {
-        if(consume(":")) {
+        if (consume(":")) {
             Node *node = new_unary(ND_Label, stmt(), tok);
             node->label_name = strndup(tok->str, tok->len);
             return node;
@@ -1372,8 +1366,7 @@ Node *expr() {
 
 long eval2(Node *node, Variable **var) {
 
-    switch (node->kind)
-    {
+    switch (node->kind) {
     case ND_Num:
         return node->value;
     case ND_Not:
@@ -1421,7 +1414,8 @@ long eval2(Node *node, Variable **var) {
     case ND_Comma:
         return eval(node->right);
     case ND_Addr:
-        if (!var || *var || node->left->kind != ND_Var || node->left->var->is_local) {
+        if (!var || *var || node->left->kind != ND_Var ||
+            node->left->var->is_local) {
             error_at(node->token->str, "invalid initializer");
         }
         *var = node->left->var;
@@ -1435,16 +1429,12 @@ long eval2(Node *node, Variable **var) {
     }
 }
 
-long eval(Node *node) {
-    return eval2(node, NULL);
-}
+long eval(Node *node) { return eval2(node, NULL); }
 
-long constexpr () {
-    return eval(conditional());
-}
+long constexpr() { return eval(conditional()); }
 
 Node *assign() {
-    Node *node = conditional ();
+    Node *node = conditional();
     Token *tok;
     if (tok = consume("=")) {
         return new_binary(ND_Assign, node, assign(), tok);
@@ -1502,7 +1492,7 @@ Node *assign() {
 Node *conditional() {
     Node *node = logor();
     Token *tok = consume("?");
-    if(!tok) {
+    if (!tok) {
         return node;
     }
     Node *ternary = new_node(ND_Ternary, tok);
@@ -1513,7 +1503,7 @@ Node *conditional() {
     return ternary;
 }
 
-Node * logor () {
+Node *logor() {
     Node *node = logand();
     Token *tok;
     while (tok = consume("||"))
@@ -1521,7 +1511,7 @@ Node * logor () {
     return node;
 }
 
-Node * logand () {
+Node *logand() {
     Node *node = bitor ();
     Token *tok;
     while (tok = consume("&&"))
@@ -1695,7 +1685,7 @@ Node *cast() {
         if (is_typename()) {
             Type *ty = type_name();
             expect(")");
-            if(!consume("{")) {
+            if (!consume("{")) {
                 Node *node = new_unary(ND_Cast, cast(), tok);
                 assign_type(node);
                 node->ty = ty;
@@ -1734,7 +1724,7 @@ Node *unary() {
         if (consume("(")) {
             if (is_typename()) {
                 Type *ty = type_name();
-                if(ty->is_incomplete) {
+                if (ty->is_incomplete) {
                     error_at(tok->str, "incomplete type");
                 }
                 expect(")");
@@ -1744,12 +1734,12 @@ Node *unary() {
         }
         Node *n = cast();
         assign_type(n);
-        if(n->ty->is_incomplete) {
+        if (n->ty->is_incomplete) {
             error_at(n->token->str, "incomplete type");
         }
         return new_number_node(size_of(n->ty), tok);
     }
-    
+
     if (tok = consume("_Alignof")) {
         expect("(");
         Type *ty = type_name();
@@ -1769,20 +1759,20 @@ Node *unary() {
 }
 
 Node *struct_ref(Node *left) {
-  assign_type(left);
-  if (left->ty->kind != TY_Struct) {
-    error_at(left->token->str, "not a struct");
-  }
+    assign_type(left);
+    if (left->ty->kind != TY_Struct) {
+        error_at(left->token->str, "not a struct");
+    }
 
-  Token *tok = token;
-  Member *mem = find_member(left->ty, expect_identifier());
-  if (!mem) {
-    error_at(tok->str, "no such member");
-  }
+    Token *tok = token;
+    Member *mem = find_member(left->ty, expect_identifier());
+    if (!mem) {
+        error_at(tok->str, "no such member");
+    }
 
-  Node *node = new_unary(ND_Member, left, tok);
-  node->member = mem;
-  return node;
+    Node *node = new_unary(ND_Member, left, tok);
+    node->member = mem;
+    return node;
 }
 
 Node *postfix() {
@@ -1831,7 +1821,7 @@ Node *postfix() {
 
 Node *compound_literal() {
     Token *tok = token;
-    if(!consume("(") || !is_typename()) {
+    if (!consume("(") || !is_typename()) {
         token = tok;
         return NULL;
     }
@@ -1844,7 +1834,7 @@ Node *compound_literal() {
     }
 
     if (scope_depth == 0) {
-        Variable *var = new_gvar(new_label(), ty,true, true);
+        Variable *var = new_gvar(new_label(), ty, true, true);
         var->initializer = init_global_variable(ty);
         return new_var_node(var, tok);
     }

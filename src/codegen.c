@@ -15,7 +15,7 @@ void gen(Node *node);
 void gen_addr(Node *node) {
 
     if (node->kind == ND_Var) {
-        if(node->init) {
+        if (node->init) {
             gen(node->init);
         }
         if (node->var->is_local) {
@@ -47,7 +47,7 @@ void gen_addr(Node *node) {
 void gen_lVal(Node *node) {
     if (node->ty->kind == TY_Array) {
         error_at(node->token->str, "Array is not a lvalue");
-    } 
+    }
     gen_addr(node);
 }
 
@@ -245,7 +245,7 @@ void gen(Node *node) {
 
         breakId = brk;
         continueId = cout;
-        return; 
+        return;
     }
     case ND_While: {
         int id = labelId++;
@@ -324,14 +324,14 @@ void gen(Node *node) {
         gen(node->cond);
         printf("  pop rax\n");
 
-        for(Node *n = node->case_next; n; n=n->case_next) {
+        for (Node *n = node->case_next; n; n = n->case_next) {
             n->case_label = labelId++;
             n->case_end_label = id;
             printf("  cmp rax, %ld\n", n->value);
             printf("  je .L.case.%d\n", n->case_label);
         }
 
-        if(node->default_case) {
+        if (node->default_case) {
             int i = labelId++;
             node->default_case->case_end_label = id;
             node->default_case->case_label = i;
@@ -355,7 +355,7 @@ void gen(Node *node) {
             gen(n);
         return;
     case ND_Return:
-        if(node->left) {
+        if (node->left) {
             gen(node->left);
             printf("  pop rax\n");
         }
@@ -401,7 +401,7 @@ void gen(Node *node) {
         return;
     }
     case ND_Var:
-        if(node->init) {
+        if (node->init) {
             gen(node->init);
         }
         gen_addr(node);
@@ -416,13 +416,13 @@ void gen(Node *node) {
         }
         return;
     case ND_FuncCall: {
-        if(!strcmp(node->funcName, "__builtin_va_start")) {
+        if (!strcmp(node->funcName, "__builtin_va_start")) {
             printf("  pop rax\n");
             printf("  mov edi, dword ptr [rbp-8]\n");
             printf("  mov dword ptr [rax], 0\n");
             printf("  mov dword ptr [rax+4], 0\n");
             printf("  mov qword ptr [rax+8], rdi\n");
-            printf("  mov qword ptr [rax+16], 0\n");  
+            printf("  mov qword ptr [rax+16], 0\n");
             return;
         }
 
@@ -603,7 +603,7 @@ void emit_text(Program *p) {
         // Save arg registers if function is variadic
         if (fn->has_varargs) {
             int n = 0;
-            for (Parameters *p = fn->params; p; p = p->next){
+            for (Parameters *p = fn->params; p; p = p->next) {
                 n++;
             }
             printf("mov dword ptr [rbp-8], %d\n", n * 8);
@@ -636,7 +636,7 @@ void emit_text(Program *p) {
 
 void emit_data(Program *p) {
     for (Parameters *global = p->globals; global; global = global->next) {
-        if(!global->var->is_static) {
+        if (!global->var->is_static) {
             printf(".global %s\n", global->var->name);
         }
     }
@@ -652,20 +652,19 @@ void emit_data(Program *p) {
 
     printf(".data\n");
     for (Parameters *global = p->globals; global; global = global->next) {
-        if (!global->var->initializer){
+        if (!global->var->initializer) {
             continue;
         }
 
         printf(".align %d\n", global->var->ty->align);
         printf("%s:\n", global->var->name);
-        for(Initializer *init = global->var->initializer; init; init = init->next){
-            if(init->label) {
+        for (Initializer *init = global->var->initializer; init;
+             init = init->next) {
+            if (init->label) {
                 printf("  .quad %s%+ld\n", init->label, init->addend);
-            }
-            else if (init->size == 1) {
+            } else if (init->size == 1) {
                 printf("  .byte %ld\n", init->value);
-            }
-            else {
+            } else {
                 printf("  .%dbyte %ld\n", init->size, init->value);
             }
         }
