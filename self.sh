@@ -1,6 +1,7 @@
 #!/bin/bash -x
 TMP=tmp-self
-
+genA=$1
+genB=$2
 mkdir -p $TMP
 
 expand() {
@@ -48,7 +49,7 @@ EOF
     sed -i 's/\bNULL\b/0/g' $TMP/$1
     sed -i 's/, \.\.\.//g' $TMP/$1
 
-    ./c2 $TMP/$1 > $TMP/${1%.c}.s
+    ./${genA} $TMP/$1 > $TMP/${1%.c}.s
     gcc -c -o $TMP/${1%.c}.o $TMP/${1%.c}.s
 }
 
@@ -62,6 +63,6 @@ expand main.c
 expand type.c
 expand codegen.c  
 expand parse.c  
-#expand tokenize.c 
+expand tokenize.c 
 
-gcc -static -o c2-gen2 $TMP/*.o
+gcc -static -o ${genB} $TMP/*.o

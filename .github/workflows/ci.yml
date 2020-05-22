@@ -15,5 +15,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: test
+    - name: gen1
+      run: make test-gen1
+    - name: gen2
       run: make test-gen2
+    - name: gen3
+      run: make test-gen3
