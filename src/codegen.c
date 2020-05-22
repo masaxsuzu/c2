@@ -639,7 +639,7 @@ void emit_data(Program *p) {
                 printf("  .quad %s%+ld\n", init->label, init->addend);
             }
             else if (init->size == 1) {
-                printf("  .byte %d\n", init->value);
+                printf("  .byte %ld\n", init->value);
             }
             else {
                 printf("  .%dbyte %ld\n", init->size, init->value);
