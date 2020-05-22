@@ -189,6 +189,9 @@ Tree *tree = &(Tree){
   0,
 };
 
+_Bool true_fn();
+_Bool false_fn();
+
 int main() {
     assert(0, 0, "0");
     assert(42, 42, "42");
@@ -764,6 +767,9 @@ int main() {
     assert(4, tree->lhs->rhs->val, "tree->lhs->rhs->val");
 
     assert(3, ext3, "ext3");
+
+    assert(1, true_fn(), "true_fn()");
+    assert(0, false_fn(), "false_fn()");
 
     printf("OK\n");
     return 0;

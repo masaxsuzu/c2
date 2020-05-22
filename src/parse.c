@@ -210,7 +210,8 @@ Node *new_sub(Node *left, Node *right, Token *tok) {
     if (left->ty->base && right->ty->base) {
         return new_binary(ND_Diff_Ptr, left, right, tok);
     }
-    error_at(tok->str, "invalid operand");
+    error_at(tok->str, "invalid operand %ld ? %ld", left->ty->kind,
+             right->ty->kind);
 }
 
 Node *new_number_node(long number, Token *tok) {

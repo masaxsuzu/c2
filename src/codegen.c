@@ -441,6 +441,9 @@ void gen(Node *node) {
         printf("  call %s\n", node->funcName);
         printf("  add rsp, 8\n");
         printf(".L.end.%d:\n", id);
+        if (node->ty->kind == TY_Bool) {
+            printf("  movzb rax, al\n");
+        }
         printf("  push rax\n");
         return;
     }
