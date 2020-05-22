@@ -482,12 +482,10 @@ Type *basetype(StorageClass *sclass) {
                 *sclass |= Extern;
             }
 
-            // TODO: compile *sclass - 1 by gen1+ compiler
-            // if (*sclass & (*sclass - 1)) {
-            //     error_at(tok->str,
-            //              "typedef, static and extern may not be used
-            //              together");
-            // }
+            if (*sclass & (*sclass - 1)) {
+                error_at(tok->str,
+                         "typedef, static and extern may not be usedtogether");
+            }
 
             continue;
         }

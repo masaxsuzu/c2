@@ -4,7 +4,7 @@ int align_to(int n, int align) { return (n + align - 1) & ~(align - 1); }
 
 bool is_integer(Type *ty) {
     return ty->kind == TY_Bool || ty->kind == TY_Long || ty->kind == TY_Int ||
-           ty->kind == TY_Short || ty->kind == TY_Char;
+           ty->kind == TY_Short || ty->kind == TY_Char || ty->kind == TY_Enum;
 }
 
 Type *new_type(TypeKind kind, int align) {

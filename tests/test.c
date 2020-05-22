@@ -195,6 +195,12 @@ _Bool false_fn();
 int add_all1(int x, ...);
 int add_all3(int z, int b, int c, ...);
 
+typedef enum {
+  One = 1,
+  Two = 2,
+  Three = 3,
+} OneTwoThree;
+
 int main() {
     assert(0, 0, "0");
     assert(42, 42, "42");
@@ -780,6 +786,10 @@ int main() {
     assert(6, add_all3(1,2,3,0), "add_all3(1,2,3,0)");
     assert(5, add_all3(1,2,3,-1,0), "add_all3(1,2,3,-1,0)");
     
+    assert(1, One, "One");
+    assert(3, One + Two, "One + Two");
+    assert(2, Three - 1, "Three - 1");
+
     printf("OK\n");
     return 0;
 }
