@@ -50,7 +50,7 @@ done
 expand main.c
 expand type.c
 expand codegen.c  
-#expand parse.c  
+expand parse.c  
 #expand tokenize.c 
 
 gcc -static -o c2-gen2 $TMP/*.o

@@ -53,8 +53,8 @@ Node *conditional();
 Node *bitand();
 Node * bitor ();
 Node *bitxor();
-Node * or ();
-Node * and ();
+Node * logor ();
+Node * logand ();
 Node *equality();
 Node *relational();
 Node *shift();
@@ -483,10 +483,12 @@ Type *basetype(StorageClass *sclass) {
                 *sclass |= Extern;
             }
 
-            if (*sclass & (*sclass - 1)) {
-                error_at(tok->str,
-                         "typedef, static and extern may not be used together");
-            }
+            // TODO: compile *sclass - 1 by gen1+ compiler
+            // if (*sclass & (*sclass - 1)) {
+            //     error_at(tok->str,
+            //              "typedef, static and extern may not be used together");
+            // }
+
             continue;
         }
 
@@ -1492,7 +1494,7 @@ Node *assign() {
 }
 
 Node *conditional() {
-    Node *node = or();
+    Node *node = logor();
     Token *tok = consume("?");
     if(!tok) {
         return node;
@@ -1505,15 +1507,15 @@ Node *conditional() {
     return ternary;
 }
 
-Node * or () {
-    Node *node = and();
+Node * logor () {
+    Node *node = logand();
     Token *tok;
     while (tok = consume("||"))
-        node = new_binary(ND_Or, node, and(), tok);
+        node = new_binary(ND_Or, node, logand(), tok);
     return node;
 }
 
-Node * and () {
+Node * logand () {
     Node *node = bitor ();
     Token *tok;
     while (tok = consume("&&"))
