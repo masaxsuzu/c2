@@ -416,6 +416,16 @@ void gen(Node *node) {
         }
         return;
     case ND_FuncCall: {
+        if(!strcmp(node->funcName, "__builtin_va_start")) {
+            printf("  pop rax\n");
+            printf("  mov edi, dword ptr [rbp-8]\n");
+            printf("  mov dword ptr [rax], 0\n");
+            printf("  mov dword ptr [rax+4], 0\n");
+            printf("  mov qword ptr [rax+8], rdi\n");
+            printf("  mov qword ptr [rax+16], 0\n");  
+            return;
+        }
+
         int id = labelId++;
         int n = 0;
         for (Node *arg = node->funcArgs; arg; arg = arg->next) {
@@ -590,6 +600,20 @@ void emit_text(Program *p) {
         printf("  mov rbp, rsp\n");
         printf("  sub rsp, %d\n", fn->stack_size);
 
+        // Save arg registers if function is variadic
+        if (fn->has_varargs) {
+            int n = 0;
+            for (Parameters *p = fn->params; p; p = p->next){
+                n++;
+            }
+            printf("mov dword ptr [rbp-8], %d\n", n * 8);
+            printf("mov [rbp-16], r9\n");
+            printf("mov [rbp-24], r8\n");
+            printf("mov [rbp-32], rcx\n");
+            printf("mov [rbp-40], rdx\n");
+            printf("mov [rbp-48], rsi\n");
+            printf("mov [rbp-56], rdi\n");
+        }
         // Push parameters as variables
         int i = 0;
 

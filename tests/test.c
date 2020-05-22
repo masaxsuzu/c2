@@ -774,7 +774,7 @@ int main() {
     assert(1, true_fn(), "true_fn()");
     assert(0, false_fn(), "false_fn()");
 
-    assert(5, add_all1(2,3,1), "add_all1(2,3)");
+    assert(9, add_all1(2,3,4), "add_all1(2,3,4)");
     assert(6, add_all1(1,2,3,0), "add_all1(1,2,3,0)");
 
     assert(6, add_all3(1,2,3,0), "add_all3(1,2,3,0)");

@@ -695,6 +695,7 @@ void read_func_parameters(Function *fn) {
     while (!consume(")")) {
         expect(",");
         if(tok = consume("...")) {
+            fn->has_varargs = true;
             expect(")");
             return;
         }
@@ -1652,6 +1653,10 @@ Node *primary() {
                 // "implicit declaration of a function"
                 node->ty = int_type();
                 return node;
+            }
+
+            if (!strcmp(node->funcName, "__builtin_va_start")) {
+                node->ty = void_type();
             }
             if (!vs->var || vs->var->ty->kind != TY_Func) {
                 error_at(tok->str, "not a function");

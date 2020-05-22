@@ -185,6 +185,7 @@ struct Function {
   Parameters *locals;
   int stack_size;
   bool is_static;
+  bool has_varargs;
 };
 
 typedef struct Program Program;
