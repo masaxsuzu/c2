@@ -33,11 +33,21 @@ extern.o: tests/extern.c
 	gcc -xc -c -o extern.o tests/extern.c
 $(OBJS): ./src/c2.h
 
+test-gen1-win: c2-gen1-win.exe win\extern.obj
+	.\c2-gen1-win.exe .\tests\test.c > .\win\test.s
+	gcc -static -o .\win\tmp .\win\test.s win\extern.obj
+
 c2-gen1-win.exe:
 	powershell .\build-win.ps1
 
+win\extern.obj: tests\extern.c
+	gcc -xc -c -o .\win\extern.obj tests\extern.c
+
 clean:
 	rm -rf c2-gen* *.o ./src/*.o *~ tmp*
+
+clean-win:
+	powershell rm  -Force -ErrorAction Ignore .\win
 
 fmt:
 	clang-format src/*.c -i
