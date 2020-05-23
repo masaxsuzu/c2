@@ -47,7 +47,9 @@ clean:
 	rm -rf c2-gen* *.o ./src/*.o *~ tmp*
 
 clean-win:
-	powershell rm  -Force -ErrorAction Ignore .\win
+	powershell rm  -Force -ErrorAction Ignore .\win\*.s
+	powershell rm  -Force -ErrorAction Ignore .\win\*.obj
+	powershell rm  -Force -ErrorAction Ignore .\c2-gen1-win.exe
 
 fmt:
 	clang-format src/*.c -i
