@@ -24,7 +24,6 @@ int sprintf(char *buf, char *fmt, ...);
 long strlen(char *p);
 int strncmp(char *p, char *q);
 void *memcpy(char *dst, char *src, long n);
-char *strndup(char *p, long n);
 int isspace(int c);
 char *strstr(char *haystack, char *needle);                                              
 long strtol(char *nptr, char **endptr, int base);
@@ -64,5 +63,6 @@ expand type.c
 expand codegen.c  
 expand parse.c  
 expand tokenize.c 
+expand lib.c 
 
 gcc -static -o ${genB} $TMP/*.o

@@ -256,3 +256,8 @@ void debug_node(char *label, Node *node);
 extern Token *token;
 extern char *user_input;
 extern char *filename;
+
+//
+// lib
+//
+char *mystrndup( char *src, long maxlen);

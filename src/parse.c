@@ -89,7 +89,7 @@ TagScope *push_tag_scope(Token *tok, Type *ty) {
     TagScope *ts = calloc(1, sizeof(TagScope));
     ts->next = tagscope;
     ts->ty = ty;
-    ts->name = strndup(tok->str, tok->len);
+    ts->name = mystrndup(tok->str, tok->len);
     ts->depth = scope_depth;
     tagscope = ts;
     return ts;
@@ -263,7 +263,7 @@ char *new_label() {
     static int c = 0;
     char buf[20];
     sprintf(buf, ".L.data.%d", c++);
-    return strndup(buf, 20);
+    return mystrndup(buf, 20);
 }
 
 // struct-member = basetype declarator type-suffix ";"
@@ -1276,7 +1276,7 @@ Node *stmt2() {
     if (tok = consume_identifier()) {
         if (consume(":")) {
             Node *node = new_unary(ND_Label, stmt(), tok);
-            node->label_name = strndup(tok->str, tok->len);
+            node->label_name = mystrndup(tok->str, tok->len);
             return node;
         }
         token = tok;
@@ -1632,7 +1632,7 @@ Node *primary() {
         // call function
         if (t = consume("(")) {
             Node *node = new_node(ND_FuncCall, t);
-            node->funcName = strndup(tok->str, tok->len);
+            node->funcName = mystrndup(tok->str, tok->len);
             node->funcArgs = funcArgs();
             assign_type(node);
 

@@ -111,7 +111,7 @@ char *expect_identifier() {
     if (token->kind != TK_Identifier) {
         error_at(token->str, "Not an identifier");
     }
-    char *s = strndup(token->str, token->len);
+    char *s = mystrndup(token->str, token->len);
     token = token->next;
     return s;
 }
