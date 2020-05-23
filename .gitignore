@@ -1,7 +1,9 @@
 c2*
 *.o
+*.obj
 *.s
 *~
 tmp*
 a.out
+win/*
 tests/debug.c

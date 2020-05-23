@@ -33,6 +33,9 @@ extern.o: tests/extern.c
 	gcc -xc -c -o extern.o tests/extern.c
 $(OBJS): ./src/c2.h
 
+c2-gen1-win.exe:
+	powershell .\build-win.ps1
+
 clean:
 	rm -rf c2-gen* *.o ./src/*.o *~ tmp*
 
