@@ -605,7 +605,7 @@ Type *type_name() {
 
 Program *program() {
 
-    Function head = {};
+    Function head = {0};
     Function *cur = &head;
 
     while (!at_eof()) {
@@ -728,7 +728,7 @@ Function *function() {
 
     expect("{");
 
-    Node head = {};
+    Node head = {0};
     Node *cur = &head;
 
     while (!consume("}")) {
@@ -766,7 +766,7 @@ Initializer *new_init_zero(Initializer *cur, int nbytes) {
 }
 
 Initializer *gvar_init_string(char *p, int len) {
-    Initializer head = {};
+    Initializer head = {0};
     Initializer *cur = &head;
     for (int i = 0; i < len; i++) {
         cur = new_init_value(cur, 1, p[i]);
@@ -867,7 +867,7 @@ Initializer *init_global_variable2(Initializer *cur, Type *ty) {
 }
 
 Initializer *init_global_variable(Type *ty) {
-    Initializer head = {};
+    Initializer head = {0};
     init_global_variable2(&head, ty);
     return head.next;
 }
@@ -1074,7 +1074,7 @@ Node *init_lvar2(Node *cur, Variable *var, Type *ty, Designator *desg) {
 }
 
 Node *init_lvar(Variable *var, Token *tok) {
-    Node head = {};
+    Node head = {0};
     init_lvar2(&head, var, var->ty, NULL);
     Node *node = new_node(ND_Block, tok);
     node->block = head.next;
@@ -1227,7 +1227,7 @@ Node *stmt2() {
     // Block
     if (tok = consume("{")) {
 
-        Node head = {};
+        Node head = {0};
         Node *cur = &head;
 
         Scope *scope = enter_scope();
