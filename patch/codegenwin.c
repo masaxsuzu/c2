@@ -55,19 +55,19 @@ void gen_binary(Node *node) {
     printf("  pop rdi\r\n");
     printf("  pop rax\r\n");
     switch (node->kind) {
-    // case ND_Add:
+    case ND_Add:
     // case ND_Add_Eq:
-    //     printf("  add rax, rdi\n");
-    //     break;
+        printf("  add rax, rdi\n");
+        break;
     // case ND_Add_Ptr:
     // case ND_Add_Ptr_Eq:
     //     printf("  imul rdi, %d\n", size_of(node->ty->base));
     //     printf("  add rax, rdi\n");
     //     break;
-    // case ND_Sub:
+    case ND_Sub:
     // case ND_Sub_Eq:
-    //     printf("  sub rax, rdi\n");
-    //     break;
+        printf("  sub rax, rdi\r\n");
+        break;
     // case ND_Sub_Ptr:
     // case ND_Sub_Ptr_Eq:
     //     printf("  imul rdi, %d\n", size_of(node->ty->base));
@@ -79,15 +79,15 @@ void gen_binary(Node *node) {
     //     printf("  mov rdi, %d\n", size_of(node->left->ty->base));
     //     printf("  idiv rdi\n");
     //     break;
-    // case ND_Mul:
+    case ND_Mul:
     // case ND_Mul_Eq:
-    //     printf("  imul rax, rdi\n");
-    //     break;
-    // case ND_Div:
+        printf("  imul rax, rdi\r\n");
+        break;
+    case ND_Div:
     // case ND_Div_Eq:
-    //     printf("  cqo\n");
-    //     printf("  idiv rdi\n");
-    //     break;
+        printf("  cqo\r\n");
+        printf("  idiv rdi\r\n");
+        break;
     // case ND_Eq:
     //     printf("  cmp rax, rdi\n");
     //     printf("  sete al\n");

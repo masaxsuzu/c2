@@ -6,5 +6,6 @@ c2*
 tmp*
 a.out
 *.exe
+*.asm
 mllink$.lnk
 tests/debug.c
