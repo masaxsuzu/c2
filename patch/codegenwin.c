@@ -14,18 +14,18 @@ void gen(Node *node);
 
 void gen_addr(Node *node) {
 
-    // if (node->kind == ND_Var) {
-    //     if (node->init) {
-    //         gen(node->init);
-    //     }
-    //     if (node->var->is_local) {
-    //         printf("  lea rax, [rbp-%d]\n", node->var->offset);
-    //         printf("  push rax\n");
-    //     } else {
-    //         printf("  push offset %s\n", node->var->name);
-    //     }
-    //     return;
-    // }
+    if (node->kind == ND_Var) {
+        // if (node->init) {
+        //     gen(node->init);
+        // }
+        if (node->var->is_local) {
+            printf("  lea rax, [rbp-%d]\n", node->var->offset);
+            printf("  push rax\n");
+        } else {
+            // printf("  push offset %s\n", node->var->name);
+        }
+        return;
+    }
 
     // if (node->kind == ND_Deref) {
     //     gen(node->left);
@@ -45,10 +45,10 @@ void gen_addr(Node *node) {
 }
 
 void gen_lVal(Node *node) {
-    // if (node->ty->kind == TY_Array) {
-    //     error_at(node->token->str, "Array is not a lvalue");
-    // }
-    // gen_addr(node);
+    if (node->ty->kind == TY_Array) {
+        error_at(node->token->str, "Array is not a lvalue");
+    }
+    gen_addr(node);
 }
 
 void gen_binary(Node *node) {
@@ -56,7 +56,7 @@ void gen_binary(Node *node) {
     printf("  pop rax\n");
     switch (node->kind) {
     case ND_Add:
-    // case ND_Add_Eq:
+    case ND_Add_Eq:
         printf("  add rax, rdi\n");
         break;
     // case ND_Add_Ptr:
@@ -65,7 +65,7 @@ void gen_binary(Node *node) {
     //     printf("  add rax, rdi\n");
     //     break;
     case ND_Sub:
-    // case ND_Sub_Eq:
+    case ND_Sub_Eq:
         printf("  sub rax, rdi\n");
         break;
     // case ND_Sub_Ptr:
@@ -80,11 +80,11 @@ void gen_binary(Node *node) {
     //     printf("  idiv rdi\n");
     //     break;
     case ND_Mul:
-    // case ND_Mul_Eq:
+    case ND_Mul_Eq:
         printf("  imul rax, rdi\n");
         break;
     case ND_Div:
-    // case ND_Div_Eq:
+    case ND_Div_Eq:
         printf("  cqo\n");
         printf("  idiv rdi\n");
         break;
@@ -138,22 +138,22 @@ void gen_binary(Node *node) {
 }
 
 void load(Type *ty) {
-    // printf("  pop rax\n");
-    // if (size_of(ty) == 1) {
-    //     printf("  movsx rax, byte ptr [rax]\n");
-    // } else if (size_of(ty) == 2) {
-    //     printf("  movsx rax, word ptr [rax]\n");
-    // } else if (size_of(ty) == 4) {
-    //     printf("  movsxd rax, dword ptr [rax]\n");
-    // } else {
-    //     printf("  mov rax, [rax]\n");
-    // }
-    // printf("  push rax\n");
+    printf("  pop rax\n");
+    if (size_of(ty) == 1) {
+        printf("  movsx rax, byte ptr [rax]\n");
+    } else if (size_of(ty) == 2) {
+        printf("  movsx rax, word ptr [rax]\n");
+    } else if (size_of(ty) == 4) {
+        printf("  movsxd rax, dword ptr [rax]\n");
+    } else {
+        printf("  mov rax, [rax]\n");
+    }
+    printf("  push rax\n");
 }
 
 void store(Type *ty) {
-    // printf("  pop rdi\n");
-    // printf("  pop rax\n");
+    printf("  pop rdi\n");
+    printf("  pop rax\n");
 
     // if (ty->kind == TY_Bool) {
     //     printf("  cmp rdi, 0\n");
@@ -161,16 +161,16 @@ void store(Type *ty) {
     //     printf("  movzb rdi, dil\n");
     // }
 
-    // if (size_of(ty) == 1) {
-    //     printf("  mov [rax], dil\n");
-    // } else if (size_of(ty) == 2) {
-    //     printf("  mov [rax], di\n");
-    // } else if (size_of(ty) == 4) {
-    //     printf("  mov [rax], edi\n");
-    // } else {
-    //     printf("  mov [rax], rdi\n");
-    // }
-    // printf("  push rdi\n");
+    if (size_of(ty) == 1) {
+        printf("  mov [rax], dil\n");
+    } else if (size_of(ty) == 2) {
+        printf("  mov [rax], di\n");
+    } else if (size_of(ty) == 4) {
+        printf("  mov [rax], edi\n");
+    } else {
+        printf("  mov [rax], rdi\n");
+    }
+    printf("  push rdi\n");
 }
 
 void truncate(Type *ty) {
@@ -349,11 +349,11 @@ void gen(Node *node) {
     //     printf(".L.case.%d:\n", node->case_label);
     //     gen(node->left);
     //     return;
-    // case ND_Block:
-    // case ND_Stmt_Expr:
-    //     for (Node *n = node->block; n; n = n->next)
-    //         gen(n);
-    //     return;
+    case ND_Block:
+    case ND_Stmt_Expr:
+        for (Node *n = node->block; n; n = n->next)
+            gen(n);
+        return;
     case ND_Return:
         if (node->left) {
             gen(node->left);
@@ -361,8 +361,8 @@ void gen(Node *node) {
         }
         printf("  jmp $LNreturn%s\n", functionName);
         return;
-    // case ND_Null:
-    //     return;
+    case ND_Null:
+        return;
     case ND_Num:
         /*
             https://stackoverflow.com/questions/16917643/how-to-push-a-64bit-int-in-nasm
@@ -374,10 +374,10 @@ void gen(Node *node) {
             printf("  push rax\n");
         }
         return;
-    // case ND_Expr_Stmt:
-    //     gen(node->left);
-    //     printf("  add rsp, 8\n");
-    //     return;
+    case ND_Expr_Stmt:
+        gen(node->left);
+        printf("  add rsp, 8\n");
+        return;
     // case ND_Addr:
     //     gen_addr(node->left);
     //     return;
@@ -400,15 +400,15 @@ void gen(Node *node) {
     //     printf(".L.end.%d:\n", id);
     //     return;
     // }
-    // case ND_Var:
+    case ND_Var:
     //     if (node->init) {
     //         gen(node->init);
     //     }
-    //     gen_addr(node);
-    //     if (node->ty->kind != TY_Array) {
-    //         load(node->ty);
-    //     }
-    //     return;
+        gen_addr(node);
+        if (node->ty->kind != TY_Array) {
+            load(node->ty);
+        }
+        return;
     // case ND_Member:
     //     gen_addr(node);
     //     if (node->ty->kind != TY_Array) {
@@ -457,11 +457,11 @@ void gen(Node *node) {
     //     printf("  push rax\n");
     //     return;
     // }
-    // case ND_Assign:
-    //     gen_lVal(node->left);
-    //     gen(node->right);
-    //     store(node->ty);
-    //     return;
+    case ND_Assign:
+        gen_lVal(node->left);
+        gen(node->right);
+        store(node->ty);
+        return;
     // case ND_Pre_Inc:
     //     gen_lVal(node->left);
     //     printf("  push [rsp]\n");
@@ -592,6 +592,15 @@ void emit_text(Program *p) {
         }
         printf("_TEXT	SEGMENT\n");
 
+        int localSize = 0;
+        for(Parameters *local = fn->locals; local; local = local->next) {
+            Variable *var = local->var;
+            if(var) {
+                printf("%s$ = %d\n", var->name, localSize);
+                localSize += size_of(var->ty);
+            }
+        }
+
         printf("%s	PROC\n", fn->name);
 
         functionName = fn->name;
@@ -600,8 +609,6 @@ void emit_text(Program *p) {
         printf("  push rbp\n");
         printf("  mov rbp, rsp\n");
         printf("  sub rbp, %d\n", fn->stack_size);
-        // 32 byte shadow space
-        printf("  sub rsp, %d\n", 32);
 
     //     // Save arg registers if function is variadic
     //     if (fn->has_varargs) {
@@ -628,11 +635,8 @@ void emit_text(Program *p) {
         for (Node *node = fn->node; node; node = node->next) {
             gen(node);
         }
-
         // Epilogue
         printf("$LNreturn%s:\n", functionName);
-        // 32 byte shadow space
-        printf("  add	rsp, 32\n");
         printf("  pop rbp\n");
         printf("  ret\n");
         printf("%s	ENDP\n", functionName);

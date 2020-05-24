@@ -3,7 +3,7 @@ ml64 .\win.asm
 link /OUT:.\tmp.exe .\win.obj
 .\tmp.exe
 
-If ($LASTEXITCODE -ne "128") {
+If ($LASTEXITCODE -ne "129") {
     Write-Error("Fail")
     exit -1
 }
