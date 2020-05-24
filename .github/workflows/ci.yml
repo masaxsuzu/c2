@@ -11,7 +11,7 @@ on:
         - master
 
 jobs:
-  build:
+  linux:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -21,3 +21,12 @@ jobs:
       run: make test-gen2
     - name: gen3
       run: make test-gen3
+  win:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: ilammy/msvc-dev-cmd@v1
+    - name: build-gen1
+      run: powershell .\build-win.ps1
+    - name: test-gen1
+      run: powershell .\test-win.ps1
