@@ -52,9 +52,9 @@ void gen_lVal(Node *node) {
 }
 
 void gen_binary(Node *node) {
-    // printf("  pop rdi\n");
-    // printf("  pop rax\n");
-    // switch (node->kind) {
+    printf("  pop rdi\n");
+    printf("  pop rax\n");
+    switch (node->kind) {
     // case ND_Add:
     // case ND_Add_Eq:
     //     printf("  add rax, rdi\n");
@@ -130,11 +130,11 @@ void gen_binary(Node *node) {
     //     printf("  mov cl, dil\n");
     //     printf("  sar rax, cl\n");
     //     break;
-    // default:
-    //     break;
-    // }
+    default:
+         break;
+    }
 
-    // printf("  push rax\n");
+    printf("  push rax\n");
 }
 
 void load(Type *ty) {
@@ -204,7 +204,7 @@ static void dec(Type *ty) {
 }
 
 void gen(Node *node) {
-    // switch (node->kind) {
+    switch (node->kind) {
     // case ND_If: {
     //     int id = labelId++;
     //     if (node->otherwise) {
@@ -354,26 +354,26 @@ void gen(Node *node) {
     //     for (Node *n = node->block; n; n = n->next)
     //         gen(n);
     //     return;
-    // case ND_Return:
-    //     if (node->left) {
-    //         gen(node->left);
-    //         printf("  pop rax\n");
-    //     }
-    //     printf("  jmp .L.return.%s\n", functionName);
-    //     return;
+    case ND_Return:
+        if (node->left) {
+            gen(node->left);
+            printf("  pop rax\n");
+        }
+        printf("  jmp .L.return.%s\n", functionName);
+        return;
     // case ND_Null:
     //     return;
-    // case ND_Num:
-    //     /*
-    //         https://stackoverflow.com/questions/16917643/how-to-push-a-64bit-int-in-nasm
-    //     */
-    //     if (node->value == (int)node->value) {
-    //         printf("  push %ld\n", node->value);
-    //     } else {
-    //         printf("  mov rax, %ld\n", node->value);
-    //         printf("  push rax\n");
-    //     }
-    //     return;
+    case ND_Num:
+        /*
+            https://stackoverflow.com/questions/16917643/how-to-push-a-64bit-int-in-nasm
+        */
+        if (node->value == (int)node->value) {
+            printf("  push %ld\n", node->value);
+        } else {
+            printf("  mov rax, %ld\n", node->value);
+            printf("  push rax\n");
+        }
+        return;
     // case ND_Expr_Stmt:
     //     gen(node->left);
     //     printf("  add rsp, 8\n");
@@ -566,12 +566,12 @@ void gen(Node *node) {
     //     gen_binary(node);
     //     store(node->ty);
     //     return;
-    // }
+    }
 
-    // gen(node->left);
-    // gen(node->right);
+    gen(node->left);
+    gen(node->right);
 
-    // gen_binary(node);
+    gen_binary(node);
 }
 
 void load_arg(Variable *var, int index) {
@@ -586,19 +586,24 @@ void load_arg(Variable *var, int index) {
     // }
 }
 void emit_text(Program *p) {
-    // printf(".text\n");
-    // for (Function *fn = p->next; fn; fn = fn->next) {
-    //     if (!fn->is_static) {
-    //         printf(".global %s\n", fn->name);
-    //     }
-    //     printf("%s:\n", fn->name);
+    printf(".text\n");
+    for (Function *fn = p->next; fn; fn = fn->next) {
+        if (!fn->is_static) {
+            printf(".globl %s\n", fn->name);
+        }
+        printf("%s:\n", fn->name);
 
-    //     functionName = fn->name;
+        functionName = fn->name;
 
-    //     // Prologue
-    //     printf("  push rbp\n");
-    //     printf("  mov rbp, rsp\n");
-    //     printf("  sub rsp, %d\n", fn->stack_size);
+        // Prologue
+        printf("  push rbp\n");
+        printf("  .seh_pushreg	rbp\n");
+        printf("  mov rbp, rsp\n");
+        printf("   .seh_setframe	rbp, %d\n", fn->stack_size);
+        // 32 byte shadow space
+        printf("  sub rsp, %d\n", 32);
+        printf("  .seh_stackalloc %d\n", 32);
+        printf("  .seh_endprologue\n", 32);
 
     //     // Save arg registers if function is variadic
     //     if (fn->has_varargs) {
@@ -614,30 +619,32 @@ void emit_text(Program *p) {
     //         printf("mov [rbp-48], rsi\n");
     //         printf("mov [rbp-56], rdi\n");
     //     }
-    //     // Push parameters as variables
-    //     int i = 0;
+        // Push parameters as variables
+        int i = 0;
 
     //     for (Parameters *params = fn->params; params; params = params->next) {
     //         Variable *var = params->var;
     //         load_arg(var, i++);
     //     }
 
-    //     for (Node *node = fn->node; node; node = node->next) {
-    //         gen(node);
-    //     }
+        for (Node *node = fn->node; node; node = node->next) {
+            gen(node);
+        }
 
-    //     // Epilogue
-    //     printf(".L.return.%s:\n", functionName);
-    //     printf("  mov rsp, rbp\n");
-    //     printf("  pop rbp\n");
-    //     printf("  ret\n");
-    // }
+        // Epilogue
+        printf(".L.return.%s:\n", functionName);
+        // 32 byte shadow space
+        printf("  add	rsp, 32\n");
+        printf("  pop rbp\n");
+        printf("  ret\n");
+        printf("  .seh_endproc\n");
+    }
 }
 
 void emit_data(Program *p) {
     // for (Parameters *global = p->globals; global; global = global->next) {
     //     if (!global->var->is_static) {
-    //         printf(".global %s\n", global->var->name);
+    //         printf(".globl %s\n", global->var->name);
     //     }
     // }
     // printf(".bss\n");
@@ -669,6 +676,8 @@ void emit_data(Program *p) {
     //         }
     //     }
     // }
+    printf("  .seh_proc	main\n");
+
 }
 void codegen(Program *p) {
     printf(".intel_syntax noprefix\n");
