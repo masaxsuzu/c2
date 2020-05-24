@@ -34,8 +34,8 @@ extern.o: tests/extern.c
 $(OBJS): ./src/c2.h
 
 test-gen1-win: c2-gen1-win.exe
-	.\c2-gen1-win.exe .\tests\win.c > .\win\win.s
-	gcc -static -o .\win\tmp .\win\win.s
+	.\c2-gen1-win.exe .\tests\win.c > .\win\win.asm
+	ml64 .\win\win.asm /Fe .\win\tmp.exe
 	powershell .\test-win.ps1
 
 c2-gen1-win.exe:
