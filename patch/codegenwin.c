@@ -592,15 +592,6 @@ void emit_text(Program *p) {
         }
         printf("_TEXT	SEGMENT\n");
 
-        int localSize = 0;
-        for(Parameters *local = fn->locals; local; local = local->next) {
-            Variable *var = local->var;
-            if(var) {
-                printf("%s$ = %d\n", var->name, localSize);
-                localSize += size_of(var->ty);
-            }
-        }
-
         printf("%s	PROC\n", fn->name);
 
         functionName = fn->name;
