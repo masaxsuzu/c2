@@ -34,8 +34,6 @@ extern.o: tests/extern.c
 $(OBJS): ./src/c2.h
 
 test-gen1-win: c2-gen1-win.exe
-	.\c2-gen1-win.exe .\tests\win.c > .\win\win.asm
-	ml64 .\win\win.asm /Fe .\win\tmp.exe
 	powershell .\test-win.ps1
 
 c2-gen1-win.exe:
@@ -48,8 +46,7 @@ clean:
 	rm -rf c2-gen* *.o ./src/*.o *~ tmp*
 
 clean-win:
-	powershell rm  -Force -ErrorAction Ignore .\win\*.s
-	powershell rm  -Force -ErrorAction Ignore .\win\*.obj
+	powershell rm  -Force -ErrorAction Ignore .\*.obj
 	powershell rm  -Force -ErrorAction Ignore .\c2-gen1-win.exe
 
 fmt:
