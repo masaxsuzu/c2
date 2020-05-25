@@ -26,5 +26,7 @@ Assert 1 'void f() {} int main() { return 1;}'
 Assert 3 'int one() { return 1;} int main() { return 2 + one();}'
 Assert 3 'int one() { return 1;} int two() { int x = 1; return 2*x;} int main() { return two() + one();}'
 Assert 3 'int zero(int x) {return 0;} int one() { return 1;} int two() { int x = 1; return 2*x;} int main() { return two() + one();}'
+Assert 4 'int main() { int x = 1; return sizeof(x);}'
+Assert 4 'int main() { return sizeof(int);}'
 
 Write-Host("OK")
