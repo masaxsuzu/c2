@@ -437,7 +437,7 @@ void gen(Node *node) {
     //         return;
     //     }
 
-    //     int id = labelId++;
+        int id = labelId++;
     //     int n = 0;
     //     for (Node *arg = node->funcArgs; arg; arg = arg->next) {
     //         gen(arg);
@@ -448,24 +448,24 @@ void gen(Node *node) {
     //         printf("  pop %s\n", argreg8[i]);
     //     }
 
-    //     // [x86-64] RSP register must a multiple of 16 before using function
-    //     // call.
-    //     printf("  mov rax, rsp\n");
-    //     printf("  and rax, 15\n");
-    //     printf("  jnz .L.call.%d\n", id); // if rsp % 16 !=  0, then jump
-    //     printf("  mov rax, 0\n");         // rsp is aligned
-    //     printf("  call %s\n", node->funcName);
-    //     printf("  jmp .L.end.%d\n", id);
-    //     printf(".L.call.%d:\n", id); // rsp is not aligned
-    //     printf("  sub rsp, 8\n");
-    //     printf("  mov rax, 0\n");
-    //     printf("  call %s\n", node->funcName);
-    //     printf("  add rsp, 8\n");
-    //     printf(".L.end.%d:\n", id);
-    //     if (node->ty->kind == TY_Bool) {
-    //         printf("  movzb rax, al\n");
-    //     }
-    //     printf("  push rax\n");
+        // [x86-64] RSP register must a multiple of 16 before using function
+        // call.
+        printf("  mov rax, rsp\n");
+        printf("  and rax, 15\n");
+        printf("  jnz $LNcall%d\n", id); // if rsp % 16 !=  0, then jump
+        printf("  mov rax, 0\n");         // rsp is aligned
+        printf("  call %s\n", node->funcName);
+        printf("  jmp $LNend%d\n", id);
+        printf("$LNcall%d:\n", id); // rsp is not aligned
+        printf("  sub rsp, 8\n");
+        printf("  mov rax, 0\n");
+        printf("  call %s\n", node->funcName);
+        printf("  add rsp, 8\n");
+        printf("$LNend%d:\n", id);
+        // if (node->ty->kind == TY_Bool) {
+        //     printf("  movzb rax, al\n");
+        // }
+        printf("  push rax\n");
         return;
     }
     case ND_Assign:
