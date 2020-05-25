@@ -7,8 +7,8 @@ char *functionName;
 // Copy args into the resiters.
 static char *argreg1[] = {"dil", "sil", "dl", "cl", "r8b", "r9b"};
 static char *argreg2[] = {"di", "si", "dx", "cx", "r8w", "r9w"};
-static char *argreg4[] = {"edi", "esi", "edx", "ecx", "r8d", "r9d"};
-static char *argreg8[] = {"rdi", "rsi", "rdx", "rcx", "r8", "r9"};
+static char *argreg4[] = {"ecx", "edx", "r8d", "r9d"};
+static char *argreg8[] = {"rcx", "rdx", "r8", "r9"};
 
 void gen(Node *node);
 
@@ -438,15 +438,15 @@ void gen(Node *node) {
     //     }
 
         int id = labelId++;
-    //     int n = 0;
-    //     for (Node *arg = node->funcArgs; arg; arg = arg->next) {
-    //         gen(arg);
-    //         n++;
-    //     }
+        int n = 0;
+        for (Node *arg = node->funcArgs; arg; arg = arg->next) {
+            gen(arg);
+            n++;
+        }
 
-    //     for (int i = n - 1; i >= 0; i--) {
-    //         printf("  pop %s\n", argreg8[i]);
-    //     }
+        for (int i = 0; i < n; i++) {
+            printf("  pop %s\n", argreg8[i]);
+        }
 
         // [x86-64] RSP register must a multiple of 16 before using function
         // call.
@@ -586,16 +586,36 @@ void gen(Node *node) {
 }
 
 void load_arg(Variable *var, int index) {
-    // if (size_of(var->ty) == 1) {
-    //     printf("  mov [rbp-%d], %s\n", var->offset, argreg1[index]);
-    // } else if (size_of(var->ty) == 2) {
-    //     printf("  mov [rbp-%d], %s\n", var->offset, argreg2[index]);
-    // } else if (size_of(var->ty) == 4) {
-    //     printf("  mov [rbp-%d], %s\n", var->offset, argreg4[index]);
-    // } else {
-    //     printf("  mov [rbp-%d], %s\n", var->offset, argreg8[index]);
-    // }
+    printf("; --- load-arg %s --- \n", var->name);
+    if (size_of(var->ty) == 1) {
+        // printf("  mov [rbp-%d], %s\n", var->offset, argreg1[index]);
+    } else if (size_of(var->ty) == 2) {
+        // printf("  mov [rbp-%d], %s\n", var->offset, argreg2[index]);
+    } else if (size_of(var->ty) == 4) {
+        printf("  mov [rbp-%d], %s\n", var->offset, argreg4[index]);
+    } else {
+        // printf("  mov [rbp-%d], %s\n", var->offset, argreg8[index]);
+    }
+    printf("; --- load-arg %s --- \n", var->name);
 }
+
+/* Function to reverse the linked list */
+void reverse(Parameters ** head) 
+{ 
+    Parameters* prev   = NULL; 
+    Parameters* current = *head; 
+    Parameters* next; 
+    while (current != NULL) 
+    { 
+        next  = current->next;   
+        current->var = current->var;    
+        current->next = prev;    
+        prev = current; 
+        current = next; 
+    } 
+    *head = prev; 
+}
+
 void emit_text(Program *p) {
     for (Function *fn = p->next; fn; fn = fn->next) {
         if (!fn->is_static) {
@@ -633,10 +653,12 @@ void emit_text(Program *p) {
         // Push parameters as variables
         int i = 0;
 
-    //     for (Parameters *params = fn->params; params; params = params->next) {
-    //         Variable *var = params->var;
-    //         load_arg(var, i++);
-    //     }
+        Parameters *head = fn->params;
+        reverse(&head);
+        for (Parameters *params = head; params; params = params->next) {
+            Variable *var = params->var;
+            load_arg(var, i++);
+        }
 
         for (Node *node = fn->node; node; node = node->next) {
             gen(node);
