@@ -650,9 +650,9 @@ void emit_text(Program *p) {
         printf("  ret\n");
         printf("%s	ENDP\n", functionName);
         printf("_TEXT	ENDS\n");
-        printf("END\n");
         printf("; --- Epilogue --- \n");
     }
+    printf("END\n");
 }
 
 void emit_data(Program *p) {
