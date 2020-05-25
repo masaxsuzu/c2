@@ -10,4 +10,4 @@ ls .\patch\*.c | % {
     cl .\patch\$src /Fo $obj
 }
 
-link /OUT:c2-gen1-win.exe .\codegenwin.obj .\lib.obj .\main.obj .\parse.obj .\tokenize.obj .\type.obj
+link /OUT:c2-gen1-win.exe .\codegenwin.obj .\lib.obj .\mainwin.obj .\parse.obj .\tokenize.obj .\type.obj

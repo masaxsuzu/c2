@@ -59,26 +59,26 @@ void gen_binary(Node *node) {
     case ND_Add_Eq:
         printf("  add rax, rdi\n");
         break;
-    // case ND_Add_Ptr:
-    // case ND_Add_Ptr_Eq:
+    case ND_Add_Ptr:
+    case ND_Add_Ptr_Eq:
     //     printf("  imul rdi, %d\n", size_of(node->ty->base));
     //     printf("  add rax, rdi\n");
-    //     break;
+        break;
     case ND_Sub:
     case ND_Sub_Eq:
         printf("  sub rax, rdi\n");
         break;
-    // case ND_Sub_Ptr:
-    // case ND_Sub_Ptr_Eq:
+    case ND_Sub_Ptr:
+    case ND_Sub_Ptr_Eq:
     //     printf("  imul rdi, %d\n", size_of(node->ty->base));
     //     printf("  sub rax, rdi\n");
-    //     break;
-    // case ND_Diff_Ptr:
+        break;
+    case ND_Diff_Ptr:
     //     printf("  sub rax, rdi\n");
     //     printf("  cqo\n");
     //     printf("  mov rdi, %d\n", size_of(node->left->ty->base));
     //     printf("  idiv rdi\n");
-    //     break;
+        break;
     case ND_Mul:
     case ND_Mul_Eq:
         printf("  imul rax, rdi\n");
@@ -88,48 +88,48 @@ void gen_binary(Node *node) {
         printf("  cqo\n");
         printf("  idiv rdi\n");
         break;
-    // case ND_Eq:
+    case ND_Eq:
     //     printf("  cmp rax, rdi\n");
     //     printf("  sete al\n");
     //     printf("  movzb rax, al\n");
-    //     break;
-    // case ND_Ne:
+        break;
+    case ND_Ne:
     //     printf("  cmp rax, rdi\n");
     //     printf("  setne al\n");
     //     printf("  movzb rax, al\n");
-    //     break;
-    // case ND_Lt:
+        break;
+    case ND_Lt:
     //     printf("  cmp rax, rdi\n");
     //     printf("  setl al\n");
     //     printf("  movzb rax, al\n");
-    //     break;
-    // case ND_Le:
+        break;
+    case ND_Le:
     //     printf("  cmp rax, rdi\n");
     //     printf("  setle al\n");
     //     printf("  movzb rax, al\n");
-    //     break;
-    // case ND_BitAnd:
-    // case ND_BitAnd_Eq:
+        break;
+    case ND_BitAnd:
+    case ND_BitAnd_Eq:
     //     printf("  and rax, rdi\n");
-    //     break;
-    // case ND_BitOr:
-    // case ND_BitOr_Eq:
+        break;
+    case ND_BitOr:
+    case ND_BitOr_Eq:
     //     printf("  or rax, rdi\n");
-    //     break;
-    // case ND_BitXor:
-    // case ND_BitXor_Eq:
+        break;
+    case ND_BitXor:
+    case ND_BitXor_Eq:
     //     printf("  xor rax, rdi\n");
     //     break;
-    // case ND_LShift:
-    // case ND_LShift_Eq:
+    case ND_LShift:
+    case ND_LShift_Eq:
     //     printf("  mov cl, dil\n");
     //     printf("  shl rax, cl\n");
     //     break;
-    // case ND_RShift:
-    // case ND_RShift_Eq:
+    case ND_RShift:
+    case ND_RShift_Eq:
     //     printf("  mov cl, dil\n");
     //     printf("  sar rax, cl\n");
-    //     break;
+        break;
     default:
          break;
     }
@@ -205,7 +205,7 @@ static void dec(Type *ty) {
 
 void gen(Node *node) {
     switch (node->kind) {
-    // case ND_If: {
+    case ND_If: {
     //     int id = labelId++;
     //     if (node->otherwise) {
     //         gen(node->cond);
@@ -225,9 +225,9 @@ void gen(Node *node) {
     //         gen(node->then);
     //         printf(".L.end.%d:\n", id);
     //     }
-    //     return;
-    // }
-    // case ND_Do: {
+        return;
+    }
+    case ND_Do: {
     //     int id = labelId++;
     //     int brk = breakId;
     //     int cout = continueId;
@@ -245,9 +245,9 @@ void gen(Node *node) {
 
     //     breakId = brk;
     //     continueId = cout;
-    //     return;
-    // }
-    // case ND_While: {
+        return;
+    }
+    case ND_While: {
     //     int id = labelId++;
     //     int brk = breakId;
     //     int cout = continueId;
@@ -265,9 +265,9 @@ void gen(Node *node) {
 
     //     breakId = brk;
     //     continueId = cout;
-    //     return;
-    // }
-    // case ND_For: {
+        return;
+    }
+    case ND_For: {
     //     int id = labelId++;
     //     int brk = breakId;
     //     int cout = continueId;
@@ -294,28 +294,28 @@ void gen(Node *node) {
 
     //     breakId = brk;
     //     continueId = cout;
-    //     return;
-    // }
-    // case ND_Break:
+        return;
+    }
+    case ND_Break:
     //     if (breakId == 0) {
     //         error_at(node->token->str, "stray break");
     //     }
     //     printf("  jmp .L.break.%d\n", breakId);
-    //     return;
-    // case ND_Continue:
+        return;
+    case ND_Continue:
     //     if (continueId == 0) {
     //         error_at(node->token->str, "stray continue");
     //     }
     //     printf("  jmp .L.continue.%d\n", continueId);
-    //     return;
-    // case ND_Goto:
+        return;
+    case ND_Goto:
     //     printf("  jmp .L.label.%s.%s\n", functionName, node->label_name);
     //     return;
-    // case ND_Label:
+    case ND_Label:
     //     printf(".L.label.%s.%s:\n", functionName, node->label_name);
     //     gen(node->left);
     //     return;
-    // case ND_Switch: {
+    case ND_Switch: {
     //     int id = labelId++;
     //     int brk = breakId;
     //     breakId = id;
@@ -343,12 +343,12 @@ void gen(Node *node) {
     //     printf(".L.break.%d:\n", id);
 
     //     breakId = brk;
-    //     return;
-    // }
-    // case ND_Case:
+        return;
+    }
+    case ND_Case:
     //     printf(".L.case.%d:\n", node->case_label);
     //     gen(node->left);
-    //     return;
+        return;
     case ND_Block:
     case ND_Stmt_Expr:
         for (Node *n = node->block; n; n = n->next)
@@ -378,16 +378,16 @@ void gen(Node *node) {
         gen(node->left);
         printf("  add rsp, 8\n");
         return;
-    // case ND_Addr:
+    case ND_Addr:
     //     gen_addr(node->left);
-    //     return;
-    // case ND_Deref:
+        return;
+    case ND_Deref:
     //     gen(node->left);
     //     if (node->ty->kind != TY_Array) {
     //         load(node->ty);
     //     }
-    //     return;
-    // case ND_Ternary: {
+        return;
+    case ND_Ternary: {
     //     int id = labelId++;
     //     gen(node->cond);
     //     printf("  pop rax\n");
@@ -399,7 +399,7 @@ void gen(Node *node) {
     //     gen(node->otherwise);
     //     printf(".L.end.%d:\n", id);
     //     return;
-    // }
+    }
     case ND_Var:
     //     if (node->init) {
     //         gen(node->init);
@@ -409,13 +409,13 @@ void gen(Node *node) {
             load(node->ty);
         }
         return;
-    // case ND_Member:
+    case ND_Member:
     //     gen_addr(node);
     //     if (node->ty->kind != TY_Array) {
     //         load(node->ty);
     //     }
-    //     return;
-    // case ND_FuncCall: {
+        return;
+    case ND_FuncCall: {
     //     if (!strcmp(node->funcName, "__builtin_va_start")) {
     //         printf("  pop rax\n");
     //         printf("  mov edi, dword ptr [rbp-8]\n");
@@ -455,58 +455,58 @@ void gen(Node *node) {
     //         printf("  movzb rax, al\n");
     //     }
     //     printf("  push rax\n");
-    //     return;
-    // }
+        return;
+    }
     case ND_Assign:
         gen_lVal(node->left);
         gen(node->right);
         store(node->ty);
         return;
-    // case ND_Pre_Inc:
+    case ND_Pre_Inc:
     //     gen_lVal(node->left);
     //     printf("  push [rsp]\n");
     //     load(node->ty);
     //     inc(node->ty);
     //     store(node->ty);
-    //     return;
-    // case ND_Pre_Dec:
+        return;
+    case ND_Pre_Dec:
     //     gen_lVal(node->left);
     //     printf("  push [rsp]\n");
     //     load(node->ty);
     //     dec(node->ty);
     //     store(node->ty);
     //     return;
-    // case ND_Post_Inc:
+    case ND_Post_Inc:
     //     gen_lVal(node->left);
     //     printf("  push [rsp]\n");
     //     load(node->ty);
     //     inc(node->ty);
     //     store(node->ty);
     //     dec(node->ty);
-    //     return;
-    // case ND_Post_Dec:
+        return;
+    case ND_Post_Dec:
     //     gen_lVal(node->left);
     //     printf("  push [rsp]\n");
     //     load(node->ty);
     //     dec(node->ty);
     //     store(node->ty);
     //     inc(node->ty);
-    //     return;
-    // case ND_Not:
+        return;
+    case ND_Not:
     //     gen(node->left);
     //     printf("  pop rax\n");
     //     printf("  cmp rax, 0\n");
     //     printf("  sete al\n");
     //     printf("  movzb rax, al\n");
     //     printf("  push rax\n");
-    //     return;
-    // case ND_BitNot:
+        return;
+    case ND_BitNot:
     //     gen(node->left);
     //     printf("  pop rax\n");
     //     printf("  not rax\n");
     //     printf("  push rax\n");
-    //     return;
-    // case ND_And: {
+        return;
+    case ND_And: {
     //     int id = labelId++;
     //     gen(node->left);
     //     printf("  pop rax\n");
@@ -521,9 +521,9 @@ void gen(Node *node) {
     //     printf(".L.false.%d:\n", id);
     //     printf("  push 0\n");
     //     printf(".L.end.%d:\n", id);
-    //     return;
-    // }
-    // case ND_Or: {
+        return;
+    }
+    case ND_Or: {
     //     int id = labelId++;
     //     gen(node->left);
     //     printf("  pop rax\n");
@@ -538,34 +538,34 @@ void gen(Node *node) {
     //     printf(".L.true.%d:\n", id);
     //     printf("  push 1\n");
     //     printf(".L.end.%d:\n", id);
-    //     return;
-    // }
-    // case ND_Comma:
+        return;
+    }
+    case ND_Comma:
     //     gen(node->left);
     //     gen(node->right);
-    //     return;
-    // case ND_Cast:
+        return;
+    case ND_Cast:
     //     gen(node->left);
     //     truncate(node->ty);
-    //     return;
-    // case ND_Add_Eq:
-    // case ND_Add_Ptr_Eq:
-    // case ND_Sub_Eq:
-    // case ND_Sub_Ptr_Eq:
-    // case ND_Mul_Eq:
-    // case ND_Div_Eq:
-    // case ND_LShift_Eq:
-    // case ND_RShift_Eq:
-    // case ND_BitAnd_Eq:
-    // case ND_BitOr_Eq:
-    // case ND_BitXor_Eq:
+        return;
+    case ND_Add_Eq:
+    case ND_Add_Ptr_Eq:
+    case ND_Sub_Eq:
+    case ND_Sub_Ptr_Eq:
+    case ND_Mul_Eq:
+    case ND_Div_Eq:
+    case ND_LShift_Eq:
+    case ND_RShift_Eq:
+    case ND_BitAnd_Eq:
+    case ND_BitOr_Eq:
+    case ND_BitXor_Eq:
     //     gen_lVal(node->left);
     //     printf("  push [rsp]\n");
     //     load(node->left->ty);
     //     gen(node->right);
     //     gen_binary(node);
     //     store(node->ty);
-    //     return;
+        return;
     }
 
     gen(node->left);
