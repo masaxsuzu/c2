@@ -19,8 +19,11 @@ void gen_addr(Node *node) {
         //     gen(node->init);
         // }
         if (node->var->is_local) {
+            printf("; --- Access local var is with offset from rbp --- \n");
             printf("  lea rax, [rbp-%d]\n", node->var->offset);
             printf("  push rax\n");
+            printf("; --- Access local var is with offset from rbp --- \n");
+
         } else {
             // printf("  push offset %s\n", node->var->name);
         }
@@ -138,6 +141,7 @@ void gen_binary(Node *node) {
 }
 
 void load(Type *ty) {
+    printf("; --- load --- \n");
     printf("  pop rax\n");
     if (size_of(ty) == 1) {
         printf("  movsx rax, byte ptr [rax]\n");
@@ -149,9 +153,11 @@ void load(Type *ty) {
         printf("  mov rax, [rax]\n");
     }
     printf("  push rax\n");
+    printf("; --- load --- \n");
 }
 
 void store(Type *ty) {
+    printf("; --- store --- \n");
     printf("  pop rdi\n");
     printf("  pop rax\n");
 
@@ -171,6 +177,7 @@ void store(Type *ty) {
         printf("  mov [rax], rdi\n");
     }
     printf("  push rdi\n");
+    printf("; --- store --- \n");
 }
 
 void truncate(Type *ty) {
@@ -368,7 +375,9 @@ void gen(Node *node) {
             https://stackoverflow.com/questions/16917643/how-to-push-a-64bit-int-in-nasm
         */
         if (node->value == (int)node->value) {
+            printf("; --- push node value --- \n");
             printf("  push %ld\n", node->value);
+            printf("; --- push node value --- \n");
         } else {
             printf("  mov rax, %ld\n", node->value);
             printf("  push rax\n");
@@ -376,7 +385,9 @@ void gen(Node *node) {
         return;
     case ND_Expr_Stmt:
         gen(node->left);
+        printf("; --- Discard the value --- \n");
         printf("  add rsp, 8\n");
+        printf("; --- Discard the value --- \n");
         return;
     case ND_Addr:
     //     gen_addr(node->left);
@@ -597,9 +608,13 @@ void emit_text(Program *p) {
         functionName = fn->name;
 
         // Prologue
+        printf("; --- Prologue --- \n");
         printf("  push rbp\n");
         printf("  mov rbp, rsp\n");
         printf("  sub rbp, %d\n", fn->stack_size);
+        // TODO: Use proper value as shadow space?
+        printf("  sub rbp, %d\n", 32);
+        printf("; --- Prologue --- \n");
 
     //     // Save arg registers if function is variadic
     //     if (fn->has_varargs) {
@@ -627,12 +642,16 @@ void emit_text(Program *p) {
             gen(node);
         }
         // Epilogue
+        printf("; --- Epilogue --- \n");
         printf("$LNreturn%s:\n", functionName);
         printf("  pop rbp\n");
+        // TODO: Use proper value as shadow space?
+        printf("  add rbp, %d\n", 32);
         printf("  ret\n");
         printf("%s	ENDP\n", functionName);
         printf("_TEXT	ENDS\n");
         printf("END\n");
+        printf("; --- Epilogue --- \n");
     }
 }
 
