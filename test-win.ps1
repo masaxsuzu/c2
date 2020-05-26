@@ -17,6 +17,14 @@ function Assert {
     Write-Output("${src} => ${got}")
 }
 
+# pointer to x(char, short, int)
+Assert 8 'int main() { short *x; return sizeof(x);}'
+Assert 8 'int main() { char *x; return sizeof(x);}'
+Assert 8 'int main() { int *x; return sizeof(x);}'
+Assert 5 'int main() { int x; int *y; x=3; y=^&x; *y=5; return x;}' # ^& is treated as & in cmd
+Assert 7 'int main() { int x; int y;x=3; y=5; *(^&x+1)=7; return y;}' # ^& is treated as & in cmd
+Assert 7 'int main() { int x; int y;x=3; y=5; *(^&y-1)=7; return x;}' # ^& is treated as & in cmd
+
 # short
 Assert 2 'int main() { short x = 1; return sizeof(x);}'
 Assert 2 'int main() { return sizeof(short);}'

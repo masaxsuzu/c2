@@ -30,10 +30,10 @@ void gen_addr(Node *node) {
         return;
     }
 
-    // if (node->kind == ND_Deref) {
-    //     gen(node->left);
-    //     return;
-    // }
+    if (node->kind == ND_Deref) {
+        gen(node->left);
+        return;
+    }
 
     // if (node->kind == ND_Member) {
     //     gen_addr(node->left);
@@ -64,8 +64,8 @@ void gen_binary(Node *node) {
         break;
     case ND_Add_Ptr:
     case ND_Add_Ptr_Eq:
-    //     printf("  imul rdi, %d\n", size_of(node->ty->base));
-    //     printf("  add rax, rdi\n");
+        printf("  imul rdi, %d\n", size_of(node->ty->base));
+        printf("  add rax, rdi\n");
         break;
     case ND_Sub:
     case ND_Sub_Eq:
@@ -73,8 +73,8 @@ void gen_binary(Node *node) {
         break;
     case ND_Sub_Ptr:
     case ND_Sub_Ptr_Eq:
-    //     printf("  imul rdi, %d\n", size_of(node->ty->base));
-    //     printf("  sub rax, rdi\n");
+        printf("  imul rdi, %d\n", size_of(node->ty->base));
+        printf("  sub rax, rdi\n");
         break;
     case ND_Diff_Ptr:
     //     printf("  sub rax, rdi\n");
@@ -390,13 +390,13 @@ void gen(Node *node) {
         printf("; --- Discard the value --- \n");
         return;
     case ND_Addr:
-    //     gen_addr(node->left);
+        gen_addr(node->left);
         return;
     case ND_Deref:
-    //     gen(node->left);
-    //     if (node->ty->kind != TY_Array) {
-    //         load(node->ty);
-    //     }
+        gen(node->left);
+        if (node->ty->kind != TY_Array) {
+            load(node->ty);
+        }
         return;
     case ND_Ternary: {
     //     int id = labelId++;
