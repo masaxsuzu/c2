@@ -24,6 +24,8 @@ Assert 8 'int main() { int *x; return sizeof(x);}'
 Assert 5 'int main() { int x; int *y; x=3; y=^&x; *y=5; return x;}' # ^& is treated as & in cmd
 Assert 7 'int main() { int x; int y;x=3; y=5; *(^&x+1)=7; return y;}' # ^& is treated as & in cmd
 Assert 7 'int main() { int x; int y;x=3; y=5; *(^&y-1)=7; return x;}' # ^& is treated as & in cmd
+Assert 0 'int main() {int x; x=3; return ^&x-^&x;}' # ^& is treated as & in cmd
+Assert 2 'int main() {int x; x=3; return ^&x+2-^&x;}' # ^& is treated as & in cmd
 
 # short
 Assert 2 'int main() { short x = 1; return sizeof(x);}'

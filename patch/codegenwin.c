@@ -77,10 +77,10 @@ void gen_binary(Node *node) {
         printf("  sub rax, rdi\n");
         break;
     case ND_Diff_Ptr:
-    //     printf("  sub rax, rdi\n");
-    //     printf("  cqo\n");
-    //     printf("  mov rdi, %d\n", size_of(node->left->ty->base));
-    //     printf("  idiv rdi\n");
+        printf("  sub rax, rdi\n");
+        printf("  cqo\n");
+        printf("  mov rdi, %d\n", size_of(node->left->ty->base));
+        printf("  idiv rdi\n");
         break;
     case ND_Mul:
     case ND_Mul_Eq:
