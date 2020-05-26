@@ -17,6 +17,12 @@ function Assert {
     Write-Output("${src} => ${got}")
 }
 
+# ++/--
+Assert 1 'int main() { int x = 1; return x++;}'
+Assert 1 'int main() { int x = 1; return x--;}'
+Assert 2 'int main() { int x = 1; return ++x;}'
+Assert 0 'int main() { int x = 1; return --x;}'
+
 # lt/le eq
 Assert 8 'int main() { if(0^<1) {return 8;} return 100;}'
 Assert 100 'int main() { if(0^<0) {return 8;} return 100;}'
