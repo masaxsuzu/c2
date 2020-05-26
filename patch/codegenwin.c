@@ -5,7 +5,7 @@ int breakId;
 int continueId;
 char *functionName;
 // Copy args into the resiters.
-static char *argreg1[] = {"dil", "sil", "dl", "cl", "r8b", "r9b"};
+static char *argreg1[] = {"cl", "dl", "r8b", "r9b"};
 static char *argreg2[] = {"di", "si", "dx", "cx", "r8w", "r9w"};
 static char *argreg4[] = {"ecx", "edx", "r8d", "r9d"};
 static char *argreg8[] = {"rcx", "rdx", "r8", "r9"};
@@ -588,7 +588,7 @@ void gen(Node *node) {
 void load_arg(Variable *var, int index) {
     printf("; --- load-arg %s --- \n", var->name);
     if (size_of(var->ty) == 1) {
-        // printf("  mov [rbp-%d], %s\n", var->offset, argreg1[index]);
+        printf("  mov [rbp-%d], %s\n", var->offset, argreg1[index]);
     } else if (size_of(var->ty) == 2) {
         // printf("  mov [rbp-%d], %s\n", var->offset, argreg2[index]);
     } else if (size_of(var->ty) == 4) {
