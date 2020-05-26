@@ -125,13 +125,13 @@ void gen_binary(Node *node) {
         break;
     case ND_LShift:
     case ND_LShift_Eq:
-    //     printf("  mov cl, dil\n");
-    //     printf("  shl rax, cl\n");
-    //     break;
+        printf("  mov cl, dil\n");
+        printf("  shl rax, cl\n");
+        break;
     case ND_RShift:
     case ND_RShift_Eq:
-    //     printf("  mov cl, dil\n");
-    //     printf("  sar rax, cl\n");
+        printf("  mov cl, dil\n");
+        printf("  sar rax, cl\n");
         break;
     default:
          break;

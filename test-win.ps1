@@ -17,6 +17,10 @@ function Assert {
     Write-Output("${src} => ${got}")
 }
 
+# <<
+Assert 16 'int main() { return 4^<^<2;}'
+Assert 1 'int main() { return 4^>^>2;}'
+
 
 # !,~,^,|,&
 Assert 1 'int main() { return ^!0;}'
