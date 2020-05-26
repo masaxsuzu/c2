@@ -17,6 +17,26 @@ function Assert {
     Write-Output("${src} => ${got}")
 }
 
+
+# !,~,^,|,&
+Assert 1 'int main() { return ^!0;}'
+Assert 0 'int main() { return ^!1;}'
+Assert 2 'int main() { return ~-3;}'
+Assert 4 'int main() { return ~-5;}'
+Assert 0 'int main() { return 0^^0;}'
+Assert 1 'int main() { return 0^^1;}'
+Assert 1 'int main() { return 1^^0;}'
+Assert 0 'int main() { return 1^^1;}'
+Assert 0 'int main() { return 0^|0;}'
+Assert 1 'int main() { return 0^|1;}'
+Assert 1 'int main() { return 1^|0;}'
+Assert 1 'int main() { return 1^|1;}'
+Assert 0 'int main() { return 0^&0;}'
+Assert 0 'int main() { return 0^&1;}'
+Assert 0 'int main() { return 1^&0;}'
+Assert 1 'int main() { return 1^&1;}'
+
+
 # ?:
 Assert 64 'int main() { return 1?64:100;}'
 Assert 100 'int main() { return 0?64:100;}'

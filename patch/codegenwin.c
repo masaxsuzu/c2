@@ -113,16 +113,16 @@ void gen_binary(Node *node) {
         break;
     case ND_BitAnd:
     case ND_BitAnd_Eq:
-    //     printf("  and rax, rdi\n");
+        printf("  and rax, rdi\n");
         break;
     case ND_BitOr:
     case ND_BitOr_Eq:
-    //     printf("  or rax, rdi\n");
+        printf("  or rax, rdi\n");
         break;
     case ND_BitXor:
     case ND_BitXor_Eq:
-    //     printf("  xor rax, rdi\n");
-    //     break;
+        printf("  xor rax, rdi\n");
+        break;
     case ND_LShift:
     case ND_LShift_Eq:
     //     printf("  mov cl, dil\n");
@@ -504,18 +504,18 @@ void gen(Node *node) {
         inc(node->ty);
         return;
     case ND_Not:
-    //     gen(node->left);
-    //     printf("  pop rax\n");
-    //     printf("  cmp rax, 0\n");
-    //     printf("  sete al\n");
-    //     printf("  movzb rax, al\n");
-    //     printf("  push rax\n");
+        gen(node->left);
+        printf("  pop rax\n");
+        printf("  cmp rax, 0\n");
+        printf("  sete al\n");
+        // printf("  movzb rax, al\n");
+        printf("  push rax\n");
         return;
     case ND_BitNot:
-    //     gen(node->left);
-    //     printf("  pop rax\n");
-    //     printf("  not rax\n");
-    //     printf("  push rax\n");
+        gen(node->left);
+        printf("  pop rax\n");
+        printf("  not rax\n");
+        printf("  push rax\n");
         return;
     case ND_And: {
     //     int id = labelId++;
