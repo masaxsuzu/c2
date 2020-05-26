@@ -102,13 +102,13 @@ void gen_binary(Node *node) {
         //printf("  movzb rax, al\n");
         break;
     case ND_Lt:
-    //     printf("  cmp rax, rdi\n");
-    //     printf("  setl al\n");
+        printf("  cmp rax, rdi\n");
+        printf("  setl al\n");
     //     printf("  movzb rax, al\n");
         break;
     case ND_Le:
-    //     printf("  cmp rax, rdi\n");
-    //     printf("  setle al\n");
+        printf("  cmp rax, rdi\n");
+        printf("  setle al\n");
     //     printf("  movzb rax, al\n");
         break;
     case ND_BitAnd:
