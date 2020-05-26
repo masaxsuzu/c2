@@ -16,6 +16,11 @@ function Assert {
     }
     Write-Output("${src} => ${got}")
 }
+# eq/not eq
+Assert 8 'int main() { if(0==0) {return 8;} return 100;}'
+Assert 100 'int main() { if(0!=0) {return 8;} return 100;}'
+Assert 8 'int main() { if(1!=0) {return 8;} else { return 100;} return 19;}'
+Assert 100 'int main() { if(1!=1) {return 8;} else { return 100;} return 19;}'
 
 # if-else
 Assert 8 'int main() { if(1) {return 8;} return 100;}'

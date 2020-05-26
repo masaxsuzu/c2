@@ -92,14 +92,14 @@ void gen_binary(Node *node) {
         printf("  idiv rdi\n");
         break;
     case ND_Eq:
-    //     printf("  cmp rax, rdi\n");
-    //     printf("  sete al\n");
-    //     printf("  movzb rax, al\n");
+        printf("  cmp rax, rdi\n");
+        printf("  sete al\n");
+        // printf("  movzb rax, al\n");
         break;
     case ND_Ne:
-    //     printf("  cmp rax, rdi\n");
-    //     printf("  setne al\n");
-    //     printf("  movzb rax, al\n");
+        printf("  cmp rax, rdi\n");
+        printf("  setne al\n");
+        //printf("  movzb rax, al\n");
         break;
     case ND_Lt:
     //     printf("  cmp rax, rdi\n");
