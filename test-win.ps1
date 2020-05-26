@@ -17,6 +17,20 @@ function Assert {
     Write-Output("${src} => ${got}")
 }
 
+# array of x (char, short, int)
+Assert 8 'int main() { char x[8]; return sizeof(x);}'
+Assert 16 'int main() { short x[8]; return sizeof(x);}'
+Assert 32 'int main() { int x[8]; return sizeof(x);}'
+Assert 8 'int main() { int x[4]; x[0] = 8; return x[0];}'
+Assert 8 'int main() { int x[4]; x[3] = 8; return x[3];}'
+Assert 0 'int main() { int x[2][3]; int *y; y=x; y[0]=0; return x[0][0];}'
+Assert 1 'int main() { int x[2][3]; int *y; y=x; y[1]=1; return x[0][1];}'
+Assert 2 'int main() { int x[2][3]; int *y; y=x; y[2]=2; return x[0][2];}'
+Assert 3 'int main() { int x[2][3]; int *y; y=x; y[3]=3; return x[1][0];}'
+Assert 4 'int main() { int x[2][3]; int *y; y=x; y[4]=4; return x[1][1];}'
+Assert 5 'int main() { int x[2][3]; int *y; y=x; y[5]=5; return x[1][2];}'
+Assert 99 'int main() { char x[4]; x[0] = ''c''; return x[0];}'
+
 # pointer to x(char, short, int)
 Assert 8 'int main() { short *x; return sizeof(x);}'
 Assert 8 'int main() { char *x; return sizeof(x);}'
