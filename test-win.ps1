@@ -17,6 +17,12 @@ function Assert {
     Write-Output("${src} => ${got}")
 }
 
+# if-else
+Assert 8 'int main() { if(1) {return 8;} return 100;}'
+Assert 100 'int main() { if(0) {return 8;} return 100;}'
+Assert 8 'int main() { if(1) {return 8;} else { return 100;} return 19;}'
+Assert 100 'int main() { if(0) {return 8;} else { return 100;} return 19;}'
+
 # array of x (char, short, int)
 Assert 8 'int main() { char x[8]; return sizeof(x);}'
 Assert 16 'int main() { short x[8]; return sizeof(x);}'

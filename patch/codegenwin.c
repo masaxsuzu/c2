@@ -213,25 +213,25 @@ static void dec(Type *ty) {
 void gen(Node *node) {
     switch (node->kind) {
     case ND_If: {
-    //     int id = labelId++;
-    //     if (node->otherwise) {
-    //         gen(node->cond);
-    //         printf("  pop rax\n");
-    //         printf("  cmp rax, 0\n");
-    //         printf("  je  .L.else.%d\n", id);
-    //         gen(node->then);
-    //         printf("  jmp .L.end.%d\n", id);
-    //         printf(".L.else.%d:\n", id);
-    //         gen(node->otherwise);
-    //         printf(".L.end.%d:\n", id);
-    //     } else {
-    //         gen(node->cond);
-    //         printf("  pop rax\n");
-    //         printf("  cmp rax, 0\n");
-    //         printf("  je  .L.end.%d\n", id);
-    //         gen(node->then);
-    //         printf(".L.end.%d:\n", id);
-    //     }
+        int id = labelId++;
+        if (node->otherwise) {
+            gen(node->cond);
+            printf("  pop rax\n");
+            printf("  cmp rax, 0\n");
+            printf("  je  $LNelse%d\n", id);
+            gen(node->then);
+            printf("  jmp $LNend%d\n", id);
+            printf("$LNelse%d:\n", id);
+            gen(node->otherwise);
+            printf("$LNend%d:\n", id);
+        } else {
+            gen(node->cond);
+            printf("  pop rax\n");
+            printf("  cmp rax, 0\n");
+            printf("  je  $LNend%d\n", id);
+            gen(node->then);
+            printf("$LNend%d:\n", id);
+        }
         return;
     }
     case ND_Do: {
