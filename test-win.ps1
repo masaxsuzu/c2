@@ -17,6 +17,10 @@ function Assert {
     Write-Output("${src} => ${got}")
 }
 
+# ?:
+Assert 64 'int main() { return 1?64:100;}'
+Assert 100 'int main() { return 0?64:100;}'
+
 # ++/--
 Assert 1 'int main() { int x = 1; return x++;}'
 Assert 1 'int main() { int x = 1; return x--;}'
