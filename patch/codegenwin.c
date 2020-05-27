@@ -184,21 +184,21 @@ void store(Type *ty) {
 }
 
 void truncate(Type *ty) {
-    // printf("  pop rax\n");
+    printf("  pop rax\n");
 
     // if (ty->kind == TY_Bool) {
     //     printf("  cmp rax, 0\n");
     //     printf("  setne al\n");
     // }
-    // int size = size_of(ty);
-    // if (size == 1) {
-    //     printf("  movsx rax, al\n");
-    // } else if (size == 2) {
-    //     printf("  movsx rax, ax\n");
-    // } else if (size == 4) {
-    //     printf("  movsxd rax, eax\n");
-    // }
-    // printf("  push rax\n");
+    int size = size_of(ty);
+    if (size == 1) {
+        printf("  movsx rax, al\n");
+    } else if (size == 2) {
+        printf("  movsx rax, ax\n");
+    } else if (size == 4) {
+        printf("  movsxd rax, eax\n");
+    }
+    printf("  push rax\n");
 }
 
 static void inc(Type *ty) {
@@ -559,8 +559,8 @@ void gen(Node *node) {
     //     gen(node->right);
         return;
     case ND_Cast:
-    //     gen(node->left);
-    //     truncate(node->ty);
+        gen(node->left);
+        truncate(node->ty);
         return;
     case ND_Add_Eq:
     case ND_Add_Ptr_Eq:
@@ -597,7 +597,7 @@ void load_arg(Variable *var, int index) {
     } else if (size_of(var->ty) == 4) {
         printf("  mov [rbp-%d], %s\n", var->offset, argreg4[index]);
     } else {
-        // printf("  mov [rbp-%d], %s\n", var->offset, argreg8[index]);
+        printf("  mov [rbp-%d], %s\n", var->offset, argreg8[index]);
     }
     printf("; --- load-arg %s --- \n", var->name);
 }

@@ -17,6 +17,10 @@ function Assert {
     Write-Output("${src} => ${got}")
 }
 
+# cast 
+Assert 0 'int main() { return (short)65536;}'
+Assert 0 'int main() { return (char)256;}'
+
 # equals 
 Assert 2 'int main() { int x = 1; x+=1; return x;}'
 Assert 0 'int main() { int x = 1; x-=1; return x;}'
