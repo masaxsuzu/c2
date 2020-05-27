@@ -17,6 +17,17 @@ function Assert {
     Write-Output("${src} => ${got}")
 }
 
+# And or
+Assert 0 'int main() { return 0^&^&0;}'
+Assert 0 'int main() { return 0^&^&1;}'
+Assert 0 'int main() { return 1^&^&0;}'
+Assert 1 'int main() { return 1^&^&1;}'
+
+Assert 0 'int main() { return 0^|^|0;}'
+Assert 1 'int main() { return 0^|^|1;}'
+Assert 1 'int main() { return 1^|^|0;}'
+Assert 1 'int main() { return 1^|^|1;}'
+
 # cast 
 Assert 0 'int main() { return (short)65536;}'
 Assert 0 'int main() { return (char)256;}'

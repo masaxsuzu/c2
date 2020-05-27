@@ -521,37 +521,37 @@ void gen(Node *node) {
         printf("  push rax\n");
         return;
     case ND_And: {
-    //     int id = labelId++;
-    //     gen(node->left);
-    //     printf("  pop rax\n");
-    //     printf("  cmp rax, 0\n");
-    //     printf("  je  .L.false.%d\n", id);
-    //     gen(node->right);
-    //     printf("  pop rax\n");
-    //     printf("  cmp rax, 0\n");
-    //     printf("  je  .L.false.%d\n", id);
-    //     printf("  push 1\n");
-    //     printf("  jmp .L.end.%d\n", id);
-    //     printf(".L.false.%d:\n", id);
-    //     printf("  push 0\n");
-    //     printf(".L.end.%d:\n", id);
+        int id = labelId++;
+        gen(node->left);
+        printf("  pop rax\n");
+        printf("  cmp rax, 0\n");
+        printf("  je  $LNfalse%d\n", id);
+        gen(node->right);
+        printf("  pop rax\n");
+        printf("  cmp rax, 0\n");
+        printf("  je  $LNfalse%d\n", id);
+        printf("  push 1\n");
+        printf("  jmp $LNend%d\n", id);
+        printf("$LNfalse%d:\n", id);
+        printf("  push 0\n");
+        printf("$LNend%d:\n", id);
         return;
     }
     case ND_Or: {
-    //     int id = labelId++;
-    //     gen(node->left);
-    //     printf("  pop rax\n");
-    //     printf("  cmp rax, 0\n");
-    //     printf("  jne .L.true.%d\n", id);
-    //     gen(node->right);
-    //     printf("  pop rax\n");
-    //     printf("  cmp rax, 0\n");
-    //     printf("  jne .L.true.%d\n", id);
-    //     printf("  push 0\n");
-    //     printf("  jmp .L.end.%d\n", id);
-    //     printf(".L.true.%d:\n", id);
-    //     printf("  push 1\n");
-    //     printf(".L.end.%d:\n", id);
+        int id = labelId++;
+        gen(node->left);
+        printf("  pop rax\n");
+        printf("  cmp rax, 0\n");
+        printf("  jne $LNtrue%d\n", id);
+        gen(node->right);
+        printf("  pop rax\n");
+        printf("  cmp rax, 0\n");
+        printf("  jne $LNtrue%d\n", id);
+        printf("  push 0\n");
+        printf("  jmp $LNend%d\n", id);
+        printf("$LNtrue%d:\n", id);
+        printf("  push 1\n");
+        printf("$LNend%d:\n", id);
         return;
     }
     case ND_Comma:
