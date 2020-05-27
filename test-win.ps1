@@ -17,6 +17,14 @@ function Assert {
     Write-Output("${src} => ${got}")
 }
 
+# equals 
+Assert 2 'int main() { int x = 1; x+=1; return x;}'
+Assert 0 'int main() { int x = 1; x-=1; return x;}'
+Assert 6 'int main() { int x = 3; x*=2; return x;}'
+Assert 3 'int main() { int x = 12; x/=4; return x;}'
+Assert 8 'int main() { int x = 2; x^<^<=2; return x;}'
+Assert 8 'int main() { int x = 64; x^>^>=3; return x;}'
+
 # <<
 Assert 16 'int main() { return 4^<^<2;}'
 Assert 1 'int main() { return 4^>^>2;}'

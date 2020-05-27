@@ -55,6 +55,8 @@ void gen_lVal(Node *node) {
 }
 
 void gen_binary(Node *node) {
+    printf("; --- gen_binary --- \n");
+
     printf("  pop rdi\n");
     printf("  pop rax\n");
     switch (node->kind) {
@@ -138,6 +140,7 @@ void gen_binary(Node *node) {
     }
 
     printf("  push rax\n");
+    printf("; --- gen_binary --- \n");
 }
 
 void load(Type *ty) {
@@ -570,12 +573,12 @@ void gen(Node *node) {
     case ND_BitAnd_Eq:
     case ND_BitOr_Eq:
     case ND_BitXor_Eq:
-    //     gen_lVal(node->left);
-    //     printf("  push [rsp]\n");
-    //     load(node->left->ty);
-    //     gen(node->right);
-    //     gen_binary(node);
-    //     store(node->ty);
+        gen_lVal(node->left);
+        printf("  push [rsp]\n");
+        load(node->left->ty);
+        gen(node->right);
+        gen_binary(node);
+        store(node->ty);
         return;
     }
 
