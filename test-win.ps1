@@ -17,6 +17,9 @@ function Assert {
     Write-Output("${src} => ${got}")
 }
 
+# Global variable
+Assert 100 'int x; int main() { x = 100; return x;}'
+
 # Comma
 Assert 55 'int main() { return (1,2,55);}'
 

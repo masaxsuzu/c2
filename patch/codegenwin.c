@@ -19,13 +19,16 @@ void gen_addr(Node *node) {
         //     gen(node->init);
         // }
         if (node->var->is_local) {
-            printf("; --- Access local var is with offset from rbp --- \n");
+            printf("; --- Access local var by offset from rbp --- \n");
             printf("  lea rax, [rbp-%d]\n", node->var->offset);
             printf("  push rax\n");
-            printf("; --- Access local var is with offset from rbp --- \n");
+            printf("; --- Access local var by offset from rbp --- \n");
 
         } else {
-            // printf("  push offset %s\n", node->var->name);
+            printf("; --- Access global var by name --- \n");
+            printf("  lea rax, %s\n", node->var->name);
+            printf("  push rax\n");
+            printf("; --- Access global var by name --- \n");
         }
         return;
     }
@@ -681,11 +684,14 @@ void emit_text(Program *p) {
 }
 
 void emit_data(Program *p) {
-    // for (Parameters *global = p->globals; global; global = global->next) {
-    //     if (!global->var->is_static) {
-    //         printf(".globl %s\n", global->var->name);
-    //     }
-    // }
+    printf("_DATA   SEGMENT\n");
+    for (Parameters *global = p->globals; global; global = global->next) {
+        if (!global->var->is_static) {
+            printf("COMM %s:DWORD\n", global->var->name);
+        }
+    }
+    printf("_DATA   ENDS\n");
+
     // printf(".bss\n");
     // for (Parameters *global = p->globals; global; global = global->next) {
     //     if (global->var->initializer) {
