@@ -686,11 +686,10 @@ void emit_text(Program *p) {
 void emit_data(Program *p) {
     printf("_DATA   SEGMENT\n");
     for (Parameters *global = p->globals; global; global = global->next) {
-        if (!global->var->is_static) {
+        if (!global->var->is_static && !global->var->initializer) {
             printf("COMM %s:DWORD\n", global->var->name);
         }
     }
-    printf("_DATA   ENDS\n");
 
     // printf(".bss\n");
     // for (Parameters *global = p->globals; global; global = global->next) {
@@ -703,24 +702,25 @@ void emit_data(Program *p) {
     // }
 
     // printf(".data\n");
-    // for (Parameters *global = p->globals; global; global = global->next) {
-    //     if (!global->var->initializer) {
-    //         continue;
-    //     }
+    for (Parameters *global = p->globals; global; global = global->next) {
+        if (!global->var->initializer) {
+            continue;
+        }
 
     //     printf(".align %d\n", global->var->ty->align);
     //     printf("%s:\n", global->var->name);
-    //     for (Initializer *init = global->var->initializer; init;
-    //          init = init->next) {
-    //         if (init->label) {
-    //             printf("  .quad %s%+ld\n", init->label, init->addend);
-    //         } else if (init->size == 1) {
-    //             printf("  .byte %ld\n", init->value);
-    //         } else {
-    //             printf("  .%dbyte %ld\n", init->size, init->value);
-    //         }
-    //     }
-    // }
+        for (Initializer *init = global->var->initializer; init;
+             init = init->next) {
+            if (init->label) {
+                // printf("  .quad %s%+ld\n", init->label, init->addend);
+            } else if (init->size == 1) {
+                // printf("  .byte %ld\n", init->value);
+            } else {
+                printf("%s  DD  %ld\n", global->var->name, init->value);
+            }
+        }
+    }
+    printf("_DATA   ENDS\n");
 }
 void codegen(Program *p) {
     // printf(".intel_syntax noprefix\n");
