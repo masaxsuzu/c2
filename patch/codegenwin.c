@@ -555,8 +555,8 @@ void gen(Node *node) {
         return;
     }
     case ND_Comma:
-    //     gen(node->left);
-    //     gen(node->right);
+        gen(node->left);
+        gen(node->right);
         return;
     case ND_Cast:
         gen(node->left);

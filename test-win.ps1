@@ -17,6 +17,9 @@ function Assert {
     Write-Output("${src} => ${got}")
 }
 
+# Comma
+Assert 55 'int main() { return (1,2,55);}'
+
 # And or
 Assert 0 'int main() { return 0^&^&0;}'
 Assert 0 'int main() { return 0^&^&1;}'
