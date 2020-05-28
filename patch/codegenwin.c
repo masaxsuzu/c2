@@ -715,7 +715,12 @@ void emit_data(Program *p) {
             if (init->label) {
                 // printf("  .quad %s%+ld\n", init->label, init->addend);
             } else if (init->size == 1) {
-                // printf("  .byte %ld\n", init->value);
+                if (i++ == 0){
+                    printf("%s  DB  %ld\n", global->var->name, init->value);
+                }
+                else {
+                    printf("    DB  %ld\n", init->value);
+                }
             } else {
                 if (i++ == 0){
                     printf("%s  DD  %ld\n", global->var->name, init->value);

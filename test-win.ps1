@@ -17,6 +17,13 @@ function Assert {
     Write-Output("${src} => ${got}")
 }
 
+
+# String literal
+Assert 99 'int main() { return "c2"[0]; }'
+Assert 50 'int main() { return "c2"[1]; }'
+Assert 99 'int main() { char *c2 = "c2"; return c2[0]; }'
+Assert 50 'int main() { char *c2 = "c2"; return c2[1]; }'
+
 # Global variable
 Assert 100 'int x; int main() { x = 100; return x;}'
 Assert 5 'char x[5]; int main() { return sizeof(x);}'
