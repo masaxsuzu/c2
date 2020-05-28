@@ -261,3 +261,4 @@ extern char *filename;
 // lib
 //
 char *mystrndup( char *src, long maxlen);
+char *new_label();

@@ -14,3 +14,10 @@ char *mystrndup( char *src, long maxlen)
     }
     return strdup( src );
 }
+
+char *new_label() {
+    static int c = 0;
+    char buf[20];
+    sprintf(buf, ".L.data.%d", c++);
+    return mystrndup(buf, 20);
+}

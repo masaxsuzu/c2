@@ -259,13 +259,6 @@ Variable *new_gvar(char *name, Type *ty, bool is_static, bool emit) {
     return var;
 }
 
-char *new_label() {
-    static int c = 0;
-    char buf[20];
-    sprintf(buf, ".L.data.%d", c++);
-    return mystrndup(buf, 20);
-}
-
 // struct-member = basetype declarator type-suffix ";"
 Member *struct_member() {
     Type *ty = basetype(NULL);
