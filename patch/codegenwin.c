@@ -709,6 +709,7 @@ void emit_data(Program *p) {
 
     //     printf(".align %d\n", global->var->ty->align);
     //     printf("%s:\n", global->var->name);
+        int i = 0;
         for (Initializer *init = global->var->initializer; init;
              init = init->next) {
             if (init->label) {
@@ -716,7 +717,12 @@ void emit_data(Program *p) {
             } else if (init->size == 1) {
                 // printf("  .byte %ld\n", init->value);
             } else {
-                printf("%s  DD  %ld\n", global->var->name, init->value);
+                if (i++ == 0){
+                    printf("%s  DD  %ld\n", global->var->name, init->value);
+                }
+                else {
+                    printf("    DD  %ld\n", init->value);
+                }
             }
         }
     }

@@ -23,6 +23,7 @@ Assert 5 'char x[5]; int main() { return sizeof(x);}'
 Assert 21 'int x=1; int main() { x += 20; return x;}'
 Assert 89 'int x=1; int y; int z = 100;int main() {y = 10; return z-y-x;}'
 Assert 7 ' int x[4]; int y = 3; int main () { x[0] = 1; x[1] = 2; return x[1] * y + x[0];}'
+Assert 11 ' int x[2] = {1,11}; int main () { return x[1];}'
 
 # Comma
 Assert 55 'int main() { return (1,2,55);}'
