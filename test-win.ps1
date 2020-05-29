@@ -18,6 +18,10 @@ function Assert {
 }
 
 
+#
+Assert 35 'int y() { return 5; } int z() { return 7; } int main() { int x = z() * y(); return x;}'
+Assert 1 'int z() { return 1; } int main() { int x = z(); return x;}'
+
 # String literal
 Assert 99 'int main() { return "c2"[0]; }'
 Assert 50 'int main() { return "c2"[1]; }'

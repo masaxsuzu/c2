@@ -637,9 +637,8 @@ void emit_text(Program *p) {
         printf("; --- Prologue --- \n");
         printf("  push rbp\n");
         printf("  mov rbp, rsp\n");
-        printf("  sub rbp, %d\n", fn->stack_size);
         // TODO: Use proper value as shadow space?
-        printf("  sub rbp, %d\n", 32);
+        printf("  sub rbp, %d\n", align_to(fn->stack_size, 32));
         printf("; --- Prologue --- \n");
 
     //     // Save arg registers if function is variadic
@@ -674,7 +673,7 @@ void emit_text(Program *p) {
         printf("$LNreturn%s:\n", functionName);
         printf("  pop rbp\n");
         // TODO: Use proper value as shadow space?
-        printf("  add rbp, %d\n", 32);
+        printf("  add rbp, %d\n", align_to(fn->stack_size, 32));
         printf("  ret\n");
         printf("%s	ENDP\n", functionName);
         printf("_TEXT	ENDS\n");
