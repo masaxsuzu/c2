@@ -20,6 +20,8 @@ function Assert {
 
 
 # Function call
+Assert 42 'int twice(int x) { return 2*x;} int main() { int x = twice(21); return x;}'
+Assert 111 'int p(int x) { return 111; } int main() { int x=  p(1); return x;}'
 Assert 1 'int main() { printf("c2\n"); return 1;}'
 Assert 35 'int y() { return 5; } int z() { return 7; } int main() { int x = z() * y(); return x;}'
 Assert 1 'int z() { return 1; } int main() { int x = z(); return x;}'
