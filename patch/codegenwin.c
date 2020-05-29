@@ -454,6 +454,9 @@ void gen(Node *node) {
             printf("  pop %s\n", argreg8[i]);
         }
 
+        //
+        printf("  sub rsp, 32\n");
+
         // [x86-64] RSP register must a multiple of 16 before using function
         // call.
         printf("  mov rax, rsp\n");
@@ -468,6 +471,8 @@ void gen(Node *node) {
         printf("  call %s\n", node->funcName);
         printf("  add rsp, 8\n");
         printf("$LNend%d:\n", id);
+
+        printf("  add rsp, 32\n");
         // if (node->ty->kind == TY_Bool) {
         //     printf("  movzb rax, al\n");
         // }

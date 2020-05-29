@@ -5,7 +5,8 @@ function Assert {
     )
 
     cmd /c "echo $src > .\tmp.c"
-    cmd /c ".\c2-gen1-win.exe .\tmp.c > .\win.asm"
+    cmd /c "echo extern printf:proc > .\win.asm" 
+    cmd /c ".\c2-gen1-win.exe .\tmp.c >> .\win.asm"
     ml64 .\win.asm
     link /OUT:.\tmp.exe .\win.obj
     .\tmp.exe
@@ -18,7 +19,8 @@ function Assert {
 }
 
 
-#
+# Function call
+Assert 1 'int main() { printf("c2\n"); return 1;}'
 Assert 35 'int y() { return 5; } int z() { return 7; } int main() { int x = z() * y(); return x;}'
 Assert 1 'int z() { return 1; } int main() { int x = z(); return x;}'
 
