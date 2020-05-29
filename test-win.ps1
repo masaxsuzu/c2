@@ -20,6 +20,11 @@ function Assert {
 
 
 # Function call
+Assert 1 'int assert(int want, int got, char *src) { if (got == want) return 1; printf("%s =^> %d, want %d\n", src, got, want); return 100;} int main() { return assert(2, 1+1,"1+1");}'
+Assert 100 'int assert(int want, int got, char *src) { if (got == want) return 1; printf("%s =^> %d, want %d\n", src, got, want); return 100;} int main() { return assert(2, 1+11,"1+11");}'
+
+Assert 11 'int print(int got, char *want) { printf("got %d\n", got); return got; } int main() { return print(11, "11");}'
+Assert 111 'int main() { printf("got %d, want %s\n", 421, "42"); return 111;}'
 Assert 42 'int twice(int x) { return 2*x;} int main() { int x = twice(21); return x;}'
 Assert 111 'int p(int x) { return 111; } int main() { int x=  p(1); return x;}'
 Assert 1 'int main() { printf("c2\n"); return 1;}'

@@ -450,7 +450,8 @@ void gen(Node *node) {
             n++;
         }
 
-        for (int i = 0; i < n; i++) {
+
+        for (int i = n - 1; i >= 0; i--) {
             printf("  pop %s\n", argreg8[i]);
         }
 
@@ -664,7 +665,6 @@ void emit_text(Program *p) {
         int i = 0;
 
         Parameters *head = fn->params;
-        reverse(&head);
         for (Parameters *params = head; params; params = params->next) {
             Variable *var = params->var;
             load_arg(var, i++);
