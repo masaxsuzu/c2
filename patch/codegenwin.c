@@ -38,16 +38,16 @@ void gen_addr(Node *node) {
         return;
     }
 
-    // if (node->kind == ND_Member) {
-    //     gen_addr(node->left);
-    //     printf("  pop rax\n");
-    //     printf("  add rax, %d\n", node->member->offset);
-    //     printf("  push rax\n");
-    //     return;
-    // }
+    if (node->kind == ND_Member) {
+        gen_addr(node->left);
+        printf("  pop rax\n");
+        printf("  add rax, %d\n", node->member->offset);
+        printf("  push rax\n");
+        return;
+    }
 
-    // error_at(node->token->str, "Left side value is not variable, got: %d",
-    //          node->kind);
+    error_at(node->token->str, "Left side value is not variable, got: %d",
+             node->kind);
 }
 
 void gen_lVal(Node *node) {
@@ -427,10 +427,10 @@ void gen(Node *node) {
         }
         return;
     case ND_Member:
-    //     gen_addr(node);
-    //     if (node->ty->kind != TY_Array) {
-    //         load(node->ty);
-    //     }
+        gen_addr(node);
+        if (node->ty->kind != TY_Array) {
+            load(node->ty);
+        }
         return;
     case ND_FuncCall: {
     //     if (!strcmp(node->funcName, "__builtin_va_start")) {
