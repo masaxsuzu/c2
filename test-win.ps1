@@ -6,6 +6,7 @@ function Assert {
 
     cmd /c "echo $src > .\tmp.c"
     cmd /c "echo extern printf:proc > .\win.asm" 
+    cmd /c "echo extern exit:proc >> .\win.asm" 
     cmd /c ".\c2-gen1-win.exe .\tmp.c >> .\win.asm"
     ml64 .\win.asm
     link /OUT:.\tmp.exe .\win.obj
@@ -18,6 +19,10 @@ function Assert {
     Write-Output("${src} => ${got}")
 }
 
+# Tests in c
+$test = cat .\tests\win.c
+
+Assert 0 $test
 
 # Function call
 Assert 1 'int assert(int want, int got, char *src) { if (got == want) return 1; printf("%s =^> %d, want %d\n", src, got, want); return 100;} int main() { return assert(2, 1+1,"1+1");}'
@@ -175,7 +180,6 @@ Assert 4 'char twice_of_second(char x, char y, char z, char w) { return y*2; } i
 Assert 97 'char a() { return ''a'';} int main() { return a();}'
 
 # int
-Assert 42 'int main() { return 42;}'
 Assert 4 'int main() { int x = 1; return sizeof(x);}'
 Assert 4 'int main() { return sizeof(int);}'
 Assert 128 'int main() { return 1 + (6/3)*64 -1;}'
