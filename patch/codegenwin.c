@@ -281,32 +281,32 @@ void gen(Node *node) {
         return;
     }
     case ND_For: {
-    //     int id = labelId++;
-    //     int brk = breakId;
-    //     int cout = continueId;
-    //     breakId = id;
-    //     continueId = id;
+        int id = labelId++;
+        int brk = breakId;
+        int cout = continueId;
+        breakId = id;
+        continueId = id;
 
-    //     if (node->init) {
-    //         gen(node->init);
-    //     }
-    //     printf(".L.begin.%d:\n", id);
-    //     if (node->cond) {
-    //         gen(node->cond);
-    //         printf("  pop rax\n");
-    //         printf("  cmp rax, 0\n");
-    //         printf("  je  .L.break.%d\n", id);
-    //     }
-    //     gen(node->then);
-    //     printf(".L.continue.%d:\n", id);
-    //     if (node->inc) {
-    //         gen(node->inc);
-    //     }
-    //     printf("  jmp .L.begin.%d\n", id);
-    //     printf(".L.break.%d:\n", id);
+        if (node->init) {
+            gen(node->init);
+        }
+        printf("$LNbegin%d:\n", id);
+        if (node->cond) {
+            gen(node->cond);
+            printf("  pop rax\n");
+            printf("  cmp rax, 0\n");
+            printf("  je  $LNbreak%d\n", id);
+        }
+        gen(node->then);
+        printf("$LNcontinue%d:\n", id);
+        if (node->inc) {
+            gen(node->inc);
+        }
+        printf("  jmp $LNbegin%d\n", id);
+        printf("$LNbreak%d:\n", id);
 
-    //     breakId = brk;
-    //     continueId = cout;
+        breakId = brk;
+        continueId = cout;
         return;
     }
     case ND_Break:

@@ -249,8 +249,8 @@ int main() {
     assert(123,({ int a = 2;if(0!=0) a=1; else a=123; a;}), "({ int a = 2;if(0!=0) a=1; else a=123; a;})");
 
     assert(10,({ int i;i=0; while(i<10) i=i+1; i; }), "({ int i;i=0; while(i<10) i=i+1; i; })");
-    // assert(55,({ int i; int j;i=0; j=0; for (i=0; i<=10; i=i+1) j=i+j; j; }), "({ int i; int j;i=0; j=0; for (i=0; i<=10; i=i+1) j=i+j; j; })");
-    // assert(3,({ 1; {2;} 3; }), "({ 1; {2;} 3; })");
+    assert(55,({ int i; int j;i=0; j=0; for (i=0; i<=10; i=i+1) j=i+j; j; }), "({ int i; int j;i=0; j=0; for (i=0; i<=10; i=i+1) j=i+j; j; })");
+    assert(3,({ 1; {2;} 3; }), "({ 1; {2;} 3; })");
     assert(55,({ int i; int j; i=0; j=0; while(i<=10) {j=i+j; i=i+1;} j; }), "({ int i; int j; i=0; j=0; while(i<=10) {j=i+j; i=i+1;} j; })");
 
     assert(5,({ int x; int *y;x=3; y=&x; *y=5; x; }), "({ int x; int *y;x=3; y=&x; *y=5; x; })");
@@ -465,8 +465,8 @@ int main() {
     
     assert(3, ({ static_fn(); }), "static_fn();");
 
-    // assert(4, ({ int i = 0; for(int j = 0; j < 5; j = j + 1) i = j; i; }), "int i = 0; for(int j = 0; j < 5; j = j + 1) i = j; i;");
-    // assert(10, ({ int i = 10; for(int i = 0; i < 5; i = i + 1) i = 4; i; }), "int i = 10; for(int i = 0; i < 5; i = i + 1) i = 4; i;");
+    assert(4, ({ int i = 0; for(int j = 0; j < 5; j = j + 1) i = j; i; }), "int i = 0; for(int j = 0; j < 5; j = j + 1) i = j; i;");
+    assert(10, ({ int i = 10; for(int i = 0; i < 5; i = i + 1) i = 4; i; }), "int i = 10; for(int i = 0; i < 5; i = i + 1) i = 4; i;");
 
     // assert(0, ({
     //   int board[100]; 
@@ -540,14 +540,14 @@ int main() {
     assert(59, 11|56, "11|56");
     assert(51, 11^56, "11^56");
 
-    // assert(3, ({ int i=0; for(;i<10;i++) { if (i == 3) break; } i; }), "int i=0; for(;i<10;i++) { if (i == 3) break; } i;");
+    assert(3, ({ int i=0; for(;i<10;i++) { if (i == 3) break; } i; }), "int i=0; for(;i<10;i++) { if (i == 3) break; } i;");
     assert(4, ({ int i=0; while (1) { if (i++ == 3) break; } i; }), "int i=0; while { if (i == 3) break; } i;");
     assert(4, ({ int i=0; while (1) { while(1) break; if (i++ == 3) break; } i; }), "int i=0; while { if (i == 3) break; } i;");
-    // assert(3, ({int i=0; for(;i<10;i++) { for(;;) break; if (i == 3) break; } i;}), "int i=0; for(;i<10;i++) { for(;;) break; if (i == 3) break; } i;");
+    assert(3, ({int i=0; for(;i<10;i++) { for(;;) break; if (i == 3) break; } i;}), "int i=0; for(;i<10;i++) { for(;;) break; if (i == 3) break; } i;");
 
-    // assert(10, ({ int i=0; int j=0; for (;i<10;i++) { if (i>5) continue; j++; } i; }), "int i=0; int j=0; for (;i<10;i++) { if (i>5) continue; j++; } i;");
-    // assert(6, ({ int i=0; int j=0; for (;i<10;i++) { if (i>5) continue; j++; } j; }), "int i=0; int j=0; for (;i<10;i++) { if (i>5) continue; j++; } j;");
-    // assert(10, ({ int i=0; int j=0; for(;!i;) { for (;j!=10;j++) continue; break; } j; }), "int i=0; int j=0; for(;!i;) { for (;j!=10;j++) continue; break; } j;");
+    assert(10, ({ int i=0; int j=0; for (;i<10;i++) { if (i>5) continue; j++; } i; }), "int i=0; int j=0; for (;i<10;i++) { if (i>5) continue; j++; } i;");
+    assert(6, ({ int i=0; int j=0; for (;i<10;i++) { if (i>5) continue; j++; } j; }), "int i=0; int j=0; for (;i<10;i++) { if (i>5) continue; j++; } j;");
+    assert(10, ({ int i=0; int j=0; for(;!i;) { for (;j!=10;j++) continue; break; } j; }), "int i=0; int j=0; for(;!i;) { for (;j!=10;j++) continue; break; } j;");
     assert(11, ({ int i=0; int j=0; while (i++<10) { if (i>5) continue; j++; } i; }), "int i=0; int j=0; while (i++<10) { if (i>5) continue; j++; } i;");
     assert(5, ({ int i=0; int j=0; while (i++<10) { if (i>5) continue; j++; } j; }), "int i=0; int j=0; while (i++<10) { if (i>5) continue; j++; } j;");
     assert(11, ({ int i=0; int j=0; while(!i) { while (j++!=10) continue; break; } j; }), "int i=0; int j=0; while(!i) { while (j++!=10) continue; break; } j;");
