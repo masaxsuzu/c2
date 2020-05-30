@@ -167,11 +167,11 @@ void store(Type *ty) {
     printf("  pop rdi\n");
     printf("  pop rax\n");
 
-    // if (ty->kind == TY_Bool) {
-    //     printf("  cmp rdi, 0\n");
-    //     printf("  setne dil\n");
-    //     printf("  movzb rdi, dil\n");
-    // }
+    if (ty->kind == TY_Bool) {
+        printf("  cmp rdi, 0\n");
+        printf("  setne dil\n");
+        // printf("  movzb rdi, dil\n");
+    }
 
     if (size_of(ty) == 1) {
         printf("  mov [rax], dil\n");
@@ -189,10 +189,10 @@ void store(Type *ty) {
 void truncate(Type *ty) {
     printf("  pop rax\n");
 
-    // if (ty->kind == TY_Bool) {
-    //     printf("  cmp rax, 0\n");
-    //     printf("  setne al\n");
-    // }
+    if (ty->kind == TY_Bool) {
+        printf("  cmp rax, 0\n");
+        printf("  setne al\n");
+    }
     int size = size_of(ty);
     if (size == 1) {
         printf("  movsx rax, al\n");
