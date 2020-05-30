@@ -10,6 +10,10 @@ int static_fn() { return 5; }
 int false_fn() { return 512; }
 int true_fn() { return 513; }
 
+int sub_from_last(int x, int y, int z, int w) {
+  return w- z - y - x;
+}
+
 int add_all1(int x, ...) {
   va_list ap;
   va_start(ap, x);

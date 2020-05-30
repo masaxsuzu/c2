@@ -45,14 +45,14 @@ int foo(int *x, int y) { return *x + y; }
 
 
 // this function would be linked.
-// int only_decl(int x);
-// int dec2(int x);
-// int decl(int x) {
-//     return decl2(x);
-// }
-// int decl2(int x) {
-//     return 2*x;
-// }
+int only_decl(int x);
+int dec2(int x);
+int decl(int x) {
+    return decl2(x);
+}
+int decl2(int x) {
+    return 2*x;
+}
 
 int sizeof_nested_type1(int *x[4]) { 
     // warning: 
@@ -73,8 +73,6 @@ void nop2() {
 }
 
 typedef int MyInt;
-
-static int static_fn() { return 3; }
 
 int print_board(int (*board)[10]) {
   for (int i = 0; i < 10; i++) {
@@ -382,8 +380,8 @@ int main() {
     assert(1, ({ + + 1;}), "+ + 1");
     assert(10, ({ - + - 10;}), "- + - 10");
 
-    // assert(42, ({ decl(21);}), "decl(21);");
-    // assert(255, ({ only_decl(255);}), "only_decl(255);");
+    assert(42, ({ decl(21);}), "decl(21);");
+    assert(255, ({ only_decl(255);}), "only_decl(255);");
 
     assert( 255, ({ short x = 255; x;}), "short x = 255; x;");
     assert(2, ({ short x; sizeof(x);}), "short x; sizeof(x);");
@@ -463,7 +461,7 @@ int main() {
     assert(4, ({ enum { zero, one, two } x; sizeof(x); }), "enum { zero, one, two } x; sizeof(x);");
     assert(4, ({ enum t { zero, one, two }; enum t y; sizeof(y); }), "enum t { zero, one, two }; enum t y; sizeof(y);");
     
-    assert(3, ({ static_fn(); }), "static_fn();");
+    // assert(3, ({ static_fn(); }), "static_fn();");
 
     assert(4, ({ int i = 0; for(int j = 0; j < 5; j = j + 1) i = j; i; }), "int i = 0; for(int j = 0; j < 5; j = j + 1) i = j; i;");
     assert(10, ({ int i = 10; for(int i = 0; i < 5; i = i + 1) i = 4; i; }), "int i = 10; for(int i = 0; i < 5; i = i + 1) i = 4; i;");
@@ -780,6 +778,8 @@ int main() {
 
     // assert(1, true_fn(), "true_fn()");
     // assert(0, false_fn(), "false_fn()");
+
+    assert(5, sub_from_last(1,2,3,11), "sub_from_last(1,2,3,11)");
 
     // assert(9, add_all1(2,3,4), "add_all1(2,3,4)");
     // assert(6, add_all1(1,2,3,0), "add_all1(1,2,3,0)");
