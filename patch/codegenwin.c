@@ -611,6 +611,21 @@ void load_arg(Variable *var, int index) {
     printf("; --- load-arg %s --- \n", var->name);
 }
 
+char *getAllocationDirectiveBy(int align) {
+    switch (align)
+    {
+    case 1:
+        return "DB";
+    case 2:
+        return "DW";
+    case 4:
+        return "DD";
+    case 8:
+    default:
+        return "DQ";
+    }
+}
+
 /* Function to reverse the linked list */
 void reverse(Parameters ** head) 
 { 
@@ -696,23 +711,8 @@ void emit_data(Program *p) {
         }
 
         // TODO for Array;
-        switch (size_of(global->var->ty))
-        {
-            case 1:
-                printf("%s DB 01H DUP (?)\n", global->var->name);
-                break; 
-            case 2:
-                printf("%s DW 01H DUP (?)\n", global->var->name);
-                break; 
-            case 4:
-                printf("%s DD 01H DUP (?)\n", global->var->name);
-                break; 
-            case 8:
-                printf("%s DQ 01H DUP (?)\n", global->var->name);
-                break; 
-            default:
-                break;
-        }
+        char *label = getAllocationDirectiveBy(size_of(global->var->ty));
+        printf("%s %s 01H DUP (?)\n", global->var->name, label);
     }
     printf("_BSS   ENDS\n");
 
@@ -733,13 +733,13 @@ void emit_data(Program *p) {
         printf("%s:\n", global->var->name);
         for (Initializer *init = global->var->initializer; init;
              init = init->next) {
+            char *label = getAllocationDirectiveBy(init->size);
             if (init->label) {
                 printf("    DQ %s%+ld\n", init->label, init->addend);
-            } else if (init->size == 1) {
-                printf("    DB  %ld\n", init->value);
-            } else {
-                printf("    DD  %ld\n", init->value);
             }
+            else {
+                printf("    %s  %ld\n", label, init->value);
+            } 
         }
     }
     printf("_DATA   ENDS\n");
