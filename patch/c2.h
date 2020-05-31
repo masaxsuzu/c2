@@ -54,6 +54,7 @@ struct Variable {
     int offset;
     bool is_local;
     bool is_static;
+    bool is_extern;
     Initializer *initializer;
 };
 

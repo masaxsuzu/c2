@@ -886,6 +886,7 @@ void *global_variable() {
     Variable *var = new_gvar(name, ty, sclass == Static, sclass != Extern);
 
     if (sclass == Extern) {
+        var->is_extern = true;
         expect(";");
         return NULL;
     }
