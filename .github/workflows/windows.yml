@@ -14,8 +14,14 @@ jobs:
   win:
     runs-on: windows-latest
     steps:
+    - name: enable git core.symlinks
+      run: git config --global core.symlinks true 
+    - name: show git core.symlinks
+      run: git config --global core.symlinks   
     - uses: actions/checkout@v2
     - uses: ilammy/msvc-dev-cmd@v1
+    - name: ls-win
+      run: powershell ls .\win 
     - name: build-gen1
       run: powershell .\build-win.ps1
     - name: test-gen1
