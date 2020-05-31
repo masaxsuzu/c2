@@ -186,6 +186,7 @@ struct Function {
   Parameters *locals;
   int stack_size;
   bool is_static;
+  bool is_extern;
   bool has_varargs;
 };
 

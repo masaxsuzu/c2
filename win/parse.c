@@ -715,10 +715,11 @@ Function *function() {
     read_func_parameters(f);
 
     if (consume(";")) {
+        f->is_extern = true;
         exit_scope(scope);
-        return NULL;
+        return f;
     }
-
+    f->is_extern = false;
     expect("{");
 
     Node head = {0};
