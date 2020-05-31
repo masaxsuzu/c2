@@ -15,9 +15,9 @@ void gen(Node *node);
 void gen_addr(Node *node) {
 
     if (node->kind == ND_Var) {
-        // if (node->init) {
-        //     gen(node->init);
-        // }
+        if (node->init) {
+            gen(node->init);
+        }
         if (node->var->is_local) {
             printf("; --- Access local var by offset from rbp --- \n");
             printf("  lea rax, [rbp-%d]\n", node->var->offset);
