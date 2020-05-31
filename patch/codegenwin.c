@@ -713,26 +713,15 @@ void emit_data(Program *p) {
         }
 
     //     printf(".align %d\n", global->var->ty->align);
-    //     printf("%s:\n", global->var->name);
-        int i = 0;
+        printf("%s:\n", global->var->name);
         for (Initializer *init = global->var->initializer; init;
              init = init->next) {
             if (init->label) {
                 // printf("  .quad %s%+ld\n", init->label, init->addend);
             } else if (init->size == 1) {
-                if (i++ == 0){
-                    printf("%s  DB  %ld\n", global->var->name, init->value);
-                }
-                else {
-                    printf("    DB  %ld\n", init->value);
-                }
+                printf("    DB  %ld\n", init->value);
             } else {
-                if (i++ == 0){
-                    printf("%s  DD  %ld\n", global->var->name, init->value);
-                }
-                else {
-                    printf("    DD  %ld\n", init->value);
-                }
+                printf("    DD  %ld\n", init->value);
             }
         }
     }
