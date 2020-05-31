@@ -126,36 +126,36 @@ void void_dec_global_val() {
   void_dec_global_val_2();
 }
 
-// char g3 = 3;
-// short g4 = 4;
-// int g5 = 5;
-// long g6 = 6;
-// int *g7 = &g5;
-// char *g8 = "abc";
-// int g9[3] = {0, 1 };
-// char *g10[] = {"foo", "bar"};
+char g3 = 3;
+short g4 = 4;
+int g5 = 5;
+long g6 = 6;
+int *g7 = &g5;
+char *g8 = "abc";
+int g9[3] = {0, 1 };
+char *g10[] = {"foo", "bar"};
 
-// struct {char a; int b;} g11[2] = {{1, 2}, {3, 4}};
-// struct {int a[2];} g12[2] = {{{1, 2}}};
+struct {char a; int b;} g11[2] = {{1, 2}, {3, 4}};
+struct {int a[2];} g12[2] = {{{1, 2}}};
 
-// struct {int a[2];} g13[2] = {{1, 2}, 3, 4};
-// struct {int a[2];} g14[2] = {1, 2, 3, 4};
-// char *g15 = {"foo"};
-// char g16[][4] = {'f', 'o', 'o', 0, 'b', 'a', 'r', 0};
+struct {int a[2];} g13[2] = {{1, 2}, 3, 4};
+struct {int a[2];} g14[2] = {1, 2, 3, 4};
+char *g15 = {"foo"};
+char g16[][4] = {'f', 'o', 'o', 0, 'b', 'a', 'r', 0};
 
-// char g17[] = "foobar";
-// char g18[10] = "foobar";
-// char g19[3] = "foobar";
+char g17[] = "foobar";
+char g18[10] = "foobar";
+char g19[3] = "foobar";
 
-// char *g20 = g17+0;
-// char *g21 = g17+3;
-// char *g22 = &g17-3;
+char *g20 = g17+0;
+char *g21 = g17+3;
+char *g22 = &g17-3;
 
-// char *g23[] = {g17+0, g17+3, g17-3};
-// int g24=3;
-// int *g25=&g24;
-// int g26[3] = {1, 2, 3};
-// int *g27 = g26 + 1;
+char *g23[] = {g17+0, g17+3, g17-3};
+int g24=3;
+int *g25=&g24;
+int g26[3] = {1, 2, 3};
+int *g27 = g26 + 1;
 
 // extern int ext1;
 // extern int *ext2;
@@ -677,66 +677,66 @@ int main() {
     assert(7, ({ int i=6; i|=3; i; }), "int i=6; i|=3; i;");
     assert(10, ({ int i=15; i^=5; i; }), "int 15; i^=5; i;");
     
-    // assert(3, g3, "g3");
-    // assert(4, g4, "g4");
-    // assert(5, g5, "g5");
-    // assert(6, g6, "g6");
-    // assert(5, *g7, "*g7");
-    // assert(0, strcmp(g8, "abc"), "strcmp(g8, \"abc\")");
+    assert(3, g3, "g3");
+    assert(4, g4, "g4");
+    assert(5, g5, "g5");
+    assert(6, g6, "g6");
+    assert(5, *g7, "*g7");
+    assert(0, strcmp(g8, "abc"), "strcmp(g8, \"abc\")");
 
-    // assert(0, g9[0], "g9[0]");
-    // assert(1, g9[1], "g9[1]");
-    // assert(0, g9[2], "g9[2]");
+    assert(0, g9[0], "g9[0]");
+    assert(1, g9[1], "g9[1]");
+    assert(0, g9[2], "g9[2]");
 
-    // assert(0, strcmp(g10[0], "foo"), "strcmp(g10[0], \"foo\")");
-    // assert(0, strcmp(g10[1], "bar"), "strcmp(g10[1], \"bar\")");
-    // assert(0, g10[1][3], "g10[1][3]");
-    // assert(2, sizeof(g10) / sizeof(*g10), "sizeof(g10) / sizeof(*g10)");
+    assert(0, strcmp(g10[0], "foo"), "strcmp(g10[0], \"foo\")");
+    assert(0, strcmp(g10[1], "bar"), "strcmp(g10[1], \"bar\")");
+    assert(0, g10[1][3], "g10[1][3]");
+    assert(2, sizeof(g10) / sizeof(*g10), "sizeof(g10) / sizeof(*g10)");
 
-    // assert(1, g11[0].a, "g11[0].a");
-    // assert(2, g11[0].b, "g11[0].b");
-    // assert(3, g11[1].a, "g11[1].a");
-    // assert(4, g11[1].b, "g11[1].b");
+    assert(1, g11[0].a, "g11[0].a");
+    assert(2, g11[0].b, "g11[0].b");
+    assert(3, g11[1].a, "g11[1].a");
+    assert(4, g11[1].b, "g11[1].b");
 
-    // assert(1, g12[0].a[0], "g12[0].a[0]");
-    // assert(2, g12[0].a[1], "g12[0].a[1]");
-    // assert(0, g12[1].a[0], "g12[1].a[0]");
-    // assert(0, g12[1].a[1], "g12[1].a[1]");
+    assert(1, g12[0].a[0], "g12[0].a[0]");
+    assert(2, g12[0].a[1], "g12[0].a[1]");
+    assert(0, g12[1].a[0], "g12[1].a[0]");
+    assert(0, g12[1].a[1], "g12[1].a[1]");
 
-    // assert(1, g13[0].a[0], "g13[0].a[0]");
-    // assert(2, g13[0].a[1], "g13[0].a[1]");
-    // assert(3, g13[1].a[0], "g13[1].a[0]");
-    // assert(4, g13[1].a[1], "g13[1].a[1]");
+    assert(1, g13[0].a[0], "g13[0].a[0]");
+    assert(2, g13[0].a[1], "g13[0].a[1]");
+    assert(3, g13[1].a[0], "g13[1].a[0]");
+    assert(4, g13[1].a[1], "g13[1].a[1]");
     
-    // assert(0, ({ int x[2][3]={0,1,2,3,4,5,}; x[0][0]; }), "int x[2][3]={0,1,2,3,4,5,}; x[0][0];");
-    // assert(3, ({ int x[2][3]={0,1,2,3,4,5,}; x[1][0]; }), "int x[2][3]={0,1,2,3,4,5,}; x[1][0];");
+    assert(0, ({ int x[2][3]={0,1,2,3,4,5,}; x[0][0]; }), "int x[2][3]={0,1,2,3,4,5,}; x[0][0];");
+    assert(3, ({ int x[2][3]={0,1,2,3,4,5,}; x[1][0]; }), "int x[2][3]={0,1,2,3,4,5,}; x[1][0];");
 
-    // assert(0, ({ struct {int a; int b;} x[2]={0,1,2,3}; x[0].a; }), "struct {int a; int b;} x[2]={0,1,2,3}; x[0].a;");
-    // assert(2, ({ struct {int a; int b;} x[2]={0,1,2,3}; x[1].a; }), "struct {int a; int b;} x[2]={0,1,2,3}; x[1].a;");
+    assert(0, ({ struct {int a; int b;} x[2]={0,1,2,3}; x[0].a; }), "struct {int a; int b;} x[2]={0,1,2,3}; x[0].a;");
+    assert(2, ({ struct {int a; int b;} x[2]={0,1,2,3}; x[1].a; }), "struct {int a; int b;} x[2]={0,1,2,3}; x[1].a;");
 
-    // assert(0, strcmp(g15, "foo"), "strcmp(g15, \"foo\")");
-    // assert(0, strcmp(g16[0], "foo"), "strcmp(g16[0], \"foo\")");
-    // assert(0, strcmp(g16[1], "bar"), "strcmp(g16[1], \"bar\")");
+    assert(0, strcmp(g15, "foo"), "strcmp(g15, \"foo\")");
+    assert(0, strcmp(g16[0], "foo"), "strcmp(g16[0], \"foo\")");
+    assert(0, strcmp(g16[1], "bar"), "strcmp(g16[1], \"bar\")");
   
-    // assert(7, sizeof(g17), "sizeof(g17)");
-    // assert(10, sizeof(g18), "sizeof(g18)");
-    // assert(3, sizeof(g19), "sizeof(g19)");
+    assert(7, sizeof(g17), "sizeof(g17)");
+    assert(10, sizeof(g18), "sizeof(g18)");
+    assert(3, sizeof(g19), "sizeof(g19)");
 
-    // assert(0, memcmp(g17, "foobar", 7), "memcmp(g17, \"foobar\", 7)");
-    // assert(0, memcmp(g18, "foobar\0\0\0", 10), "memcmp(g18, \"foobar\\0\\0\\0\", 10)");
-    // assert(0, memcmp(g19, "foo", 3), "memcmp(g19, \"foo\", 3)");
+    assert(0, memcmp(g17, "foobar", 7), "memcmp(g17, \"foobar\", 7)");
+    assert(0, memcmp(g18, "foobar\0\0\0", 10), "memcmp(g18, \"foobar\\0\\0\\0\", 10)");
+    assert(0, memcmp(g19, "foo", 3), "memcmp(g19, \"foo\", 3)");
 
-    // assert(0, strcmp(g20, "foobar"), "strcmp(g20, \"foobar\")");
-    // assert(0, strcmp(g21, "bar"), "strcmp(g21, \"bar\")");
-    // assert(0, strcmp(g22+3, "foobar"), "strcmp(g22+3, \"foobar\")");
+    assert(0, strcmp(g20, "foobar"), "strcmp(g20, \"foobar\")");
+    assert(0, strcmp(g21, "bar"), "strcmp(g21, \"bar\")");
+    assert(0, strcmp(g22+3, "foobar"), "strcmp(g22+3, \"foobar\")");
 
-    // assert(0, strcmp(g23[0], "foobar"), "strcmp(g23[0], \"foobar\")");
-    // assert(0, strcmp(g23[1], "bar"), "strcmp(g23[1], \"bar\")");
-    // assert(0, strcmp(g23[2]+3, "foobar"), "strcmp(g23[2]+3, \"foobar\")");
+    assert(0, strcmp(g23[0], "foobar"), "strcmp(g23[0], \"foobar\")");
+    assert(0, strcmp(g23[1], "bar"), "strcmp(g23[1], \"bar\")");
+    assert(0, strcmp(g23[2]+3, "foobar"), "strcmp(g23[2]+3, \"foobar\")");
 
-    // assert(3, g24, "g24");
-    // assert(3, *g25, "*g25");
-    // assert(2, *g27, "*g27");
+    assert(3, g24, "g24");
+    assert(3, *g25, "*g25");
+    assert(2, *g27, "*g27");
     
     // ext1 = 5;
     // assert(5, ext1, "ext1");

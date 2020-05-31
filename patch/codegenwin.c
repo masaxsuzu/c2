@@ -717,7 +717,7 @@ void emit_data(Program *p) {
         for (Initializer *init = global->var->initializer; init;
              init = init->next) {
             if (init->label) {
-                // printf("  .quad %s%+ld\n", init->label, init->addend);
+                printf("    QWORD %s%+ld\n", init->label, init->addend);
             } else if (init->size == 1) {
                 printf("    DB  %ld\n", init->value);
             } else {
