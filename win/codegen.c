@@ -661,6 +661,11 @@ void emit_extern(Program *p) {
     for (Function *fn = p->next; fn; fn = fn->next) {
         if (fn->is_extern && emit_as_extern(fn, p)) {
             printf("EXTRN %s:PROC\n", fn->name);
+            continue;
+        }
+        if (!fn->is_static) {
+            printf("PUBLIC	%s\n", fn->name);
+            continue;
         }
     }
     for (Parameters *global = p->globals; global; global = global->next) {
@@ -673,9 +678,6 @@ void emit_text(Program *p) {
     for (Function *fn = p->next; fn; fn = fn->next) {
          if (fn->is_extern) {
             continue;
-        }
-        if (!fn->is_static) {
-            printf("PUBLIC	%s\n", fn->name);
         }
         printf("_TEXT	SEGMENT\n");
 

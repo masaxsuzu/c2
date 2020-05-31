@@ -8,18 +8,18 @@ function expand {
         $file
     )
     $def = ' 
+int memcmp();
 int strdup();
 typedef struct FILE FILE;
 FILE *stdout;
 FILE *stderr;
 void *malloc(long size);
 void *calloc(long nmemb, long size);
-// int *__errno_location();
+int *_errno();
 char *strerror(int errnum);
 FILE *fopen(char *pathname, char *mode);
 long fread(void *ptr, long size, long nmemb, FILE *stream);
 int feof(FILE *stream);
-static void assert() {}
 int strcmp(char *s1, char *s2);
 int printf(char *fmt, ...);
 int sprintf(char *buf, char *fmt, ...);
@@ -49,19 +49,19 @@ static void va_end(__va_elem *ap) {}'
     [System.IO.File]::AppendAllLines([string]".\$TMP\${file}", [string[]]$header)
     [System.IO.File]::AppendAllLines([string]".\$TMP\${file}", [string[]]$src)
 
-    $expanded = $(Get-Content .\$TMP\${file} | % { $_ -replace "\bbool\b","_Bool" } )
+    $expanded = $(Get-Content .\$TMP\${file} | % { $_ -creplace "\bbool\b","_Bool" } )
     [System.IO.File]::WriteAllLines(".\$TMP\${file}", $expanded, $Utf8NoBomEncoding)
 
-    $expanded = $(Get-Content .\$TMP\${file} | % { $_ -replace "\berrno\b","*__errno_location()" } )
+    $expanded = $(Get-Content .\$TMP\${file} | % { $_ -creplace "\berrno\b","*_errno()" } )
     [System.IO.File]::WriteAllLines(".\$TMP\${file}", $expanded, $Utf8NoBomEncoding)
 
-    $expanded = $(Get-Content .\$TMP\${file} | % { $_ -replace "\btrue\b","1" } )
+    $expanded = $(Get-Content .\$TMP\${file} | % { $_ -creplace "\btrue\b","1" } )
     [System.IO.File]::WriteAllLines(".\$TMP\${file}", $expanded, $Utf8NoBomEncoding)
 
-    $expanded = $(Get-Content .\$TMP\${file} | % { $_ -replace "\bfalse\b","0" } )
+    $expanded = $(Get-Content .\$TMP\${file} | % { $_ -creplace "\bfalse\b","0" } )
     [System.IO.File]::WriteAllLines(".\$TMP\${file}", $expanded, $Utf8NoBomEncoding)
 
-    $expanded = $(Get-Content .\$TMP\${file} | % { $_ -replace "\bNULL\b","0" } )
+    $expanded = $(Get-Content .\$TMP\${file} | % { $_ -creplace "\bNULL\b","0" } )
     [System.IO.File]::WriteAllLines(".\$TMP\${file}", $expanded, $Utf8NoBomEncoding)
 
     $expanded = $(Get-Content .\$TMP\${file} | % { $_ -replace ", \.\.\.","" } )
@@ -81,7 +81,9 @@ ls .\win\*c | % {
     cl /TC /Fo $_.FullName
 }
 
+expand main.c
 expand lib.c
+expand type.c
 
-link /OUT:$genB .\codegen.obj .\lib.obj .\main.obj .\parse.obj .\tokenize.obj .\type.obj legacy_stdio_definitions.lib
+link /OUT:$genB .\codegen.obj .\lib.obj .\main.obj .\parse.obj .\tokenize.obj .\type.obj legacy_stdio_definitions.lib /FORCE
 

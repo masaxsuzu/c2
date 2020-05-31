@@ -58,8 +58,8 @@ Node *logand();
 Node *equality();
 Node *relational();
 Node *shift();
-Node *add();
-Node *mul();
+Node *_add();
+Node *_mul();
 Node *cast();
 Node *unary();
 Node *primary();
@@ -1570,34 +1570,34 @@ Node *relational() {
 }
 
 Node *shift() {
-    Node *node = add();
+    Node *node = _add();
     Token *tok;
     for (;;) {
         if (tok = consume("<<")) {
-            node = new_binary(ND_LShift, node, add(), tok);
+            node = new_binary(ND_LShift, node, _add(), tok);
         } else if (tok = consume(">>")) {
-            node = new_binary(ND_RShift, node, add(), tok);
+            node = new_binary(ND_RShift, node, _add(), tok);
         } else {
             return node;
         }
     }
 }
 
-Node *add() {
-    Node *node = mul();
+Node *_add() {
+    Node *node = _mul();
     Token *tok;
     for (;;) {
         if (tok = consume("+")) {
-            node = new_add(node, mul(), tok);
+            node = new_add(node, _mul(), tok);
         } else if (tok = consume("-")) {
-            node = new_sub(node, mul(), tok);
+            node = new_sub(node, _mul(), tok);
         } else {
             return node;
         }
     }
 }
 
-Node *mul() {
+Node *_mul() {
     Node *node = cast();
     Token *tok;
     for (;;) {
