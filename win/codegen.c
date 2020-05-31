@@ -642,10 +642,25 @@ void reverse(Parameters ** head)
     } 
     *head = prev; 
 }
+
+bool emit_as_extern(Function *f, Program *p) {
+    bool has_body = false;
+
+    for (Function *fn = p->next; fn; fn = fn->next) {
+        if (strcmp(f->name, fn->name)) {
+            continue;            
+        }
+        if (!fn->is_extern){
+            return false;
+        }
+    }
+    return true;
+}
+
 void emit_extern(Program *p) {
     for (Function *fn = p->next; fn; fn = fn->next) {
-        if (fn->is_extern) {
-            printf("extern %s:proc\n", fn->name);
+        if (fn->is_extern && emit_as_extern(fn, p)) {
+            printf("EXTRN %s:PROC\n", fn->name);
         }
     }
     for (Parameters *global = p->globals; global; global = global->next) {

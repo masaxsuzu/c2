@@ -7,7 +7,8 @@ function expand {
     param (
         $file
     )
-    $def = '    
+    $def = ' 
+int strdup();
 typedef struct FILE FILE;
 extern FILE *stdout;
 extern FILE *stderr;
@@ -40,16 +41,42 @@ __builtin_va_start(ap);
 }
 static void va_end(__va_elem *ap) {}'
 
-    $src = Get-Content ".\win\$File";
     [System.IO.File]::WriteAllLines(".\$TMP\${file}", $def, $Utf8NoBomEncoding)
+
+    $header = $(Get-Content .\win\c2.h | ? {$_ -NotMatch "^#"})
+    $src = $(Get-Content .\win\$file | ? {$_ -NotMatch "^#"})
+
+    [System.IO.File]::AppendAllLines([string]".\$TMP\${file}", [string[]]$header)
     [System.IO.File]::AppendAllLines([string]".\$TMP\${file}", [string[]]$src)
 
+    $expanded = $(Get-Content .\$TMP\${file} | % { $_ -replace "\bbool\b","_Bool" } )
+    [System.IO.File]::WriteAllLines(".\$TMP\${file}", $expanded, $Utf8NoBomEncoding)
+
+    $expanded = $(Get-Content .\$TMP\${file} | % { $_ -replace "\berrno\b","*__errno_location()" } )
+    [System.IO.File]::WriteAllLines(".\$TMP\${file}", $expanded, $Utf8NoBomEncoding)
+
+    $expanded = $(Get-Content .\$TMP\${file} | % { $_ -replace "\btrue\b","1" } )
+    [System.IO.File]::WriteAllLines(".\$TMP\${file}", $expanded, $Utf8NoBomEncoding)
+
+    $expanded = $(Get-Content .\$TMP\${file} | % { $_ -replace "\bfalse\b","0" } )
+    [System.IO.File]::WriteAllLines(".\$TMP\${file}", $expanded, $Utf8NoBomEncoding)
+
+    $expanded = $(Get-Content .\$TMP\${file} | % { $_ -replace "\bNULL\b","0" } )
+    [System.IO.File]::WriteAllLines(".\$TMP\${file}", $expanded, $Utf8NoBomEncoding)
+
+    $expanded = $(Get-Content .\$TMP\${file} | % { $_ -replace ", \.\.\.","" } )
+    [System.IO.File]::WriteAllLines(".\$TMP\${file}", $expanded, $Utf8NoBomEncoding)
+
+    $asm = invoke-expression ".\${genA} .\$TMP\${file}"
+    $out = $file.Replace(".c", ".asm")
+    $obj = $file.Replace(".c", ".obj")
+
+    [System.IO.File]::WriteAllLines(".\${out}", $asm, $Utf8NoBomEncoding)
+    # rm $obj
+    # ml64 $out
 }
 
 mkdir -f $TMP
-cp .\win\*.c $TMP
-cp .\win\c2.h $TMP
-
 ls .\win\*c | % {
     cl /TC /Fo $_.FullName
 }
