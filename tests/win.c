@@ -74,6 +74,8 @@ void nop2() {
 
 typedef int MyInt;
 
+// static int static_fn() { return 3; }
+
 int print_board(int (*board)[10]) {
   for (int i = 0; i < 10; i++) {
     for (int j = 0; j < 10; j++)
@@ -159,17 +161,19 @@ int *g27 = g26 + 1;
 
 // extern int ext1;
 // extern int *ext2;
-// static int ext3 = 3;
+static int ext3 = 3;
 
 int;
 struct {char a; int b;};
 typedef struct {char a; int b;} Ty1;
 
-// int counter() {
-//     static int i;
-//     static int j = 1+1;
-//     return i++ + j++;
-// }
+int counter() {
+    static char i;
+    static short j = 1+1;
+    static int k;
+    static long long l;
+    return i++ + j++ + k-- + l++;
+}
 
 typedef struct Tree {
   int val;
@@ -756,9 +760,9 @@ int main() {
     assert(1, _Alignof(struct {char a; char b;}[2]), "_Alignof(struct {char a; char b;}[2])");
     assert(8, _Alignof(struct {char a; long b;}[2]), "_Alignof(struct {char a; long b;}[2])");
 
-    // assert(2, counter(), "counter()");
-    // assert(4, counter(), "counter()");
-    // assert(6, counter(), "counter()");
+    assert(2, counter(), "counter()");
+    assert(4, counter(), "counter()");
+    assert(6, counter(), "counter()");
 
     assert(8, ({ struct *foo; sizeof(foo); }), "struct *foo; sizeof(foo);");
     assert(4, ({ struct T *foo; struct T {int x;}; sizeof(struct T); }), "struct T *foo; struct T {int x;}; sizeof(struct T);");

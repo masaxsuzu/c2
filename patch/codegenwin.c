@@ -689,22 +689,39 @@ void emit_text(Program *p) {
 }
 
 void emit_data(Program *p) {
+    printf("_BSS   SEGMENT\n");
+    for (Parameters *global = p->globals; global; global = global->next) {
+        if (!global->var->is_static || global->var->initializer) {
+            continue;
+        }
+
+        // TODO for Array;
+        switch (size_of(global->var->ty))
+        {
+            case 1:
+                printf("%s DB 01H DUP (?)\n", global->var->name);
+                break; 
+            case 2:
+                printf("%s DW 01H DUP (?)\n", global->var->name);
+                break; 
+            case 4:
+                printf("%s DD 01H DUP (?)\n", global->var->name);
+                break; 
+            case 8:
+                printf("%s DQ 01H DUP (?)\n", global->var->name);
+                break; 
+            default:
+                break;
+        }
+    }
+    printf("_BSS   ENDS\n");
+
     printf("_DATA   SEGMENT\n");
     for (Parameters *global = p->globals; global; global = global->next) {
         if (!global->var->is_static && !global->var->initializer) {
             printf("COMM %s:DWORD\n", global->var->name);
         }
     }
-
-    // printf(".bss\n");
-    // for (Parameters *global = p->globals; global; global = global->next) {
-    //     if (global->var->initializer) {
-    //         continue;
-    //     }
-    //     printf(".align %d\n", global->var->ty->align);
-    //     printf("%s:\n", global->var->name);
-    //     printf("  .zero %d\n", size_of(global->var->ty));
-    // }
 
     // printf(".data\n");
     for (Parameters *global = p->globals; global; global = global->next) {
@@ -717,7 +734,7 @@ void emit_data(Program *p) {
         for (Initializer *init = global->var->initializer; init;
              init = init->next) {
             if (init->label) {
-                printf("    QWORD %s%+ld\n", init->label, init->addend);
+                printf("    DQ %s%+ld\n", init->label, init->addend);
             } else if (init->size == 1) {
                 printf("    DB  %ld\n", init->value);
             } else {
