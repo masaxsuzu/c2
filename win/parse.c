@@ -530,9 +530,9 @@ Type *basetype(StorageClass *sclass) {
             ty = short_type();
             break;
         case INT:
+        case LONG:
             ty = int_type();
             break;
-        case LONG:
         case LONG + INT:
         case LONG + LONG:
         case LONG + LONG + INT:

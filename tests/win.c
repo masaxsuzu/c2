@@ -389,7 +389,7 @@ int main() {
 
     assert( 255, ({ short x = 255; x;}), "short x = 255; x;");
     assert(2, ({ short x; sizeof(x);}), "short x; sizeof(x);");
-    assert(8, ({ long x; sizeof(x);}), "long x; sizeof(x);");
+    assert(4, ({ long x; sizeof(x);}), "long x; sizeof(x);");
     assert(2, ({ int y = 1; short x = 1; x+1;}), "int y = 1; short x = 1; x+1;");
     assert(2, ({ short x = 1;int y = 1; x+1;}), "short x = 1;int y = 1; x+1;");
     assert(2, ({ int y = 1; long x = 1; x+1;}), "int y = 1; long x = 1; x+1;");
@@ -421,7 +421,8 @@ int main() {
     assert(1, ({ sizeof(char); }), "sizeof(char);");
     assert(2, ({ sizeof(short); }), "sizeof(short);");
     assert(4, ({ sizeof(int); }), "sizeof(int);");
-    assert(8, ({ sizeof(long); }), "sizeof(long);");
+    assert(4, ({ sizeof(long); }), "sizeof(long);");
+    assert(8, ({ sizeof(long long); }), "sizeof(long long);");
 
     assert(4, ({ sizeof(struct {int a;}); }), "sizeof(struct {int a;});");
     assert(8, ({ sizeof(int (**)); }), "sizeof(int (**));");
@@ -448,7 +449,7 @@ int main() {
     assert(0, (_Bool)(char)256, "(_Bool)(char)256");
     assert(1, (long)1, "(long)1");
     assert(0, (long)&*(int *)0, "(long)&*(int *)0");
-    assert(5, ({ int x=5; long y=(long)&x; *(int*)y; }), "int x=5; long y=(long)&x; *(int*)y");
+    assert(5, ({ int x=5; long long y=(long long)&x; *(int*)y; }), "int x=5; long long y=(long long)&x; *(int*)y");
 
     assert(97, 'a', "'a'");
     assert(10, '\n', "\'\\n\'");
@@ -753,12 +754,12 @@ int main() {
     assert(1, _Alignof(char), "_Alignof(char)");
     assert(2, _Alignof(short), "_Alignof(short)");
     assert(4, _Alignof(int), "_Alignof(int)");
-    assert(8, _Alignof(long), "_Alignof(long)");
+    assert(4, _Alignof(long), "_Alignof(long)");
     assert(8, _Alignof(long long), "_Alignof(long long)");
     assert(1, _Alignof(char[3]), "_Alignof(char[3])");
     assert(4, _Alignof(int[3]), "_Alignof(int[3])");
     assert(1, _Alignof(struct {char a; char b;}[2]), "_Alignof(struct {char a; char b;}[2])");
-    assert(8, _Alignof(struct {char a; long b;}[2]), "_Alignof(struct {char a; long b;}[2])");
+    assert(8, _Alignof(struct {char a; long long b;}[2]), "_Alignof(struct {char a; long long b;}[2])");
 
     assert(2, counter(), "counter()");
     assert(4, counter(), "counter()");
