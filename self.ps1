@@ -8,6 +8,12 @@ function expand {
         $file
     )
     $def = ' 
+int exit();
+int fprintf();
+int vprintf();
+int vfprintf();
+int ispunct();
+int isdigit();
 int memcmp();
 int strdup();
 typedef struct FILE FILE;
@@ -84,6 +90,7 @@ ls .\win\*c | % {
 expand main.c
 expand lib.c
 expand type.c
+expand tokenize.c
 
 link /OUT:$genB .\codegen.obj .\lib.obj .\main.obj .\parse.obj .\tokenize.obj .\type.obj legacy_stdio_definitions.lib /FORCE
 

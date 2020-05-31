@@ -657,6 +657,20 @@ bool emit_as_extern(Function *f, Program *p) {
     return true;
 }
 
+bool emit_var_as_extern(Parameters *param, Parameters *p) {
+    bool has_body = false;
+
+    for (Parameters *pr = p->next; pr; pr = pr->next) {
+        if (strcmp(param->var->name, pr->var->name)) {
+            continue;            
+        }
+        if(!pr->var->is_extern){
+            return false;
+        }
+    }
+    return true;
+}
+
 void emit_extern(Program *p) {
     for (Function *fn = p->next; fn; fn = fn->next) {
         if (fn->is_extern && emit_as_extern(fn, p)) {
@@ -669,8 +683,13 @@ void emit_extern(Program *p) {
         }
     }
     for (Parameters *global = p->globals; global; global = global->next) {
-        if (global->var->is_extern) {
-            printf("EXTERN %s:DWORD\n", global->var->name);
+        if (global->var->is_extern && emit_var_as_extern(global, p->globals)) {
+           printf("EXTERN %s:DWORD\n", global->var->name);
+           continue;
+        }
+        if (!global->var->is_static && !global->var->initializer) {
+            printf("COMM %s:DWORD\n", global->var->name);
+            continue;
         }
     }
 }
@@ -751,14 +770,6 @@ void emit_data(Program *p) {
     printf("_BSS   ENDS\n");
 
     printf("_DATA   SEGMENT\n");
-    for (Parameters *global = p->globals; global; global = global->next) {
-        if (global->var->is_extern) {
-            continue;
-        }
-        if (!global->var->is_static && !global->var->initializer) {
-            printf("COMM %s:DWORD\n", global->var->name);
-        }
-    }
 
     // printf(".data\n");
     for (Parameters *global = p->globals; global; global = global->next) {
