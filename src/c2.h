@@ -252,8 +252,6 @@ void codegen(Program *prog);
 //
 void error(char *fmt, ...);
 void error_at(char *loc, char *fmt, ...);
-void debug_token(char *label, Token *token);
-void debug_node(char *label, Node *node);
 
 extern Token *token;
 extern char *user_input;

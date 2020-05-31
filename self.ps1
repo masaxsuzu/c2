@@ -10,11 +10,11 @@ function expand {
     $def = ' 
 int strdup();
 typedef struct FILE FILE;
-extern FILE *stdout;
-extern FILE *stderr;
+FILE *stdout;
+FILE *stderr;
 void *malloc(long size);
 void *calloc(long nmemb, long size);
-int *__errno_location();
+// int *__errno_location();
 char *strerror(int errnum);
 FILE *fopen(char *pathname, char *mode);
 long fread(void *ptr, long size, long nmemb, FILE *stream);
@@ -72,8 +72,8 @@ static void va_end(__va_elem *ap) {}'
     $obj = $file.Replace(".c", ".obj")
 
     [System.IO.File]::WriteAllLines(".\${out}", $asm, $Utf8NoBomEncoding)
-    # rm $obj
-    # ml64 $out
+    rm $obj
+    ml64 $out
 }
 
 mkdir -f $TMP
@@ -81,5 +81,7 @@ ls .\win\*c | % {
     cl /TC /Fo $_.FullName
 }
 
-link /OUT:$genB .\codegen.obj .\lib.obj .\main.obj .\parse.obj .\tokenize.obj .\type.obj
+expand lib.c
+
+link /OUT:$genB .\codegen.obj .\lib.obj .\main.obj .\parse.obj .\tokenize.obj .\type.obj legacy_stdio_definitions.lib
 

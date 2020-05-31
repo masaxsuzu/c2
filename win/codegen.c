@@ -204,13 +204,13 @@ void truncate(Type *ty) {
     printf("  push rax\n");
 }
 
-static void inc(Type *ty) {
+static void _inc(Type *ty) {
     printf("  pop rax\n");
     printf("  add rax, %d\n", ty->base ? size_of(ty->base) : 1);
     printf("  push rax\n");
 }
 
-static void dec(Type *ty) {
+static void _dec(Type *ty) {
     printf("  pop rax\n");
     printf("  sub rax, %d\n", ty->base ? size_of(ty->base) : 1);
     printf("  push rax\n");
@@ -433,15 +433,15 @@ void gen(Node *node) {
         }
         return;
     case ND_FuncCall: {
-    //     if (!strcmp(node->funcName, "__builtin_va_start")) {
-    //         printf("  pop rax\n");
-    //         printf("  mov edi, dword ptr [rbp-8]\n");
-    //         printf("  mov dword ptr [rax], 0\n");
-    //         printf("  mov dword ptr [rax+4], 0\n");
-    //         printf("  mov qword ptr [rax+8], rdi\n");
-    //         printf("  mov qword ptr [rax+16], 0\n");
-    //         return;
-    //     }
+        if (!strcmp(node->funcName, "__builtin_va_start")) {
+            printf("  pop rax\n");
+            printf("  mov edi, dword ptr [rbp-8]\n");
+            printf("  mov dword ptr [rax], 0\n");
+            printf("  mov dword ptr [rax+4], 0\n");
+            printf("  mov qword ptr [rax+8], rdi\n");
+            printf("  mov qword ptr [rax+16], 0\n");
+            return;
+        }
 
         int id = labelId++;
         int n = 0;
@@ -489,31 +489,31 @@ void gen(Node *node) {
         gen_lVal(node->left);
         printf("  push [rsp]\n");
         load(node->ty);
-        inc(node->ty);
+        _inc(node->ty);
         store(node->ty);
         return;
     case ND_Pre_Dec:
         gen_lVal(node->left);
         printf("  push [rsp]\n");
         load(node->ty);
-        dec(node->ty);
+        _dec(node->ty);
         store(node->ty);
         return;
     case ND_Post_Inc:
         gen_lVal(node->left);
         printf("  push [rsp]\n");
         load(node->ty);
-        inc(node->ty);
+        _inc(node->ty);
         store(node->ty);
-        dec(node->ty);
+        _dec(node->ty);
         return;
     case ND_Post_Dec:
         gen_lVal(node->left);
         printf("  push [rsp]\n");
         load(node->ty);
-        dec(node->ty);
+        _dec(node->ty);
         store(node->ty);
-        inc(node->ty);
+        _inc(node->ty);
         return;
     case ND_Not:
         gen(node->left);
