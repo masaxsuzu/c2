@@ -418,9 +418,9 @@ void gen(Node *node) {
         return;
     }
     case ND_Var:
-    //     if (node->init) {
-    //         gen(node->init);
-    //     }
+        if (node->init) {
+            gen(node->init);
+        }
         gen_addr(node);
         if (node->ty->kind != TY_Array) {
             load(node->ty);
@@ -520,7 +520,7 @@ void gen(Node *node) {
         printf("  pop rax\n");
         printf("  cmp rax, 0\n");
         printf("  sete al\n");
-        // printf("  movzb rax, al\n");
+        printf("  movsx rax, al\n");
         printf("  push rax\n");
         return;
     case ND_BitNot:
