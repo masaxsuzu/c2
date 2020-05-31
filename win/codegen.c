@@ -474,9 +474,9 @@ void gen(Node *node) {
         printf("$LNend%d:\n", id);
 
         printf("  add rsp, 32\n");
-        // if (node->ty->kind == TY_Bool) {
-        //     printf("  movzb rax, al\n");
-        // }
+        if (node->ty->kind == TY_Bool) {
+            printf("  movsx rax, al\n");
+        }
         printf("  push rax\n");
         return;
     }
@@ -704,8 +704,16 @@ void emit_text(Program *p) {
 }
 
 void emit_data(Program *p) {
+    for (Parameters *global = p->globals; global; global = global->next) {
+        if (global->var->is_extern) {
+            printf("EXTERN %s:DWORD\n", global->var->name);
+        }
+    }
     printf("_BSS   SEGMENT\n");
     for (Parameters *global = p->globals; global; global = global->next) {
+        if (global->var->is_extern) {
+            continue;
+        }
         if (!global->var->is_static || global->var->initializer) {
             continue;
         }
@@ -718,6 +726,9 @@ void emit_data(Program *p) {
 
     printf("_DATA   SEGMENT\n");
     for (Parameters *global = p->globals; global; global = global->next) {
+        if (global->var->is_extern) {
+            continue;
+        }
         if (!global->var->is_static && !global->var->initializer) {
             printf("COMM %s:DWORD\n", global->var->name);
         }

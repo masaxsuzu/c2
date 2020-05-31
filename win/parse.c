@@ -883,7 +883,7 @@ void *global_variable() {
         return NULL;
     }
 
-    Variable *var = new_gvar(name, ty, sclass == Static, sclass != Extern);
+    Variable *var = new_gvar(name, ty, sclass == Static, true);
 
     if (sclass == Extern) {
         var->is_extern = true;

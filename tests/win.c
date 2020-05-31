@@ -159,8 +159,8 @@ int *g25=&g24;
 int g26[3] = {1, 2, 3};
 int *g27 = g26 + 1;
 
-// extern int ext1;
-// extern int *ext2;
+extern int ext1;
+extern int *ext2;
 static int ext3 = 3;
 
 int;
@@ -742,11 +742,11 @@ int main() {
     assert(3, *g25, "*g25");
     assert(2, *g27, "*g27");
     
-    // ext1 = 5;
-    // assert(5, ext1, "ext1");
+    ext1 = 5;
+    assert(5, ext1, "ext1");
 
-    // ext2 = &ext1;
-    // assert(5, *ext2, "*ext2");
+    ext2 = &ext1;
+    assert(5, *ext2, "*ext2");
 
     ;
 
@@ -778,10 +778,10 @@ int main() {
     assert(3, tree->lhs->lhs->val, "tree->lhs->lhs->val");
     assert(4, tree->lhs->rhs->val, "tree->lhs->rhs->val");
 
-    // assert(3, ext3, "ext3");
+    assert(3, ext3, "ext3");
 
-    // assert(1, true_fn(), "true_fn()");
-    // assert(0, false_fn(), "false_fn()");
+    assert(1, true_fn(), "true_fn()");
+    assert(0, false_fn(), "false_fn()");
 
     assert(5, sub_from_last(1,2,3,11), "sub_from_last(1,2,3,11)");
 
