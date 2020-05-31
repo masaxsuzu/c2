@@ -25,4 +25,8 @@ jobs:
     - name: build-gen1
       run: powershell .\build-win.ps1
     - name: test-gen1
-      run: powershell .\test-win.ps1
+      run: powershell .\test-win.ps1 .\c2-gen1-win.exe
+    - name: build-gen2
+      run: powershell .\self.ps1 c2-gen1-win.exe c2-gen2-win.exe
+    - name: test-gen2
+      run: powershell .\test-win.ps1 .\c2-gen2-win.exe

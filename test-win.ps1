@@ -1,3 +1,5 @@
+$c2 = $args[0]
+
 function Assert {
     param (
         $want,
@@ -11,7 +13,8 @@ extern printf:proc
 extern exit:proc
 extern strcmp:proc
 extern memcmp:proc'
-    $asm = $(.\c2-gen1-win.exe $src)
+
+    $asm = invoke-expression "$c2 $src"
     [System.IO.File]::WriteAllLines(".\win.asm", $externs, $Utf8NoBomEncoding)
     [System.IO.File]::AppendAllLines([string]".\win.asm", [string[]]$asm)
     ml64 .\win.asm
