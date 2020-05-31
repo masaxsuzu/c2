@@ -781,11 +781,11 @@ int main() {
     assert(1, true_fn(), "true_fn()");
     assert(0, false_fn(), "false_fn()");
 
-    assert(9, add_all1(2,3,4), "add_all1(2,3,4)");
-    assert(6, add_all1(1,2,3,0), "add_all1(1,2,3,0)");
+    assert(7, add_all1(1,3,4), "add_all1(1,3,4)");
+    assert(5, add_all1(2,2,3,0), "add_all1(2,2,3,0)");
 
-    assert(6, add_all3(1,2,3,0), "add_all3(1,2,3,0)");
-    assert(5, add_all3(1,2,3,-1,0), "add_all3(1,2,3,-1,0)");
+    assert(16, add_all3(1,2,3,11), "add_all3(2,2,3,11)");
+    assert(4, add_all3(2,2,3,-1,0), "add_all3(1,2,3,-1,0)");
     
     assert(1, One, "One");
     assert(3, One + Two, "One + Two");

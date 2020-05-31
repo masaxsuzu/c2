@@ -194,8 +194,8 @@ _Bool true_fn();
 _Bool false_fn();
 int sub_from_last(int x, int y, int z, int w);
 
-int add_all1(int x, ...);
-int add_all3(int z, int b, int c, ...);
+int add_all1(int n, int x, ...);
+int add_all3(int n, int x, int y, ...);
 
 typedef enum {
   One = 1,
@@ -785,11 +785,11 @@ int main() {
 
     assert(5, sub_from_last(1,2,3,11), "sub_from_last(1,2,3,11)");
 
-    // assert(9, add_all1(2,3,4), "add_all1(2,3,4)");
-    // assert(6, add_all1(1,2,3,0), "add_all1(1,2,3,0)");
+    assert(7, add_all1(1,3,4), "add_all1(1,3,4)");
+    assert(5, add_all1(2,2,3,0), "add_all1(2,2,3,0)");
 
-    // assert(6, add_all3(1,2,3,0), "add_all3(1,2,3,0)");
-    // assert(5, add_all3(1,2,3,-1,0), "add_all3(1,2,3,-1,0)");
+    assert(16, add_all3(1,2,3,11), "add_all3(1,2,3,11)");
+    // assert(4, add_all3(2,2,3,-1,0), "add_all3(1,2,3,-1,0)");
     
     assert(1, One, "One");
     assert(3, One + Two, "One + Two");

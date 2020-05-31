@@ -14,27 +14,29 @@ int sub_from_last(int x, int y, int z, int w) {
   return w- z - y - x;
 }
 
-int add_all1(int x, ...) {
+int add_all1(int n, int x, ...) {
   va_list ap;
   va_start(ap, x);
-
-  for (;;) {
+  printf("x = %d\n",x);
+  for( int i = 0; i < n; ++i ) {
     int y = va_arg(ap, int);
-    if (y == 0)
-      return x;
+    printf("y = %d\n",y);
     x += y;
   }
+  return x;
 }
 
-int add_all3(int x, int y, int z, ...) {
+int add_all3(int n, int x, int y, ...) {
   va_list ap;
-  va_start(ap, z);
-  x = x + y + z;
+  va_start(ap, y);
+  printf("x = %d\n",x);
+  printf("y = %d\n",y);
+  x = x + y;
 
-  for (;;) {
-    int y = va_arg(ap, int);
-    if (y == 0)
-      return x;
-    x += y;
+  for( int i = 0; i < n; ++i ) {
+    int z = va_arg(ap, int);
+    printf("z = %d\n",z);
+    x += z;
   }
+  return x;
 }
