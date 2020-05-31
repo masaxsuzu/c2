@@ -99,22 +99,22 @@ void gen_binary(Node *node) {
     case ND_Eq:
         printf("  cmp rax, rdi\n");
         printf("  sete al\n");
-        // printf("  movzb rax, al\n");
+        printf("  movsx rax, al\n");
         break;
     case ND_Ne:
         printf("  cmp rax, rdi\n");
         printf("  setne al\n");
-        //printf("  movzb rax, al\n");
+        printf("  movsx rax, al\n");
         break;
     case ND_Lt:
         printf("  cmp rax, rdi\n");
         printf("  setl al\n");
-    //     printf("  movzb rax, al\n");
+        printf("  movsx rax, al\n");
         break;
     case ND_Le:
         printf("  cmp rax, rdi\n");
         printf("  setle al\n");
-    //     printf("  movzb rax, al\n");
+        printf("  movsx rax, al\n");
         break;
     case ND_BitAnd:
     case ND_BitAnd_Eq:
@@ -170,7 +170,7 @@ void store(Type *ty) {
     if (ty->kind == TY_Bool) {
         printf("  cmp rdi, 0\n");
         printf("  setne dil\n");
-        // printf("  movzb rdi, dil\n");
+        printf("  movsx rdi, dil\n");
     }
 
     if (size_of(ty) == 1) {

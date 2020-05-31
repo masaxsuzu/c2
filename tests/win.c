@@ -508,7 +508,7 @@ int main() {
     assert(3, ({ int i=6; i/=2; i; }), "int i=6; i/=2; i;");
     assert(3, ({ int i=6; i/=2; }), "int i=6; i/=2;");
 
-    // assert(-1, ~0, "~0");
+    assert(-1, ~0, "~0");
     assert(0, ~-1, "~-1");
 
     assert(0, 0&&1, "0&&1");
@@ -575,15 +575,15 @@ int main() {
     assert(8, 1<<3, "1<<3");
     assert(10, 5<<1, "5<<1");
     assert(2, 5>>1, "5>>1");
-    // assert(-1, -1>>1, "-1>>1");
+    assert(-1, -1>>1, "-1>>1");
 
     assert(1, ({ int i=1; i<<=0; i; }), "int i=1; i<<0;");
     assert(8, ({ int i=1; i<<=3; i; }), "int i=1; i<<3;");
     assert(10, ({ int i=5; i<<=1; i; }), "int i=5; i<<1;");
     assert(2, ({ int i=5; i>>=1; i; }), "int i=5; i>>1;");
-    // assert(-1, -1, "-1");
-    // assert(-1, ({ int i=-1; i; }), "int i=-1; i;");
-    // assert(-1, ({ int i=-1; i>>=1; i; }), "int i=1; i>>1;");
+    assert(-1, -1, "-1");
+    assert(-1, ({ int i=-1; i; }), "int i=-1; i;");
+    assert(-1, ({ int i=-1; i>>=1; i; }), "int i=1; i>>1;");
 
     assert(100, ({ 1?100:200; }), "1?100:200;");
     assert(200, ({ 0?100:200; }), "0?100:200;");
