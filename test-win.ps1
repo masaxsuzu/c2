@@ -4,11 +4,16 @@ function Assert {
         $src
     )
 
-    cmd /c "echo extern printf:proc > .\win.asm"
-    cmd /c "echo extern exit:proc >> .\win.asm"
-    cmd /c "echo extern strcmp:proc >> .\win.asm"
-    cmd /c "echo extern memcmp:proc >> .\win.asm"
-    cmd /c ".\c2-gen1-win.exe $src >> .\win.asm"
+    $Utf8NoBomEncoding = New-Object System.Text.UTF8Encoding $False
+
+    $externs = '
+extern printf:proc
+extern exit:proc
+extern strcmp:proc
+extern memcmp:proc'
+    $asm = $(.\c2-gen1-win.exe $src)
+    [System.IO.File]::WriteAllLines(".\win.asm", $externs, $Utf8NoBomEncoding)
+    [System.IO.File]::AppendAllLines([string]".\win.asm", [string[]]$asm)
     ml64 .\win.asm
     cl /TC /Fa /Fo .\tests\extern.c
     link /OUT:.\tmp.exe .\win.obj .\extern.obj
