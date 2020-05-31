@@ -45,9 +45,9 @@ void *global_variable();
 Node *stmt();
 Node *stmt2();
 Node *expr();
-long eval(Node *node);
-long eval2(Node *node, Variable **var);
-long constexpr();
+long long eval(Node *node);
+long long eval2(Node *node, Variable **var);
+long long constexpr();
 Node *assign();
 Node *conditional();
 Node *bitand();
@@ -214,7 +214,7 @@ Node *new_sub(Node *left, Node *right, Token *tok) {
              right->ty->kind);
 }
 
-Node *new_number_node(long number, Token *tok) {
+Node *new_number_node(long long number, Token *tok) {
     Node *node = new_node(ND_Num, tok);
     node->value = number;
     return node;
@@ -744,7 +744,7 @@ Initializer *new_init_value(Initializer *cur, int size, int value) {
     return init;
 }
 
-Initializer *new_init_label(Initializer *cur, char *label, long addend) {
+Initializer *new_init_label(Initializer *cur, char *label,long long addend) {
     Initializer *init = calloc(1, sizeof(Initializer));
     init->label = label;
     init->addend = addend;
@@ -850,7 +850,7 @@ Initializer *init_global_variable2(Initializer *cur, Type *ty) {
     }
 
     Variable *var = NULL;
-    long addend = eval2(expr, &var);
+    long long addend = eval2(expr, &var);
     if (var) {
         int scale = (var->ty->kind == TY_Array) ? size_of(var->ty->base)
                                                 : size_of(var->ty);
@@ -1295,7 +1295,7 @@ Node *stmt2() {
             error_at(tok->str, "stray case");
         }
 
-        long val = constexpr();
+        long long val = constexpr();
         expect(":");
 
         Node *node = new_unary(ND_Case, stmt(), tok);
@@ -1357,7 +1357,7 @@ Node *expr() {
     return node;
 }
 
-long eval2(Node *node, Variable **var) {
+long long eval2(Node *node, Variable **var) {
 
     switch (node->kind) {
     case ND_Num:
@@ -1422,9 +1422,9 @@ long eval2(Node *node, Variable **var) {
     }
 }
 
-long eval(Node *node) { return eval2(node, NULL); }
+long long eval(Node *node) { return eval2(node, NULL); }
 
-long constexpr() { return eval(conditional()); }
+long long constexpr() { return eval(conditional()); }
 
 Node *assign() {
     Node *node = conditional();

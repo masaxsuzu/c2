@@ -96,11 +96,11 @@ void expect(char *op) {
 
 // If next token is a number, advance 1 token.
 // Then return the number. Otherwise report an error.
-long expect_number() {
+long long expect_number() {
     if (token->kind != TK_Number) {
         error_at(token->str, "Not a number");
     }
-    long number = token->value;
+    long long number = token->value;
     token = token->next;
     return number;
 }
