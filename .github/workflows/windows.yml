@@ -30,3 +30,7 @@ jobs:
       run: powershell .\self.ps1 c2-gen1-win.exe c2-gen2-win.exe
     - name: test-gen2
       run: powershell .\test-win.ps1 .\c2-gen2-win.exe
+    - name: build-gen3
+      run: powershell .\self.ps1 c2-gen2-win.exe c2-gen3-win.exe
+    - name: test-gen3
+      run: powershell .\test-win.ps1 .\c2-gen3-win.exe

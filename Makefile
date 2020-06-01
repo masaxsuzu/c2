@@ -33,17 +33,25 @@ extern.o: tests/extern.c
 	gcc -xc -c -o extern.o tests/extern.c
 $(OBJS): ./src/c2.h
 
+test-win: test-gen1-win test-gen2-win test-gen3-win
+
 test-gen1-win: c2-gen1-win.exe
 	powershell .\test-win.ps1 .\c2-gen1-win.exe
 
 test-gen2-win: c2-gen2-win.exe
 	powershell .\test-win.ps1 .\c2-gen2-win.exe
 
+test-gen3-win: c2-gen3-win.exe
+	powershell .\test-win.ps1 .\c2-gen3-win.exe
+
 c2-gen1-win.exe:
 	powershell .\build-win.ps1
 
 c2-gen2-win.exe:
 	powershell .\self.ps1 c2-gen1-win.exe c2-gen2-win.exe
+
+c2-gen3-win.exe:
+	powershell .\self.ps1 c2-gen2-win.exe c2-gen3-win.exe
 
 win\extern.obj: tests\extern.c
 	gcc -xc -c -o .\win\extern.obj tests\extern.c
