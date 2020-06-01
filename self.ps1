@@ -93,7 +93,7 @@ rm tokenize.*
 rm codegen.*
 rm parse.*
 
-// As of now, I need this dummy object.
+# As of now, I need this dummy object.
 cl /TC /Fo /Fa .\win\msvc.c 
 
 expand main.c
