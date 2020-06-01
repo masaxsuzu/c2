@@ -4,4 +4,4 @@ ls .\win\*.c | % {
     cl .\win\$src /Fo $obj
 }
 
-link /OUT:c2-gen1-win.exe .\codegen.obj .\lib.obj .\main.obj .\parse.obj .\tokenize.obj .\type.obj
+link /OUT:c2-gen1-win.exe .\codegen.obj .\lib.obj .\main.obj .\parse.obj .\tokenize.obj .\type.obj .\msvc.obj

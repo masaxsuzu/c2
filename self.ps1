@@ -78,28 +78,30 @@ static void va_end(__va_elem *ap) {}'
     $obj = $file.Replace(".c", ".obj")
 
     [System.IO.File]::WriteAllLines(".\${out}", $asm, $Utf8NoBomEncoding)
-    ml64 $out
+    ml64 $out /c
 }
 
 rm *.asm
 rm *.obj
 
 mkdir -f $TMP
-ls .\win\*c | % {
-    cl /TC /Fo $_.FullName
-}
 
 rm main.*
 rm lib.*
 rm type.*
 rm tokenize.*
 rm codegen.*
+rm parse.*
+
+// As of now, I need this dummy object.
+cl /TC /Fo /Fa .\win\msvc.c 
 
 expand main.c
 expand lib.c
 expand type.c
 expand tokenize.c
 expand codegen.c
+expand parse.c
 
-link /OUT:$genB .\codegen.obj .\lib.obj .\main.obj .\parse.obj .\tokenize.obj .\type.obj legacy_stdio_definitions.lib /FORCE
+link /OUT:$genB .\codegen.obj .\lib.obj .\main.obj .\parse.obj .\tokenize.obj .\type.obj .\msvc.obj legacy_stdio_definitions.lib /FORCE
 
