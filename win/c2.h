@@ -25,7 +25,7 @@ typedef struct Token Token;
 struct Token {
     TokenKind kind;
     Token *next;
-    long value; // only for number
+    long long value; // only for number
     char *str;
     int len;
     char *contents;
@@ -77,9 +77,9 @@ struct Initializer
 {
     Initializer *next;
     int size;
-    long value;
+    long long value;
     char *label;
-    long addend;
+    long long addend;
 };
 
 typedef enum {
@@ -161,7 +161,7 @@ struct Node {
     int case_label;
     int case_end_label;
     
-    long value;          // only for number
+    long long value;          // only for number
     Variable *var;
     Node *cond;         // if
     Node *then;         // if

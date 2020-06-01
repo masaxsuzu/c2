@@ -30,7 +30,7 @@ Parameters *locals;
 Parameters *globals;
 VarScope *varscope;
 TagScope *tagscope;
-static int scope_depth;
+int scope_depth;
 
 Node *current_switch;
 
