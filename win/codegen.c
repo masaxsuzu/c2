@@ -700,8 +700,12 @@ void emit_text(Program *p) {
         }
         printf("_TEXT	SEGMENT\n");
 
-        printf("%s	PROC\n", fn->name);
-
+        if(fn->is_static) {
+        printf("%s	PROC PRIVATE\n", fn->name);
+        }
+        else {
+            printf("%s	PROC\n", fn->name);
+        }
         functionName = fn->name;
 
         // Prologue

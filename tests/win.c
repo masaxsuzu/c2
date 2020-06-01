@@ -73,7 +73,7 @@ void nop2() {
 
 typedef int MyInt;
 
-// static int static_fn() { return 3; }
+static int static_fn() { return 3; }
 
 int print_board(int (*board)[10]) {
   for (int i = 0; i < 10; i++) {
@@ -466,7 +466,7 @@ int main() {
     assert(4, ({ enum { zero, one, two } x; sizeof(x); }), "enum { zero, one, two } x; sizeof(x);");
     assert(4, ({ enum t { zero, one, two }; enum t y; sizeof(y); }), "enum t { zero, one, two }; enum t y; sizeof(y);");
     
-    //assert(3, ({ static_fn(); }), "static_fn();");
+    assert(3, ({ static_fn(); }), "static_fn();");
 
     assert(4, ({ int i = 0; for(int j = 0; j < 5; j = j + 1) i = j; i; }), "int i = 0; for(int j = 0; j < 5; j = j + 1) i = j; i;");
     assert(10, ({ int i = 10; for(int i = 0; i < 5; i = i + 1) i = 4; i; }), "int i = 10; for(int i = 0; i < 5; i = i + 1) i = 4; i;");
