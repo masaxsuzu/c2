@@ -103,5 +103,5 @@ expand tokenize.c
 expand codegen.c
 expand parse.c
 
-link /OUT:$genB .\codegen.obj .\lib.obj .\main.obj .\parse.obj .\tokenize.obj .\type.obj .\msvc.obj legacy_stdio_definitions.lib /FORCE
+link /OUT:$genB .\codegen.obj .\lib.obj .\main.obj .\parse.obj .\tokenize.obj .\type.obj .\msvc.obj legacy_stdio_definitions.lib
 
