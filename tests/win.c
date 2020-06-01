@@ -471,13 +471,13 @@ int main() {
     assert(4, ({ int i = 0; for(int j = 0; j < 5; j = j + 1) i = j; i; }), "int i = 0; for(int j = 0; j < 5; j = j + 1) i = j; i;");
     assert(10, ({ int i = 10; for(int i = 0; i < 5; i = i + 1) i = 4; i; }), "int i = 10; for(int i = 0; i < 5; i = i + 1) i = 4; i;");
 
-    assert(0, ({
+     assert(0, ({
       int board[100]; 
       for (int i = 0; i < 100; i=i+1) 
         board[i] = 0; 
-      solve(board, 0); 
-      0;
-    }), "nqueen");
+        solve(board, 0); 
+        0;
+      }), "nqueen");
 
     assert(3, (1,2,3), "1,2,3");
 

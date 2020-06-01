@@ -29,6 +29,8 @@ extern memcmp:proc'
     Write-Output("${src} => ${got}")
 }
 
+rm .\win.*
+rm .\tmp.exe
 # Tests in c
 # Assert 1 .\tests\debug.c
 
