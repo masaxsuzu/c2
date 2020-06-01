@@ -36,7 +36,7 @@ Token *consume(char *op);
 Token *consume_identifier(void);
 Token *peek(char *op);
 void expect(char *op);
-long expect_number(void);
+long long expect_number(void);
 char *expect_identifier(void);
 bool at_eof(void);
 Token *tokenize(void);
