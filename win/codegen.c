@@ -688,7 +688,21 @@ void emit_extern(Program *p) {
            continue;
         }
         if (!global->var->is_static && !global->var->initializer) {
-            printf("COMM %s:DWORD\n", global->var->name);
+            switch (global->var->ty->align)
+            {
+            case 1:
+                printf("COMM %s:BYTE\n", global->var->name);
+                break;            
+            case 2:
+                printf("COMM %s:WORD\n", global->var->name);
+                break;            
+            case 4:
+                printf("COMM %s:DWORD\n", global->var->name);
+                break;
+            default:
+                printf("COMM %s:QWORD\n", global->var->name);
+                break;
+            }
             continue;
         }
     }

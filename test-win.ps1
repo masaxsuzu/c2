@@ -30,6 +30,7 @@ extern memcmp:proc'
 }
 
 rm .\win.*
+rm .\extern.*
 rm .\tmp.exe
 # Tests in c
 # Assert 1 .\tests\debug.c

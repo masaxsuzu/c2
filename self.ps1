@@ -99,10 +99,6 @@ expand type.c
 expand tokenize.c
 expand codegen.c
 expand parse.c
-expand msvc.c
 
-# As of now, I need this dummy object.
-cl /TC /Fo /Fa .\$tmp\msvc.c 
-
-link /OUT:$genB .\codegen.obj .\lib.obj .\main.obj .\parse.obj .\tokenize.obj .\type.obj .\msvc.obj legacy_stdio_definitions.lib
+link /OUT:$genB .\codegen.obj .\lib.obj .\main.obj .\parse.obj .\tokenize.obj .\type.obj  legacy_stdio_definitions.lib
 
