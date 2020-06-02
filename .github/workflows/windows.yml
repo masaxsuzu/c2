@@ -34,3 +34,5 @@ jobs:
       run: powershell .\self.ps1 c2-gen2-win.exe c2-gen3-win.exe
     - name: test-gen3
       run: powershell .\test-win.ps1 .\c2-gen3-win.exe
+    - name: test-genN
+      run: powershell .\compare.ps1
