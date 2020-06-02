@@ -1,7 +1,1 @@
-ls .\win\*.c | % {
-    $src = $_.Name
-    $obj = $src.Replace(".c", ".obj")
-    cl .\win\$src /Fo $obj
-}
-
-link /OUT:c2-gen1-win.exe .\codegen.obj .\lib.obj .\main.obj .\parse.obj .\tokenize.obj .\type.obj .\msvc.obj
+cl /Fe:c2-gen1-win.exe .\win\codegen.c .\win\lib.c .\win\main.c .\win\parse.c .\win\tokenize.c .\win\type.c

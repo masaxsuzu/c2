@@ -340,7 +340,7 @@ void gen(Node *node) {
         for (Node *n = node->case_next; n; n = n->case_next) {
             n->case_label = labelId++;
             n->case_end_label = id;
-            printf("  cmp rax, %ld\n", n->value);
+            printf("  cmp rax, %lld\n", n->value);
             printf("  je $LNcase%d\n", n->case_label);
         }
 
@@ -382,10 +382,10 @@ void gen(Node *node) {
         */
         if (node->value == (int)node->value) {
             printf("; --- push node value --- \n");
-            printf("  push %ld\n", node->value);
+            printf("  push %lld\n", node->value);
             printf("; --- push node value --- \n");
         } else {
-            printf("  mov rax, %ld\n", node->value);
+            printf("  mov rax, %lld\n", node->value);
             printf("  push rax\n");
         }
         return;
@@ -801,10 +801,10 @@ void emit_data(Program *p) {
              init = init->next) {
             char *label = getAllocationDirectiveBy(init->size);
             if (init->label) {
-                printf("    DQ %s%+ld\n", init->label, init->addend);
+                printf("    DQ %s%+lld\n", init->label, init->addend);
             }
             else {
-                printf("    %s  %ld\n", label, init->value);
+                printf("    %s  %lld\n", label, init->value);
             } 
         }
     }

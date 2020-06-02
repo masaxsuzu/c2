@@ -327,7 +327,7 @@ void gen(Node *node) {
         for (Node *n = node->case_next; n; n = n->case_next) {
             n->case_label = labelId++;
             n->case_end_label = id;
-            printf("  cmp rax, %ld\n", n->value);
+            printf("  cmp rax, %lld\n", n->value);
             printf("  je .L.case.%d\n", n->case_label);
         }
 
@@ -368,9 +368,9 @@ void gen(Node *node) {
             https://stackoverflow.com/questions/16917643/how-to-push-a-64bit-int-in-nasm
         */
         if (node->value == (int)node->value) {
-            printf("  push %ld\n", node->value);
+            printf("  push %lld\n", node->value);
         } else {
-            printf("  mov rax, %ld\n", node->value);
+            printf("  mov rax, %lld\n", node->value);
             printf("  push rax\n");
         }
         return;
@@ -663,9 +663,9 @@ void emit_data(Program *p) {
             if (init->label) {
                 printf("  .quad %s%+ld\n", init->label, init->addend);
             } else if (init->size == 1) {
-                printf("  .byte %ld\n", init->value);
+                printf("  .byte %lld\n", init->value);
             } else {
-                printf("  .%dbyte %ld\n", init->size, init->value);
+                printf("  .%dbyte %lld\n", init->size, init->value);
             }
         }
     }
