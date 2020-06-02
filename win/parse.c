@@ -1,5 +1,45 @@
 #include "c2.h"
 
+// Scope for struct tags
+typedef struct TagScope TagScope;
+struct TagScope {
+    TagScope *next;
+    char *name;
+    int depth;
+    Type *ty;
+};
+
+// Scope for local variables, global variables or typedefs
+typedef struct VarScope VarScope;
+struct VarScope {
+    VarScope *next;
+    char *name;
+    int depth;
+    Variable *var;
+    Type *type_def;
+    Type *enum_ty;
+    int enum_val;
+};
+
+typedef struct Scope {
+    VarScope *varscope;
+    TagScope *tagscope;
+} Scope;
+
+Parameters *locals;
+Parameters *globals;
+VarScope *varscope;
+TagScope *tagscope;
+int scope_depth;
+
+Node *current_switch;
+
+typedef enum {
+    TypeDef = 1 << 0,
+    Static = 1 << 1,
+    Extern = 1 << 2,
+} StorageClass;
+
 Function *function();
 void *global_variable();
 Node *stmt();
@@ -863,6 +903,13 @@ void *global_variable() {
     }
     expect(";");
 }
+
+typedef struct Designator Designator;
+struct Designator {
+    Designator *next;
+    int idx;     // array
+    Member *mem; // member
+};
 
 Node *new_desg_node2(Variable *var, Designator *desg, Token *tok) {
     if (!desg) {
